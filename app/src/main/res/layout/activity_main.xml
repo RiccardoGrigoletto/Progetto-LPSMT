@@ -1,26 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:circular="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#3d3d3d"
     android:orientation="vertical"
-    tools:context=".MainActivity" >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-        <com.example.marco.progettolpsmt.CircularProgressBar
+    tools:context=".MainActivity">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <com.example.marco.progettolpsmt.CircularProgressBar
             android:id="@+id/study"
             style="@style/Widget.ProgressBar.CircularProgressBar"
             android:layout_width="300dip"
             android:layout_height="3000dip"
-            android:layout_marginTop="100dip"
+            android:layout_marginTop="10dip"
             circular:cpb_subtitle="ammazzami"
             circular:cpb_title="Hai una pistola"
             circular:circ_height="40dp"
             circular:circ_width="25dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dip">
+        <Button
+            android:id="@+id/start"
+            style="@style/Widget.ProgressBar.CircularProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:text="Start"
+            android:background="#bada55"/>
+        <Button
+            android:id="@+id/pause"
+            style="@style/Widget.ProgressBar.CircularProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:text="Pause"
+            android:layout_marginLeft="10dp"
+            android:background="#bada55"/>
+        <Button
+            android:id="@+id/stop"
+            style="@style/Widget.ProgressBar.CircularProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:layout_marginLeft="10dp"
+            android:text="Stop"
+            android:background="#bada55"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dip">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Session completed:"
+            />
+        <TextView
+            android:id="@+id/counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:layout_marginLeft="20dp"/>
     </LinearLayout>
 
 </LinearLayout>

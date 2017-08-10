@@ -18,6 +18,7 @@ package com.example.marco.progettolpsmt;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -30,6 +31,8 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -39,7 +42,7 @@ import android.widget.ProgressBar;
 
 public class CircularProgressBar extends ProgressBar{
 	private static final String TAG = "CircularProgressBar";
-
+    private ObjectAnimator progressBarAnimator=null;
 	private static final int STROKE_WIDTH = 20;
 
 	private String mTitle = "";		
@@ -155,7 +158,7 @@ public class CircularProgressBar extends ProgressBar{
 
 	@Override
 	protected synchronized void onDraw(Canvas canvas) {
-		canvas.drawArc(mCircleBounds, 0, 360 , false, mBackgroundColorPaint);
+        canvas.drawArc(mCircleBounds, 0, 360 , false, mBackgroundColorPaint);
 
 		int prog = getProgress();
 		float scale = getMax() > 0 ? (float)prog/getMax() *360: 0;
@@ -207,8 +210,8 @@ public class CircularProgressBar extends ProgressBar{
 		if(start!=0)
 			setProgress(start);
 
-		final ObjectAnimator progressBarAnimator = ObjectAnimator.ofFloat(this, "animateProgress", start, end);
-		progressBarAnimator.setDuration(25000);
+        progressBarAnimator = ObjectAnimator.ofFloat(this, "animateProgress", start, end);
+		progressBarAnimator.setDuration(2500);
 		//		progressBarAnimator.setInterpolator(new AnticipateOvershootInterpolator(2f, 1.5f));
 		progressBarAnimator.setInterpolator(new LinearInterpolator());
 
@@ -249,6 +252,38 @@ public class CircularProgressBar extends ProgressBar{
 		});
 		progressBarAnimator.start();
 	}
+	@RequiresApi(api = Build.VERSION_CODES.KITKAT)
+
+	/**
+	 * method for pausing the animation
+	 * @return void
+	 */
+	public void pauseAnimation(){
+        progressBarAnimator.pause();
+	}
+
+	/**
+	 * method for end theanimation
+	 * @return void
+	 */
+	public void stopAnimation(){
+		progressBarAnimator.end();
+	}
+	@RequiresApi(api = Build.VERSION_CODES.KITKAT)
+
+	/**
+	 * method for resuming the animation
+	 * @return void
+	 */
+	public void resumeAnimation(){
+		progressBarAnimator.resume();
+	}
+
+	/*
+	public void resetAnimation(){
+		progressBarAnimator.reverse();
+
+	}*/
 
 	public synchronized void setTitle(String title){
 		this.mTitle = title;
