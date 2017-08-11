@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean isStarted= false;
     private TextView counter;
     private int sessionCounter=0;
+    int lel = 30;
+    //text  timer
+    TextTimer textTimer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
         stop.setClickable(false);
 
         /**
+         * Below there is the TextView timer
+         */
+        textTimer = new TextTimer(1500000,1,studytimer);
+        /**
          * adding listener to start button, used to start the animation and resume it
          */
         start.setOnClickListener(new View.OnClickListener(){
@@ -48,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
                     pause.setClickable(true);
                 }
                 else{
+                    textTimer.resume();
                     resumeAnimation(studytimer);
                 }
             }
@@ -61,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                if(isStarted==true) {
+                   textTimer.pause();
                    pauseAnimation(studytimer);
                    start.setText("Resume");
                }
@@ -78,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                     resetAnimation();
                     isStarted = false;
                     start.setText("Start");
+                    textTimer.stop();
                 }
             }
         });
@@ -93,12 +104,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationStart() {
-                isStarted = true;
+                            isStarted = true;
+                            textTimer.start();
             }
 
             @Override
             public void onAnimationProgress(int progress) {
-                timer.setTitle(progress + "%");
+               // timer.setTitle(progress + "%");
             }
             @Override
             public void onAnimationFinish() {
