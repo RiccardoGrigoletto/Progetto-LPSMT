@@ -10,66 +10,37 @@ import java.util.Date;
  */
 
 public class Course {
-    private final String ProgressException = "Course Class: Progress need to be between 0 and 100";
-    private final String CFUException = "Course Class: CFU need to be between 1 and 15";
+    private final String CreditsException = "Course Class: credits need to be between 3 and 15";
     private String name;
-    private int CFU; /*from 1 to 15*/
-    private int studyHours;
-    private int progress; /*from 0 to 100 */
+    private Integer credits; /*from 3 to 15*/
     private ArrayList<Argument> arguments;
-    private Date exam;
-    private ArrayList<WeeklySessions> studySessions;
+    private ArrayList<Date> exams;
+    private boolean attended;
 
     /*****CONSTRUCTORS*******/
-    public Course(String name, int CFU, ArrayList<Argument> arguments, Date exam, ArrayList<WeeklySessions> studySessions, int studyHours) throws Exception {
-        this(name, CFU, arguments, exam, studySessions);
-        this.studyHours = studyHours;
-    }
-    public Course(String name, int CFU, ArrayList<Argument> arguments, Date exam, ArrayList<WeeklySessions> studySessions) throws Exception {
-        this(name, CFU, arguments, exam);
-        this.studySessions = studySessions;
-    }
 
-    public Course(String name, int CFU, ArrayList<Argument> arguments, Date exam) throws Exception {
-        this(name, CFU, exam);
+    public Course(String name, int Credits, ArrayList<Argument> arguments, ArrayList<Date> exams) throws Exception {
+        this(name, Credits, exams);
         this.arguments = arguments;
     }
 
-    public Course(String name, int CFU, Date exam) throws Exception {
-        this(name,CFU);
-        this.exam = exam;
+    public Course(String name, int Credits, ArrayList<Date> exams) throws Exception {
+        this(name, Credits);
+        this.exams = exams;
 
     }
 
-    public Course(String name, int CFU) throws Exception {
+    public Course(String name, int Credits) throws Exception {
         this();
-        setCFU(CFU);
+        setCredits(Credits);
         this.name = name;
 
     }
 
     private Course() {
         this.arguments = new ArrayList<>();
-        if (studyHours==0) {
-           this.studyHours = Global.calculateHours(this.getCFU());
-        }
-        arguments.add(new Argument("TODO", studyHours));
-        this.studySessions = new ArrayList<>();
-        this.progress = 0;
     }
 
-
-    public int getStudyHours() {
-        return studyHours;
-    }
-
-    public void setStudyHours(int studyHours) {
-        this.studyHours = studyHours;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
 
     public String getName() {
         return name;
@@ -79,21 +50,17 @@ public class Course {
         this.name = name;
     }
 
-    public int getCFU() {
-        return CFU;
+    public int getCredits() {
+        return credits;
     }
 
-    public void setCFU(int CFU) throws Exception {
-        if (CFU>=1 && CFU<=15) {
-            this.CFU = CFU;
+    public void setCredits(int credits) throws Exception {
+        if (credits >=3 && credits <=15) {
+            this.credits = credits;
         }
         else {
-            throw new Exception(CFUException);
+            throw new Exception(CreditsException);
         }
-    }
-
-    public int getProgress() {
-        return progress;
     }
 
     public ArrayList<Argument> getArguments() {
@@ -104,22 +71,39 @@ public class Course {
         this.arguments = arguments;
     }
 
-    public Date getExam() {
-        return exam;
+    public ArrayList<Date> getExam() {
+        return exams;
     }
 
-    public void setExam(Date exam) {
-        this.exam = exam;
+    public void setExam(ArrayList<Date> exams) {
+        this.exams = exams;
     }
 
-    public ArrayList<WeeklySessions> getStudySessions() {
-        return studySessions;
+    public boolean isAttended() {
+        return attended;
     }
 
-    public void setStudySessions(ArrayList<WeeklySessions> studySessions) {
-        this.studySessions = studySessions;
+    public void setAttended(boolean attended) {
+        this.attended = attended;
     }
 
+    /**
+     * This function calculate the amount of time spent for each argument of the course and returns
+     * the ratio with the expected time required.
+     * Note: the "previously done" arguments contain fake log with the required amount of time
+     * @return the progress
+     */
+    public int getProgress() {
+        int studied = 0;
+        for (Argument arg: arguments) {
+            studied+=arg.getSpentTime();
+        }
+        int expected = Global.calculateHours(credits,attended);
+        return studied/expected;
+    }
+
+
+    public void addArgument(Argument arg) {
+        arguments.add(arg);
+    }
 }
-
-
