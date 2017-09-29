@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tall_toolbar_height">100dp</dimen>
+    <dimen name="box_margin">5dp</dimen>
+    <dimen name="title_box">40dp</dimen>
+</resources>

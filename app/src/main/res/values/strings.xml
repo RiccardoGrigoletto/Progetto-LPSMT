@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ProgettoLPSMT</string>
+    <string name="navbar_home">home</string>
+    <string name="navbar_profile">profile</string>
+    <string name="action_new">new</string>
+    <string name="action_timer">timer</string>
+    <string name="action_calendar">calendar</string>
 </resources>
