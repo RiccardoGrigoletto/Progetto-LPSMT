@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <ListView
+        android:id="@+id/courses_progress_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/box_margin"
+        android:layout_weight="0"
+        android:background="@drawable/box"
+        android:elevation="6dp"
+        android:footerDividersEnabled="false"
+        android:translationZ="6dp" />
+
+    <LinearLayout
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:elevation="6dp"
+        android:footerDividersEnabled="false"
+        android:translationZ="6dp"
+        android:background="@drawable/box"
+        android:layout_margin="@dimen/box_margin"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textAlignment="center"
+            android:textSize="@dimen/title_box"/>
+
+        <ListView
+            android:id="@+id/daily_events_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/box_margin"
+            />
+    </LinearLayout>
+</LinearLayout>

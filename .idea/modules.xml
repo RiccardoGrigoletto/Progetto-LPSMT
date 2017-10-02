@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Progetto-LPSMT.iml" filepath="$PROJECT_DIR$/Progetto-LPSMT.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/progettolpsmt.iml" filepath="$PROJECT_DIR$/progettolpsmt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/navigationtabbar-1.2.5/navigationtabbar-1.2.5.iml" filepath="$PROJECT_DIR$/navigationtabbar-1.2.5/navigationtabbar-1.2.5.iml" />
     </modules>
   </component>
 </project>

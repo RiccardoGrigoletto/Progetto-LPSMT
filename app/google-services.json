@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "604221463760",
+    "firebase_url": "https://progetto-lpsmt.firebaseio.com",
+    "project_id": "progetto-lpsmt",
+    "storage_bucket": "progetto-lpsmt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604221463760:android:091a1b42003e2251",
+        "android_client_info": {
+          "package_name": "com.example.marco.progettolpsmt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "604221463760-63j7vbv75ra8jr8vrl70gppr654q45qc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.marco.progettolpsmt",
+            "certificate_hash": "6e0f5a91906f44941bac510012582495efa4211d"
+          }
+        },
+        {
+          "client_id": "604221463760-f2b0fqlbef7tnvevbn6iv7jgg1017msj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOyGpZr7svediCOIn87clnCsAHNNOouv4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "604221463760-f2b0fqlbef7tnvevbn6iv7jgg1017msj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
