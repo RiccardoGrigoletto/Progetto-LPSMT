@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.marco.progettolpsmt.Classes.Course;
+import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.R;
 
 import java.util.ArrayList;

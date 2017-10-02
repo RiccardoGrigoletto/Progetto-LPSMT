@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.marco.progettolpsmt.Classes.Course;
+import com.example.marco.progettolpsmt.backend.Course;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
                         ArrayList<Course> values = new ArrayList<>();
                         try {
-                            values.add(new Course("fisica",6));
-                            values.add(new Course("LPSMT",12));
+                            values.add(new Course());
+                            values.add(new Course());
 
                         } catch (Exception e) {
                             e.printStackTrace();
