@@ -4,22 +4,19 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.view.animation.Interpolator;
 import android.widget.Button;
-
+import android.widget.EditText;
+import android.app.Dialog;
 import java.util.ArrayList;
-
+import android.widget.Toast;
 import devlight.io.library.ArcProgressStackView;
-
 import static devlight.io.library.ArcProgressStackView.Model;
-//import static devlight.io.sample.MainActivity.MODEL_COUNT;
-
 /**
  *
  *
@@ -29,34 +26,60 @@ import static devlight.io.library.ArcProgressStackView.Model;
 public class MainActivity extends Activity {
 
     private int mCounter = 0;
-    int finished = 0;
     public final static int MODEL_COUNT = 3;
+    //private final float max_value = 105.0F, min_value = 0.0F;
     private ArcProgressStackView mArcProgressStackView;
     private Button startbutton;
     private Button pause;
     private Button reset;
-    private int numberofripetition =0;
+    private int session = 0;
+    private long current_playtime =0;
     private long animationstate;
+    private int n_session = 4;
+    private long studytimetimer;
+    private long breaktimetimer;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
+        //final LayoutInflater inflater = MainActivity.this.getLayoutInflater();//(LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        //Dialog used in order to take data from user, that we need in order to initializate timer
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.timerinitializationpopup);
+        Button yourButton = dialog.findViewById(R.id.button);
+        //textbox of the dialog
+        final EditText sessions = dialog.findViewById(R.id.editText2);
+        final EditText studytime = dialog.findViewById(R.id.editText3);
+        final EditText breaktime = dialog.findViewById(R.id.editText4);
 
+        //adding listener to buttons
+        yourButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Entratoo","lel");
+                if ( !((sessions.getText()).toString().equals("")) && !((studytime.getText()).toString().equals("")) && !((breaktime.getText()).toString().equals(""))) {
+                    //go on here and dismiss dialog
+                    n_session = Integer.parseInt(sessions.getText().toString());
+                    studytimetimer = Long.parseLong(studytime.getText().toString());
+                    breaktimetimer = Long.parseLong(breaktime.getText().toString());
+                    dialog.dismiss();
+                }
+                else{
+                    Toast.makeText(view.getContext(),"Invalid data", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        dialog.show();
+
+        //ArcProgressView initialization
         startbutton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
         mArcProgressStackView = (ArcProgressStackView) findViewById(R.id.apsv_presentation);
         mArcProgressStackView.setShadowColor(Color.argb(200, 0, 0, 0));
-        mArcProgressStackView.setAnimationDuration(25000);
+        //mArcProgressStackView.setAnimationDuration(25000);
         mArcProgressStackView.setSweepAngle(270);
-        /*mArcProgressStackView.setInterpolator(new Interpolator() {
-            @Override
-            public float getInterpolation(float input) {
-                return 0.00000000000000000001F;
-            }
-        });*/
-
-
         final String[] stringColors = getResources().getStringArray(R.array.devlight);
         final String[] stringBgColors = getResources().getStringArray(R.array.bg);
 
@@ -79,53 +102,72 @@ public class MainActivity extends Activity {
         for(int i = 0 ; i < 150 ; i++){
             lel[i] =(float)i;
         }
-
-
-        final ValueAnimator valueAnimator = ValueAnimator.ofFloat(lel);
+        final ValueAnimator firstarc = ValueAnimator.ofFloat(lel);
         final ValueAnimator va2 = ValueAnimator.ofFloat(lel);
-        valueAnimator.setDuration(2500);
+
+        firstarc.setDuration(2500);
         // valueAnimator.setStartDelay(200);
-        valueAnimator.setRepeatMode(ValueAnimator.RESTART);
-        valueAnimator.setRepeatCount(MODEL_COUNT - 2);
-        valueAnimator.addListener(new AnimatorListenerAdapter() {
+        firstarc.setRepeatMode(ValueAnimator.RESTART);
+        firstarc.setRepeatCount(MODEL_COUNT - 2);
+        firstarc.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(final Animator animation) {
                 mCounter = 0;
-                numberofripetition++;
-                startbutton.setClickable(true);
-                finished=1;
+                animationstate = 0;
+                session += (100)/n_session;
                 va2.start();
-                // mArcProgressStackView.getModels().get(MODEL_COUNT - 1).setProgress(25);
             }
             @Override
             public void onAnimationRepeat(final Animator animation) {
                 mCounter++;
             }
         });
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+        va2.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(final Animator animation) {
+
+                startbutton.setClickable(true);
+                animationstate = 0;
+                if(n_session == 0){
+                    n_session = 4;
+                    va2.setCurrentPlayTime(-1);
+
+                }
+            }
+            @Override
+            public void onAnimationRepeat(final Animator animation) {
+
+            }
+        });
+
+        firstarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation) {
                 mArcProgressStackView.getModels().get(Math.min(mCounter, MODEL_COUNT - 2))  //Math.min(mCounter, MODEL_COUNT - 2)
                         .setProgress((Float) animation.getAnimatedValue());
+                animationstate = animation.getCurrentPlayTime();
                 mArcProgressStackView.postInvalidate();
             }
         });
-
-        //va2.addListener();
-
         va2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation) {
-                mArcProgressStackView.getModels().get(MODEL_COUNT - 1)  //Math.min(mCounter, MODEL_COUNT - 2)
-                        .setProgress((Float) animation.getAnimatedValue() / 4);mArcProgressStackView.postInvalidate();
+                Log.d("Animator",String.valueOf(animation.getAnimatedValue() ));
+                Log.d("Session",String.valueOf(session));
+                Log.d("Number of session",String.valueOf(n_session));
+                Log.d("Current playtime",String.valueOf(current_playtime));
+                mArcProgressStackView.getModels().get(MODEL_COUNT - 1).setProgress(session);
             }
         });
+
         startbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             @TargetApi(Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
-                if(animationstate != 0) {valueAnimator.resume();return;}
-                valueAnimator.start();
+                if(animationstate != 0) {firstarc.resume(); startbutton.setClickable(false); return;}
+                firstarc.start();
+                //cambiare il colore del bottone
                 startbutton.setClickable(false);
             }
         });
@@ -134,7 +176,7 @@ public class MainActivity extends Activity {
             @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                valueAnimator.pause();
+                firstarc.pause();
                 startbutton.setClickable(true);
             }
         });
