@@ -30,6 +30,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${support}"
     compile "com.android.support:design:${support}"
 
+    compile 'devlight.io:arcprogressstackview:1.0.4'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'devlight.io:navigationtabbar:1.2.5'
     compile 'com.google.firebase:firebase-database:10.0.1'

@@ -1,16 +1,28 @@
 package com.example.marco.progettolpsmt;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.marco.progettolpsmt.backend.Course;
-import com.example.marco.progettolpsmt.R;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -33,7 +45,7 @@ public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
      * we are overriding the getView method here - this is what defines how each
      * list item will look.
      */
-    public View getView(int position, View convertView, ViewGroup parent){
+    public View getView(int position, View convertView, ViewGroup parent) {
 
         // assign the view we are converting to a local variable
         View v = convertView;
