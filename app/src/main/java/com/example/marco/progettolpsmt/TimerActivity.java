@@ -38,7 +38,7 @@ public class TimerActivity extends Activity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_timer);
         super.onCreate(savedInstanceState);
         //final LayoutInflater inflater = MainActivity.this.getLayoutInflater();//(LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         //Dialog used in order to take data from user, that we need in order to initializate timer
@@ -75,7 +75,7 @@ public class TimerActivity extends Activity {
         pause =(Button) findViewById(R.id.pausebtn);
         mArcProgressStackView = (ArcProgressStackView) findViewById(R.id.apsv_presentation);
         mArcProgressStackView.setShadowColor(Color.argb(200, 0, 0, 0));
-        //mArcProgressStackView.setAnimationDuration(25000);
+        mArcProgressStackView.setAnimationDuration(25000);
         mArcProgressStackView.setSweepAngle(270);
         final String[] stringColors = getResources().getStringArray(R.array.colors);
         final String[] stringBgColors = getResources().getStringArray(R.array.colors);

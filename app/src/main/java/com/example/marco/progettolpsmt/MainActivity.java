@@ -1,17 +1,24 @@
 package com.example.marco.progettolpsmt;
 
+import android.animation.ObjectAnimator;
+import android.content.ClipData;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Button;
 
 import com.example.marco.progettolpsmt.backend.Course;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +45,16 @@ public class MainActivity extends AppCompatActivity {
         //app bar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+      /*  myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Entrato","");
+                Intent myIntent = new Intent(getApplicationContext(),TimerActivity.class);
+                getApplicationContext().startActivity(myIntent);
+            }
+        });*/
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -160,7 +177,35 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }, 500);
+
+        //attach timer
+       /* myToolbar.findViewById(R.id.action_timer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });*/
+        /*myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               // new TimerActivity();
+
+            }
+        });*/
+
+
     }
+
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.action_timer) {
+            Intent intent = new Intent(getBaseContext(),TimerActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+
 
     private NavigationTabBar.Model ntbModelBuilder(int icon, int activeColor, String title) {
         NavigationTabBar.Model.Builder ntb = null;
