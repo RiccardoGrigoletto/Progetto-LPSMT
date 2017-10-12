@@ -100,7 +100,8 @@ public class TimerActivity extends Activity {
             lel[i] =(float)i;
         }
         final ValueAnimator firstarc = ValueAnimator.ofFloat(lel);
-        final ValueAnimator va2 = ValueAnimator.ofFloat(lel);
+        final ValueAnimator secondarc = ValueAnimator.ofFloat(lel);
+        final ValueAnimator thirdarc = ValueAnimator.ofFloat(lel);
 
         firstarc.setDuration(2500);
         // valueAnimator.setStartDelay(200);
@@ -112,7 +113,6 @@ public class TimerActivity extends Activity {
                 mCounter = 0;
                 animationstate = 0;
                 session += (100)/n_session;
-                va2.start();
             }
             @Override
             public void onAnimationRepeat(final Animator animation) {
@@ -120,7 +120,14 @@ public class TimerActivity extends Activity {
             }
         });
 
-        va2.addListener(new AnimatorListenerAdapter() {
+        secondarc.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                thirdarc.start();
+            }
+        });
+        thirdarc.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(final Animator animation) {
 
@@ -128,7 +135,7 @@ public class TimerActivity extends Activity {
                 animationstate = 0;
                 if(n_session == 0){
                     n_session = 4;
-                    va2.setCurrentPlayTime(-1);
+                    thirdarc.setCurrentPlayTime(-1);
 
                 }
             }
@@ -147,7 +154,7 @@ public class TimerActivity extends Activity {
                 mArcProgressStackView.postInvalidate();
             }
         });
-        va2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        thirdarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation) {
                 Log.d("Animator", String.valueOf(animation.getAnimatedValue() ));
