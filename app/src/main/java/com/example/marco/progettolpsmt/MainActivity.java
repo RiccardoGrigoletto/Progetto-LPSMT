@@ -1,7 +1,10 @@
 package com.example.marco.progettolpsmt;
 
+import android.app.DialogFragment;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +14,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.example.marco.progettolpsmt.backend.Course;
 import com.google.firebase.database.DataSnapshot;
@@ -25,7 +32,7 @@ import java.util.ArrayList;
 import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity {
-    final int VIEWS = 2;
+    final int VIEWS = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("courses");
 
-        //app bar
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        setSupportActionBar(myToolbar);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -98,11 +102,59 @@ public class MainActivity extends AppCompatActivity {
                     case 1: {
                         view = LayoutInflater.from(
                                 getBaseContext()).inflate(R.layout.page_1, null, false);
+
                     } break;
-                    /*case 2: {
+                    case 2: {
+
                         view = LayoutInflater.from(
-                                getBaseContext()).inflate(R.layout.page_1, null, false);
-                    } break;*/
+                                getBaseContext()).inflate(R.layout.page_2, null, false);
+                        Spinner spinner = view.findViewById(R.id.CFUSpinner);
+                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
+                                R.array.CFU_array, android.R.layout.simple_spinner_item);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinner.setAdapter(adapter);
+
+                        final LinearLayout linearLayoutArguments = view.findViewById(R.id.argoumentsList);
+                        View view1 = LayoutInflater.from(getBaseContext())
+                                .inflate(R.layout.argument_view, null, false);
+                        linearLayoutArguments.addView(view1);
+
+                        FloatingActionButton addArgumentButton = view.findViewById(R.id.addArgumentButton);
+
+                        addArgumentButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                View view1 = LayoutInflater.from(getBaseContext())
+                                        .inflate(R.layout.argument_view,null,false);
+                                linearLayoutArguments.addView(view1);
+                            }
+                        });
+                        FloatingActionButton deleteArgumentButton = view.findViewById(R.id.deleteArgumentButton);
+
+                        deleteArgumentButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                View view1 = LayoutInflater.from(getBaseContext())
+                                        .inflate(R.layout.argument_view,null,false);
+                                linearLayoutArguments.addView(view1);
+                            }
+                        });
+
+                        Button addExamButton = view.findViewById(R.id.addExamButton);
+
+                        addExamButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                showDatePickerDialog(view);
+                            }
+
+                        });
+
+
+
+                    } break;
                 }
                 /*final TextView txtPage = (TextView) view.findViewById(R.id.txt_vp_item_page);
                 txtPage.setText(String.format("Hello everyone! this is the page #%d", position));*/
@@ -112,23 +164,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final NavigationTabBar navigationTabBar = (NavigationTabBar) findViewById(R.id.ntb);
+        final NavigationTabBar navigationTabBar = findViewById(R.id.ntb);
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
 
             models.add(ntbModelBuilder(
                     R.drawable.ic_home_black_24dp,
-                    R.color.colorPrimaryDark,
-                    getResources().getString(R.string.navbar_home)));
+                    R.color.colorPrimaryDark));
             models.add(ntbModelBuilder(
                     R.drawable.ic_account_circle_black_24dp,
-                    R.color.colorPrimaryDark,
-                    getResources().getString(R.string.navbar_profile)));
-            /*models.add(ntbModelBuilder(
-                    R.drawable.ic_account_circle_black_24dp,
-                    R.color.colorPrimaryDark,
-                    getResources().getString(R.string.navbar_profile)));*/
+                    R.color.colorPrimaryDark));
+            models.add(ntbModelBuilder(
+                    R.drawable.ic_add_black_24dp,
+                    R.color.colorPrimaryDark));
         navigationTabBar.setModels(models);
-        navigationTabBar.setViewPager(viewPager, VIEWS);
+        navigationTabBar.setViewPager(viewPager, 0);
         navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
@@ -162,19 +211,17 @@ public class MainActivity extends AppCompatActivity {
         }, 500);
     }
 
-    private NavigationTabBar.Model ntbModelBuilder(int icon, int activeColor, String title) {
+    private NavigationTabBar.Model ntbModelBuilder(int icon, int activeColor) {
         NavigationTabBar.Model.Builder ntb = null;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ntb = new NavigationTabBar.Model.Builder(getResources().getDrawable(icon, null),
                     getResources().getColor(activeColor, null));
-            ntb.title(title);
             /*res.badgeTitle("");*/
         } else {
             ntb = new NavigationTabBar.Model.Builder(
                     getResources().getDrawable(icon),
                     getResources().getColor(activeColor));
-            ntb.title(title);
         }
         return ntb.build();
     }
@@ -184,5 +231,9 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.items, menu);
         return true;
+    }
+    public void showDatePickerDialog (View v) {
+        DialogFragment newFragment = new DatePickerFragment();
+        newFragment.show(getFragmentManager(), "datePicker");
     }
 }
