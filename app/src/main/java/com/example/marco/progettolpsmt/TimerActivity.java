@@ -89,7 +89,7 @@ public class TimerActivity extends Activity {
 
         //circle creation
         final ArrayList<ArcProgressStackView.Model> models = new ArrayList<>();
-        models.add(new ArcProgressStackView.Model("Study Time", 0, bgColors[0], colors[0]));
+        models.add(new ArcProgressStackView.Model("Study Time", 0, bgColors[0], colors[2]));
         models.add(new ArcProgressStackView.Model("Break Time", 0, bgColors[1], colors[1]));
         models.add(new ArcProgressStackView.Model("Session Progress", 0, bgColors[2], colors[2]));
         mArcProgressStackView.setModels(models);
