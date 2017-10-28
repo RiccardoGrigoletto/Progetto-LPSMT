@@ -1,28 +1,25 @@
 package com.example.marco.progettolpsmt;
 
-import android.app.DialogFragment;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,6 +33,8 @@ import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity {
     final int VIEWS = 3;
+
+    @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.vp_ntb);
+        /*page creation*/
+        final ViewPager viewPager = findViewById(R.id.vp_ntb);
         viewPager.setAdapter(new PagerAdapter() {
             @Override
             public int getCount() {
@@ -95,69 +95,40 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         CoursesProgressAdapter<Course> progressAdapter = new CoursesProgressAdapter<>(getBaseContext(),
-                                R.layout.progress_bar,values);
+                                R.layout.progress_bar_min, values);
                         lvProgress.setAdapter(progressAdapter);
 
                         DailyCoursesAdapter<Course> adapter = new DailyCoursesAdapter<>(getBaseContext(),
-                                R.layout.daily_course,values);
+                                R.layout.daily_course, values);
                         lvDay.setAdapter(adapter);
-                    } break;
+                    }
+                    break;
                     case 1: {
                         view = LayoutInflater.from(
                                 getBaseContext()).inflate(R.layout.page_1, null, false);
+                        RecyclerView coursesRV = view.findViewById(R.id.coursesRecyclerView);
+                        ArrayList<Course> courses = new ArrayList<>();
+                        courses.add(new Course());
+                        courses.add(new Course());
+                        RecyclerView.Adapter myAdapter = new CoursesAdapter(courses);
 
-                    } break;
+                        // use a linear layout manager
+                        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getBaseContext());
+                        coursesRV.setLayoutManager(mLayoutManager);
+
+                        coursesRV.setAdapter(myAdapter);
+
+                        /*final View argument = LayoutInflater.from(getBaseContext())
+                                .inflate(R.layout.argument_view,null,false);
+                        coursesRV.addView(argument);*/
+                    }
+                    break;
                     case 2: {
-
                         view = LayoutInflater.from(
-                                getBaseContext()).inflate(R.layout.page_2, null, false);
-                        Spinner spinner = view.findViewById(R.id.CFUSpinner);
-                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
-                                R.array.CFU_array, android.R.layout.simple_spinner_item);
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        spinner.setAdapter(adapter);
+                                getBaseContext()).inflate(R.layout.settings, null, false);
 
-                        final LinearLayout linearLayoutArguments = view.findViewById(R.id.argoumentsList);
-                        View view1 = LayoutInflater.from(getBaseContext())
-                                .inflate(R.layout.argument_view, null, false);
-                        linearLayoutArguments.addView(view1);
-
-                        FloatingActionButton addArgumentButton = view.findViewById(R.id.addArgumentButton);
-
-                        addArgumentButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                                View view1 = LayoutInflater.from(getBaseContext())
-                                        .inflate(R.layout.argument_view,null,false);
-                                linearLayoutArguments.addView(view1);
-                            }
-                        });
-                        FloatingActionButton deleteArgumentButton = view.findViewById(R.id.deleteArgumentButton);
-
-                        deleteArgumentButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                                View view1 = LayoutInflater.from(getBaseContext())
-                                        .inflate(R.layout.argument_view,null,false);
-                                linearLayoutArguments.addView(view1);
-                            }
-                        });
-
-                        Button addExamButton = view.findViewById(R.id.addExamButton);
-
-                        addExamButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                showDatePickerDialog(view);
-                            }
-
-                        });
-
-
-
-                    } break;
+                    }
+                    break;
                 }
                 /*final TextView txtPage = (TextView) view.findViewById(R.id.txt_vp_item_page);
                 txtPage.setText(String.format("Hello everyone! this is the page #%d", position));*/
@@ -170,15 +141,15 @@ public class MainActivity extends AppCompatActivity {
         final NavigationTabBar navigationTabBar = findViewById(R.id.ntb);
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
 
-            models.add(ntbModelBuilder(
-                    R.drawable.ic_home_black_24dp,
-                    R.color.colorPrimaryDark));
-            models.add(ntbModelBuilder(
-                    R.drawable.ic_account_circle_black_24dp,
-                    R.color.colorPrimaryDark));
-            models.add(ntbModelBuilder(
-                    R.drawable.ic_add_black_24dp,
-                    R.color.colorPrimaryDark));
+        models.add(ntbModelBuilder(
+                R.drawable.ic_home_black_24dp,
+                R.color.colorPrimaryDark));
+        models.add(ntbModelBuilder(
+                R.drawable.ic_account_circle_black_24dp,
+                R.color.colorPrimaryDark));
+        models.add(ntbModelBuilder(
+                R.drawable.ic_settings_black_24px,
+                R.color.colorPrimaryDark));
         navigationTabBar.setModels(models);
         navigationTabBar.setViewPager(viewPager, 0);
         navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -213,29 +184,25 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 500);
 
-        //attach timer
-       /* myToolbar.findViewById(R.id.action_timer).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });*/
-        /*myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               // new TimerActivity();
-
-            }
-        });*/
 
 
+    /*floating button listener*/
+    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.newCourse);
+        fab.setOnClickListener(new View.OnClickListener()
+
+    {
+        @Override
+        public void onClick (View v){
+        Intent intent = new Intent(getBaseContext(), NewCourseActivity.class);
+        startActivity(intent);
     }
-
+    });
+}
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.action_timer) {
             Intent intent = new Intent(getBaseContext(),TimerActivity.class);
             startActivity(intent);
-            finish();
+            //finish();
         }
         return super.onOptionsItemSelected(menuItem);
     }
@@ -261,8 +228,5 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.items, menu);
         return true;
     }
-    public void showDatePickerDialog (View v) {
-        DialogFragment newFragment = new DatePickerFragment();
-        newFragment.show(getFragmentManager(), "datePicker");
-    }
+
 }

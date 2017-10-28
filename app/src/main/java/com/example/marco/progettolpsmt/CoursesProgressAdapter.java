@@ -9,7 +9,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.marco.progettolpsmt.backend.Course;
-import com.example.marco.progettolpsmt.R;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -45,7 +44,7 @@ public class CoursesProgressAdapter<C> extends ArrayAdapter<Course> {
         // to inflate it basically means to render, or show, the view.
         if (v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.progress_bar, null);
+            v = inflater.inflate(R.layout.progress_bar_min, null);
         }
 
 		/*

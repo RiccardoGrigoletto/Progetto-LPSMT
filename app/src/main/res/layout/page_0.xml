@@ -12,9 +12,9 @@
         android:layout_margin="@dimen/box_margin"
         android:layout_weight="0"
         android:background="@drawable/box"
-        android:elevation="6dp"
+        android:elevation="@dimen/box_elevation"
         android:footerDividersEnabled="false"
-        android:translationZ="6dp" />
+        android:translationZ="@dimen/box_translationZ" />
 
     <LinearLayout
         android:id="@+id/textView2"
@@ -22,10 +22,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:elevation="6dp"
-        android:footerDividersEnabled="false"
         android:translationZ="6dp"
         android:background="@drawable/box"
         android:layout_margin="@dimen/box_margin"
+        android:footerDividersEnabled="false"
         android:orientation="vertical" >
 
         <TextView
