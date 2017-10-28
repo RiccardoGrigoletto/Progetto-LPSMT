@@ -27,10 +27,10 @@ public class Course implements Observer {
      */
     public Course() {
         name = "Untitled Course";
-        credits = Settings.DEFAULT.getRegularCredits();
+        credits = 3;//Settings.DEFAULT.getRegularCredits();
         arguments = new ArrayList<>();
         exams = new ArrayList<>();
-        timeExpected = credits * Settings.DEFAULT.getHoursPerCredit() * 60;
+        timeExpected = credits * 25/*Settings.DEFAULT.getHoursPerCredit()*/ * 60;
     }
 
     /**
