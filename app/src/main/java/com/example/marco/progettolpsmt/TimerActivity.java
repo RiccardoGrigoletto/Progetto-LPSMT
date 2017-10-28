@@ -24,7 +24,6 @@ public class TimerActivity extends Activity {
 
     private int mCounter = 0;
     public final static int MODEL_COUNT = 3;
-    //private final float max_value = 105.0F, min_value = 0.0F;
     private ArcProgressStackView mArcProgressStackView;
     private Button startbutton;
     private Button pause;
@@ -54,7 +53,6 @@ public class TimerActivity extends Activity {
         yourButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Entratoo","lel");
                 if ( !((sessions.getText()).toString().equals("")) && !((studytime.getText()).toString().equals("")) && !((breaktime.getText()).toString().equals(""))) {
                     //go on here and dismiss dialog
                     n_session = Integer.parseInt(sessions.getText().toString());
@@ -74,27 +72,16 @@ public class TimerActivity extends Activity {
         startbutton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
         mArcProgressStackView = (ArcProgressStackView) findViewById(R.id.apsv_presentation);
-        mArcProgressStackView.setShadowColor(Color.argb(200, 0, 0, 0));
+        //mArcProgressStackView.setShadowColor(Color.argb(200, 0, 0, 0));
         mArcProgressStackView.setAnimationDuration(25000);
         mArcProgressStackView.setSweepAngle(270);
-        final String[] stringColors = getResources().getStringArray(R.array.colors);
-        final String[] stringBgColors = getResources().getStringArray(R.array.colors);
-
-        final int[] colors = new int[MODEL_COUNT];
-        final int[] bgColors = new int[MODEL_COUNT];
-        for (int i = 0; i < MODEL_COUNT; i++) {
-            colors[i] = Color.parseColor(stringColors[i]);
-            bgColors[i] = Color.parseColor(stringBgColors[i]);
-        }
-
         //circle creation
         final ArrayList<ArcProgressStackView.Model> models = new ArrayList<>();
-        models.add(new ArcProgressStackView.Model("Study Time", 0, bgColors[0], colors[2]));
-        models.add(new ArcProgressStackView.Model("Break Time", 0, bgColors[1], colors[1]));
-        models.add(new ArcProgressStackView.Model("Session Progress", 0, bgColors[2], colors[2]));
+        models.add(new ArcProgressStackView.Model("Study Time", 0, R.color.white,R.color.colorPrimary));
+        models.add(new ArcProgressStackView.Model("Break Time", 0,R.color.white , R.color.colorPrimary));
+        models.add(new ArcProgressStackView.Model("Session Progress", 0, R.color.white, R.color.colorPrimary));
         mArcProgressStackView.setModels(models);
 
-        //105.0F
         float[] lel = new float[200];
         for(int i = 0 ; i < 150 ; i++){
             lel[i] =(float)i;
@@ -102,17 +89,19 @@ public class TimerActivity extends Activity {
         final ValueAnimator firstarc = ValueAnimator.ofFloat(lel);
         final ValueAnimator secondarc = ValueAnimator.ofFloat(lel);
         final ValueAnimator thirdarc = ValueAnimator.ofFloat(lel);
-
         firstarc.setDuration(2500);
-        // valueAnimator.setStartDelay(200);
-        firstarc.setRepeatMode(ValueAnimator.RESTART);
-        firstarc.setRepeatCount(MODEL_COUNT - 2);
+        secondarc.setDuration(333);
+        /**
+         * On end listeners. This listeners are used in order to allow graphic sync between circles.
+         * When a circle animation end, the onEndListener update
+         */
         firstarc.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(final Animator animation) {
                 mCounter = 0;
                 animationstate = 0;
                 session += (100)/n_session;
+                secondarc.start();
             }
             @Override
             public void onAnimationRepeat(final Animator animation) {
@@ -122,21 +111,24 @@ public class TimerActivity extends Activity {
 
         secondarc.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
+            public void onAnimationEnd(final Animator animation) {
+                Log.d("sono","entrato");
                 thirdarc.start();
             }
+            @Override
+            public void onAnimationRepeat(final Animator animation) {
+
+            }
         });
+
         thirdarc.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(final Animator animation) {
-
                 startbutton.setClickable(true);
                 animationstate = 0;
                 if(n_session == 0){
                     n_session = 4;
                     thirdarc.setCurrentPlayTime(-1);
-
                 }
             }
             @Override
@@ -145,15 +137,32 @@ public class TimerActivity extends Activity {
             }
         });
 
+        /**
+         * Animator update listener. This methods are used to update graphics animation of
+         * the ArchModel. Every circle own a method that update graphics valued differently as the other
+         * due to different values setted by user before the animation starts.
+         */
+
         firstarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation) {
-                mArcProgressStackView.getModels().get(Math.min(mCounter, MODEL_COUNT - 2))  //Math.min(mCounter, MODEL_COUNT - 2)
+                mArcProgressStackView.getModels().get(MODEL_COUNT-3)  //Math.min(mCounter, MODEL_COUNT - 2)
                         .setProgress((Float) animation.getAnimatedValue());
                 animationstate = animation.getCurrentPlayTime();
                 mArcProgressStackView.postInvalidate();
             }
         });
+
+        secondarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(final ValueAnimator animation) {
+                mArcProgressStackView.getModels().get(MODEL_COUNT-2)  //Math.min(mCounter, MODEL_COUNT - 2)
+                        .setProgress((Float) animation.getAnimatedValue());
+                animationstate = animation.getCurrentPlayTime();
+                mArcProgressStackView.postInvalidate();
+            }
+        });
+
         thirdarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation) {
@@ -165,6 +174,10 @@ public class TimerActivity extends Activity {
             }
         });
 
+
+        /**
+         * Button listeners
+         */
         startbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             @TargetApi(Build.VERSION_CODES.KITKAT)

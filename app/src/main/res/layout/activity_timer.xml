@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"
+    android:background="@color/white"
     android:gravity="top"
     android:orientation="vertical">
 
@@ -17,8 +17,8 @@
         android:textSize="18sp"/>
 
     <FrameLayout
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
         android:layout_gravity="center"
         android:layout_marginTop="25dp">
 
@@ -39,48 +39,35 @@
             app:apsv_text_color="#00000000"/>
 
         <LinearLayout
-            android:layout_width="85dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:gravity="end"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="17.5dip"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:shadowColor="#64000000"
-                android:shadowDx="0"
-                android:shadowDy="5"
-                android:shadowRadius="5"
                 android:text="Study Time"
-                android:textColor="#fff"
-                android:textSize="11sp"/>
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="20sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="17.5dip"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:gravity="center"
-                android:shadowColor="#64000000"
-                android:shadowDx="0"
-                android:shadowDy="5"
-                android:shadowRadius="5"
                 android:text="Break Time"
-                android:textColor="#fff"
-                android:textSize="11sp"/>
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="20sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="17.5dip"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:gravity="center"
-                android:shadowColor="#64000000"
-                android:shadowDx="0"
-                android:shadowDy="5"
-                android:shadowRadius="5"
                 android:text="Study Progress"
-                android:textColor="#fff"
-                android:textSize="11sp"/>
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="20sp"/>
 
         </LinearLayout>
 
@@ -89,7 +76,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000"
+        android:background="@color/white"
         android:gravity="bottom"
         android:orientation="horizontal">
 
