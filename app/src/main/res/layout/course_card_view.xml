@@ -3,10 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/box_margin"
-    android:layout_weight="0"
     android:background="@drawable/box"
     android:elevation="@dimen/box_elevation"
-    android:translationZ="6dp">
+    android:translationZ="@dimen/box_translationZ">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +21,7 @@ import devlight.io.library.ArcProgressStackView;
 import static devlight.io.library.ArcProgressStackView.Model;
 
 
-public class TimerActivity extends Activity {
+public class TimerActivity extends AppCompatActivity {
 
     private int mCounter = 0;
     public final static int MODEL_COUNT = 3;
@@ -72,14 +73,17 @@ public class TimerActivity extends Activity {
         startbutton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
         mArcProgressStackView = (ArcProgressStackView) findViewById(R.id.apsv_presentation);
-        //mArcProgressStackView.setShadowColor(Color.argb(200, 0, 0, 0));
         mArcProgressStackView.setAnimationDuration(25000);
         mArcProgressStackView.setSweepAngle(270);
         //circle creation
-        final ArrayList<ArcProgressStackView.Model> models = new ArrayList<>();
-        models.add(new ArcProgressStackView.Model("Study Time", 0, R.color.white,R.color.colorPrimary));
-        models.add(new ArcProgressStackView.Model("Break Time", 0,R.color.white , R.color.colorPrimary));
-        models.add(new ArcProgressStackView.Model("Session Progress", 0, R.color.white, R.color.colorPrimary));
+        final ArrayList<Model> models = new ArrayList<>();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            models.add(new Model("Study Time", 0,getColor(R.color.colorPrimary),getColor(R.color.colorAccent)));
+            models.add(new Model("Break Time", 0,getColor(R.color.colorPrimary) , getColor(R.color.colorAccent)));
+            models.add(new Model("Session Progress", 0, getColor(R.color.colorPrimary), getColor(R.color.colorAccent)));
+
+        }
         mArcProgressStackView.setModels(models);
 
         float[] lel = new float[200];

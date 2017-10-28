@@ -3,8 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:gravity="top"
     android:orientation="vertical">
 
     <TextView
@@ -17,29 +15,30 @@
         android:textSize="18sp"/>
 
     <FrameLayout
-        android:layout_width="350dp"
-        android:layout_height="350dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="25dp">
+        android:layout_marginTop="25dp"
+        android:layout_margin="@dimen/box_margin"
+        android:background="@drawable/box"
+        android:elevation="@dimen/box_elevation"
+        android:translationZ="@dimen/box_translationZ">
 
         <devlight.io.library.ArcProgressStackView
             android:id="@+id/apsv_presentation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:apsv_animated="true"
+            android:layout_margin="8dp"
             app:apsv_dragged="false"
             app:apsv_draw_width="70dp"
             app:apsv_leveled="true"
             app:apsv_model_bg_enabled="true"
             app:apsv_model_offset="-2dp"
-            app:apsv_preview_bg="#34ffa70b"
-            app:apsv_preview_colors="@array/default_preview"
             app:apsv_rounded="true"
-            app:apsv_shadowed="false"
-            app:apsv_text_color="#00000000"/>
+            app:apsv_shadowed="false" />
 
         <LinearLayout
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
@@ -49,7 +48,7 @@
                 android:gravity="center"
                 android:text="Study Time"
                 android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -58,7 +57,7 @@
                 android:gravity="center"
                 android:text="Break Time"
                 android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -67,7 +66,7 @@
                 android:gravity="center"
                 android:text="Study Progress"
                 android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
         </LinearLayout>
 
