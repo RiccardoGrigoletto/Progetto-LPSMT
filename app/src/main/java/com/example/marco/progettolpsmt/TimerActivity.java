@@ -2,9 +2,12 @@ package com.example.marco.progettolpsmt;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +17,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
+
 import java.util.ArrayList;
 
 import devlight.io.library.ArcProgressStackView;
@@ -35,6 +41,7 @@ public class TimerActivity extends AppCompatActivity {
     private int n_session = 4;
     private long studytimetimer;
     private long breaktimetimer;
+    private boolean isdialogsetted = false;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -50,6 +57,7 @@ public class TimerActivity extends AppCompatActivity {
         final EditText studytime = dialog.findViewById(R.id.editText3);
         final EditText breaktime = dialog.findViewById(R.id.editText4);
 
+
         //adding listener to buttons
         yourButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,30 +67,41 @@ public class TimerActivity extends AppCompatActivity {
                     n_session = Integer.parseInt(sessions.getText().toString());
                     studytimetimer = Long.parseLong(studytime.getText().toString());
                     breaktimetimer = Long.parseLong(breaktime.getText().toString());
+                    isdialogsetted = true;
                     dialog.dismiss();
-                }
-                else{
-                    Toast.makeText(view.getContext(),"Invalid data", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
         dialog.show();
-
+         /*
+           if user doesn't set values, the system will use default setted values
+         */
+         if(isdialogsetted == false) {
+            n_session = TimerSettingsSingleton.getInstance().getNumberOfStudySessions();
+            studytimetimer = TimerSettingsSingleton.getInstance().getNumberOfStudyDuration();
+            breaktimetimer = TimerSettingsSingleton.getInstance().getNumberOfBreakDuration();
+         }
         //ArcProgressView initialization
         startbutton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
         mArcProgressStackView = (ArcProgressStackView) findViewById(R.id.apsv_presentation);
-        mArcProgressStackView.setAnimationDuration(25000);
+       // mArcProgressStackView.setAnimationDuration(25000);
         mArcProgressStackView.setSweepAngle(270);
         //circle creation
         final ArrayList<Model> models = new ArrayList<>();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
             models.add(new Model("Study Time", 0,getColor(R.color.colorPrimary),getColor(R.color.colorAccent)));
             models.add(new Model("Break Time", 0,getColor(R.color.colorPrimary) , getColor(R.color.colorAccent)));
             models.add(new Model("Session Progress", 0, getColor(R.color.colorPrimary), getColor(R.color.colorAccent)));
 
+        }
+        else{
+            models.add(new Model("Study Time", 0,Color.parseColor("#00bcd4"),Color.parseColor("#ff5722")));
+            models.add(new Model("Break Time", 0,Color.parseColor("#00bcd4") , Color.parseColor("#ff5722")));
+            models.add(new Model("Session Progress", 0,Color.parseColor("#00bcd4"), Color.parseColor("#ff5722")));
         }
         mArcProgressStackView.setModels(models);
 
@@ -93,8 +112,8 @@ public class TimerActivity extends AppCompatActivity {
         final ValueAnimator firstarc = ValueAnimator.ofFloat(lel);
         final ValueAnimator secondarc = ValueAnimator.ofFloat(lel);
         final ValueAnimator thirdarc = ValueAnimator.ofFloat(lel);
-        firstarc.setDuration(2500);
-        secondarc.setDuration(333);
+        firstarc.setDuration(studytimetimer);
+        secondarc.setDuration(breaktimetimer);
         /**
          * On end listeners. This listeners are used in order to allow graphic sync between circles.
          * When a circle animation end, the onEndListener update
