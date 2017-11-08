@@ -1,96 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linear"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="21dp"
-        android:layout_marginTop="2dp"
-        android:gravity="center"
-        android:text="Studi Parser"
-        android:textColor="#fff"
-        android:textSize="18sp"/>
-
     <FrameLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="25dp"
-        android:layout_margin="@dimen/box_margin"
-        android:background="@drawable/box"
-        android:elevation="@dimen/box_elevation"
-        android:translationZ="@dimen/box_translationZ">
+        android:background="@drawable/box">
 
         <devlight.io.library.ArcProgressStackView
             android:id="@+id/apsv_presentation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="8dp"
+            android:progress="150"
             app:apsv_dragged="false"
             app:apsv_draw_width="70dp"
             app:apsv_leveled="true"
             app:apsv_model_bg_enabled="true"
             app:apsv_model_offset="-2dp"
             app:apsv_rounded="true"
-            app:apsv_shadowed="false" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Study Time"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:gravity="center"
-                android:text="Break Time"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:gravity="center"
-                android:text="Study Progress"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp" />
-
-        </LinearLayout>
-
+            app:apsv_shadowed="false"
+            tools:layout_editor_absoluteX="29dp"
+            tools:layout_editor_absoluteY="8dp" />
     </FrameLayout>
 
+    <cn.iwgang.countdownview.CountdownView
+        android:layout_width="wrap_content"
+        android:id="@+id/countdownview"
+        android:layout_height="90dp"
+        app:isHideTimeBackground="true"
+        app:isShowHour="true"
+        app:isShowMillisecond="false"
+        app:isShowMinute="true"
+        app:isShowSecond="true"
+        app:isTimeTextBold="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.316"
+        app:suffixGravity="bottom"
+        app:suffixHour="h"
+        app:suffixMinute="m"
+        app:suffixSecond="s"
+        app:suffixTextColor="#000000"
+        app:suffixTextSize="20sp"
+        app:timeTextColor="#000000"
+        app:timeTextSize="30sp" />
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/apsv_linear"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Study Time"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:text="Study Progress"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:text="Break Time"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@color/white"
         android:gravity="bottom"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.834">
 
         <Button
             android:id="@+id/startbtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start"
-            />
+            android:text="Start" />
+
         <Button
             android:id="@+id/pausebtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pause"
-            />
+            android:text="Pause" />
+
     </LinearLayout>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
+
