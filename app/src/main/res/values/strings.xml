@@ -11,4 +11,5 @@
     <string name="password_label">password</string>
     <string name="login_label">login</string>
     <string name="log_out_btn">log out</string>
+    <string name="loading">loading ...</string>
 </resources>
