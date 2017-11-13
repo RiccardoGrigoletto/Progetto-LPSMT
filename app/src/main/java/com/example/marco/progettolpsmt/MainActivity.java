@@ -1,7 +1,6 @@
 package com.example.marco.progettolpsmt;
 
 
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,16 +10,27 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
+import com.example.marco.progettolpsmt.backend.Exam;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,17 +38,26 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity {
     final int VIEWS = 3;
 
-    @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
+
+    public FirebaseUser user;
+    private FirebaseAuth mAuth;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
         setContentView(R.layout.activity_main);
+
+        Toast.makeText(this,user.getDisplayName(),Toast.LENGTH_LONG).show();
 
         // Write a message to the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -77,6 +96,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Object instantiateItem(final ViewGroup container, final int position) {
                 View view = null;
+
+                ArrayList<Course> values = new ArrayList<>();
+                Course c1 = new Course();
+                c1.setName("fisica");
+                c1.addArgument(new Argument());
+                c1.addArgument(new Argument());
+                c1.addExam(new Exam(new Date()));
+                c1.addExam(new Exam(new Date()));
+                values.add(c1);
+                values.add(new Course());
+
                 switch (position) {
                     case 0: {
                         view = LayoutInflater.from(
@@ -86,14 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
                         ListView lvDay = view.findViewById(R.id.daily_events_list_view);
 
-                        ArrayList<Course> values = new ArrayList<>();
-                        try {
-                            values.add(new Course());
-                            values.add(new Course());
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                         CoursesProgressAdapter<Course> progressAdapter = new CoursesProgressAdapter<>(getBaseContext(),
                                 R.layout.progress_bar_min, values);
                         lvProgress.setAdapter(progressAdapter);
@@ -106,27 +129,41 @@ public class MainActivity extends AppCompatActivity {
                     case 1: {
                         view = LayoutInflater.from(
                                 getBaseContext()).inflate(R.layout.page_1, null, false);
-                        RecyclerView coursesRV = view.findViewById(R.id.coursesRecyclerView);
-                        ArrayList<Course> courses = new ArrayList<>();
-                        courses.add(new Course());
-                        courses.add(new Course());
-                        RecyclerView.Adapter myAdapter = new CoursesAdapter(courses);
+                       /* RecyclerView coursesRV = view.findViewById(R.id.coursesRecyclerView);
+                        RecyclerView.Adapter myAdapter = new CoursesAdapter(values);
 
                         // use a linear layout manager
                         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getBaseContext());
                         coursesRV.setLayoutManager(mLayoutManager);
 
-                        coursesRV.setAdapter(myAdapter);
+                        coursesRV.setAdapter(myAdapter);*/
 
                         /*final View argument = LayoutInflater.from(getBaseContext())
                                 .inflate(R.layout.argument_view,null,false);
                         coursesRV.addView(argument);*/
+
+                        ExpandableListView extendedLisView = view.findViewById(R.id.coursesExtendableListView);
+                        extendedLisView.setAdapter(new CourseExpandableListAdapter(getBaseContext(),values));
                     }
                     break;
                     case 2: {
                         view = LayoutInflater.from(
                                 getBaseContext()).inflate(R.layout.settings, null, false);
+                        LinearLayout settingsLL = view.findViewById(R.id.settingsLinearLayout);
 
+                        ConstraintLayout settingStudyTime = (ConstraintLayout) getLayoutInflater().inflate(R.layout.setting_constraint,null);
+                        ((TextView)settingStudyTime.findViewById(R.id.name)).setText("ore di studio");
+                        settingsLL.addView(settingStudyTime);
+
+                        Button logOut = view.findViewById(R.id.log_out);
+                        logOut.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                FirebaseAuth.getInstance().signOut();
+                                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                                startActivity(intent);
+                            }
+                        });
                     }
                     break;
                 }
@@ -148,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 R.drawable.ic_account_circle_black_24dp,
                 R.color.colorPrimaryDark));
         models.add(ntbModelBuilder(
-                R.drawable.ic_settings_black_24px,
+                R.drawable.ic_settings_black_24dp,
                 R.color.colorPrimaryDark));
         navigationTabBar.setModels(models);
         navigationTabBar.setViewPager(viewPager, 0);

@@ -9,11 +9,11 @@
         android:id="@+id/courses_progress_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/box_margin"
         android:layout_weight="0"
+        android:footerDividersEnabled="false"
+        android:layout_margin="@dimen/box_margin"
         android:background="@drawable/box"
         android:elevation="@dimen/box_elevation"
-        android:footerDividersEnabled="false"
         android:translationZ="@dimen/box_translationZ" />
 
     <LinearLayout

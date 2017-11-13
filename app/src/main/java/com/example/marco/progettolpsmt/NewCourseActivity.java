@@ -30,10 +30,18 @@ public class NewCourseActivity extends AppCompatActivity {
         spinner.setAdapter(adapter);
 
         final LinearLayout linearLayoutArguments = findViewById(R.id.argoumentsList);
-        View view1 = LayoutInflater.from(getBaseContext())
+        final View firstArgument = LayoutInflater.from(getBaseContext())
                 .inflate(R.layout.argument_edit_view, null, false);
-        linearLayoutArguments.addView(view1);
+        linearLayoutArguments.addView(firstArgument);
+        final ImageButton deleteArgumentButton = firstArgument.findViewById(R.id.imageButton);
+        deleteArgumentButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        linearLayoutArguments.removeView(firstArgument);
 
+                    }
+                });
         FloatingActionButton addArgumentButton = findViewById(R.id.addArgumentButton);
 
         addArgumentButton.setOnClickListener(new View.OnClickListener() {

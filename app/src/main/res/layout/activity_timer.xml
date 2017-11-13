@@ -35,7 +35,7 @@
             app:apsv_model_bg_enabled="true"
             app:apsv_model_offset="-2dp"
             app:apsv_rounded="true"
-            app:apsv_shadowed="false" />
+            app:apsv_shadowed="false"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
