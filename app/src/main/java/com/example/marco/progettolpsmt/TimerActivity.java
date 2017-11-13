@@ -1,6 +1,7 @@
 package com.example.marco.progettolpsmt;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -90,10 +91,10 @@ public class TimerActivity extends AppCompatActivity {
         for(int i = 0 ; i < 150 ; i++){
             lel[i] =(float)i;
         }
-        final ValueAnimator firstarc = ValueAnimator.ofFloat(lel);
-        final ValueAnimator secondarc = ValueAnimator.ofFloat(lel);
+        final ValueAnimator firstarc = ValueAnimator.ofFloat(1f,100.0F);
+        final ValueAnimator secondarc = ValueAnimator.ofFloat(100f);
         final ValueAnimator thirdarc = ValueAnimator.ofFloat(lel);
-        firstarc.setDuration(2500);
+        firstarc.setDuration(60*1000);
         secondarc.setDuration(333);
         /**
          * On end listeners. This listeners are used in order to allow graphic sync between circles.

@@ -1,12 +1,9 @@
 package com.example.marco.progettolpsmt;
 
-import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.example.marco.progettolpsmt.backend.Course;

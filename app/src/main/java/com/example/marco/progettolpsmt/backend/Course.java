@@ -27,10 +27,21 @@ public class Course implements Observer {
      */
     public Course() {
         name = "Untitled Course";
-        credits = 3;//Settings.DEFAULT.getRegularCredits();
+        // Regional settings defaults
+        Settings.DEFAULT.setHoursPerCredit(25);
+        Settings.DEFAULT.setRegularCredits(6);
+        // Time settings defaults (these are the Pomodoro Technique defaults)
+        Settings.DEFAULT.setStudyDuration(25);
+        Settings.DEFAULT.setPauseDuration(5);
+        Settings.DEFAULT.setRelaxDuration(30);
+        Settings.DEFAULT.setSessionAmount(4);
+        // Features settings defaults
+        Settings.DEFAULT.setNoDistraction(false);
+        Settings.DEFAULT.setFullImmersion(true);
+        credits = Settings.DEFAULT.getRegularCredits();
         arguments = new ArrayList<>();
         exams = new ArrayList<>();
-        timeExpected = credits * 25/*Settings.DEFAULT.getHoursPerCredit()*/ * 60;
+        timeExpected = credits * Settings.DEFAULT.getHoursPerCredit() * 60;
     }
 
     /**

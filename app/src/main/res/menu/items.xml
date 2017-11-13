@@ -4,13 +4,13 @@
 
     <item
         android:id="@+id/action_timer"
-        android:icon="@drawable/ic_update_black_24dp"
+        android:icon="@drawable/ic_timer_white_24dp"
         android:title="@string/action_timer"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_calendar"
-        android:icon="@drawable/ic_event_black_24dp"
+        android:icon="@drawable/ic_event_white_24dp"
         android:title="@string/action_calendar"
         app:showAsAction="ifRoom"/>
 
