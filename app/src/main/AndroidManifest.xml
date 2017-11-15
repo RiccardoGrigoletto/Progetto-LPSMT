@@ -14,11 +14,6 @@
         <activity
             android:name=".MainActivity"
             >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".TimerActivity"
@@ -28,6 +23,17 @@
             android:name=".NewCourseActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
             >
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:noHistory="true"
+            android:parentActivityName=".MainActivity"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

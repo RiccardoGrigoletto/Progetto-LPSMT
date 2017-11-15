@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">ProgettoLPSMT</string>
-    <string name="navbar_home">home</string>
-    <string name="navbar_profile">profile</string>
-    <string name="action_new">new</string>
     <string name="action_timer">timer</string>
     <string name="action_calendar">calendar</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
@@ -100,4 +97,14 @@
     <string name="breakduration">300000</string>
     <string name="studyduration">60000</string>
     <string name="studysession">4</string>
+    <string name="add_course_name_label">course name</string>
+    <string name="add_course_cfu_label">CFU</string>
+    <string name="add_course_arguments_label">arguments</string>
+    <string name="add_course_exams_label">exams</string>
+    <string name="add_course_new_exam_btn">New Exam</string>
+    <string name="email_label">email</string>
+    <string name="password_label">password</string>
+    <string name="login_label">login</string>
+    <string name="log_out_btn">log out</string>
+    <string name="loading">loading ...</string>
 </resources>

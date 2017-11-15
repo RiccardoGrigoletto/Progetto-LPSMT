@@ -19,22 +19,22 @@
         android:id="@+id/newCourse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right|end"
+        android:layout_gravity="bottom|end"
         android:layout_marginBottom="66dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
         android:clickable="true"
-        android:padding="5dp"
-        app:elevation="0dp"
+        android:focusable="true"
         app:fabSize="normal"
+        app:layout_anchor="@id/ntb"
+        app:layout_anchorGravity="end"
         app:rippleColor="@color/white"
-        app:srcCompat="@drawable/ic_add_white_24px" />
+        app:srcCompat="@drawable/ic_add_white_24dp" />
 
     <devlight.io.library.ntb.NavigationTabBar
         android:id="@+id/ntb"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_gravity="bottom"
-        android:elevation="3dp"
         app:ntb_active_color="@color/white"
         app:ntb_badge_gravity="top"
         app:ntb_badge_position="right"

@@ -1,6 +1,7 @@
 package com.example.marco.progettolpsmt;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Dialog;
@@ -116,7 +117,6 @@ public class TimerActivity extends AppCompatActivity {
         }
         mArcProgressStackView.setModels(models);
         mArcProgressStackView.setSweepAngle(270);
-
         /**
          * firstarc == external arch
          * secondarc = middle arch
