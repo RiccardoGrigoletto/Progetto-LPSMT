@@ -4,7 +4,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,8 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.util.Log;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 //import com.example.marco.progettolpsmt.backend.Log;
 import com.example.marco.progettolpsmt.backend.Course;
@@ -36,6 +40,8 @@ public class TimerActivity extends AppCompatActivity {
     private long animationstate=0,animationstatesecondarch =0,thirdarchanimationstate=0;
     private long n_session = 4;
     private long studytimetimer;
+    private Spinner coursespinner;
+    private Spinner argumentspinner;
     private long breaktimetimer;
     private boolean isdialogsetted = false;
     private Course courses;
@@ -57,11 +63,25 @@ public class TimerActivity extends AppCompatActivity {
         //Dialog used in order to take data from user, that we need in order to initializate timer
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.timerinitializationpopup);
+        final AlertDialog confirmchangecourseargumentdialog = new AlertDialog.Builder(this)
+                .setTitle("Change Course or Argument")
+                .setMessage("Are you sure that you want to change argument or course?\n You will lose current progress..")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                    }})
+                .setNegativeButton(android.R.string.no, null).show();;
+
+
         Button yourButton = dialog.findViewById(R.id.button);
         //textbox of the dialog
         final EditText sessions = dialog.findViewById(R.id.editText2);
         final EditText studytime = dialog.findViewById(R.id.editText3);
         final EditText breaktime = dialog.findViewById(R.id.editText4);
+        //spinners
+        coursespinner = findViewById(R.id.coursespinner);
+        argumentspinner = findViewById(R.id.argumentspinner);
         //buttons
         startbutton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
@@ -316,6 +336,9 @@ public class TimerActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+
+        //spinners onchange listeners
+
 
     }
 

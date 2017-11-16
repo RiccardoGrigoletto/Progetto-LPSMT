@@ -4,12 +4,14 @@ package com.example.marco.progettolpsmt;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -26,9 +29,7 @@ import android.widget.Toast;
 import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Exam;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -150,6 +151,33 @@ public class MainActivity extends AppCompatActivity {
                         view = LayoutInflater.from(
                                 getBaseContext()).inflate(R.layout.settings, null, false);
                         LinearLayout settingsLL = view.findViewById(R.id.settingsLinearLayout);
+                        //numbers textfields
+                        final EditText numberofsession = view.findViewById(R.id.nsession);
+                        final EditText studyduration = view.findViewById(R.id.studyduration);
+                        final EditText breakduration = view.findViewById(R.id.breakduration);
+                        //onchange listeners
+                        numberofsession.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this)));
+                        studyduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(MainActivity.this)));
+                        breakduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(MainActivity.this)));
+                        numberofsession.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                Log.d("------------------>","before");
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+                                Log.d("------------------>","During"+numberofsession.getText().toString());
+                                TimerSettingsSingleton.getInstance().setNumberOfStudySessions(Integer.parseInt(numberofsession.getText().toString()),MainActivity.this);
+                                Log.d("------------------>","During"+TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
+                                Toast.makeText(MainActivity.this, "Impossible Add preference",Toast.LENGTH_LONG).show();
+
+                            }
+                        });
 
                         ConstraintLayout settingStudyTime = (ConstraintLayout) getLayoutInflater().inflate(R.layout.setting_constraint,null);
                         ((TextView)settingStudyTime.findViewById(R.id.name)).setText("ore di studio");

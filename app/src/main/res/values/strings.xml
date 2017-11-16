@@ -93,7 +93,6 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="navbar_calendar">calendar</string>
-    <string name="studysessiondefault">4</string>
     <string name="breakduration">300000</string>
     <string name="studyduration">60000</string>
     <string name="studysession">4</string>
