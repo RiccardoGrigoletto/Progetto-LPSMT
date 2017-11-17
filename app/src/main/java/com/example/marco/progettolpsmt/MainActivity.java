@@ -173,12 +173,13 @@ public class MainActivity extends AppCompatActivity {
                             public void afterTextChanged(Editable editable) {
                                 Log.d("------------------>","During"+numberofsession.getText().toString());
                                 TimerSettingsSingleton.getInstance().setNumberOfStudySessions(Integer.parseInt(numberofsession.getText().toString()),MainActivity.this);
-                                Log.d("------------------>","During"+TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
+
                                 Toast.makeText(MainActivity.this, "Impossible Add preference",Toast.LENGTH_LONG).show();
 
                             }
                         });
 
+                        Log.d("------------------>","During"+TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
                         ConstraintLayout settingStudyTime = (ConstraintLayout) getLayoutInflater().inflate(R.layout.setting_constraint,null);
                         ((TextView)settingStudyTime.findViewById(R.id.name)).setText("ore di studio");
                         settingsLL.addView(settingStudyTime);

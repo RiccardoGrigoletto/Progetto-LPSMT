@@ -35,7 +35,7 @@ public class TimerSettingsSingleton extends Application {
                 .getDefaultSharedPreferences(c);
         SharedPreferences.Editor editor = timerPreferences.edit();
         editor.putString("studysessions", String.valueOf(studySessions));
-        editor.apply();
+        editor.commit();
         /* timerPreferences = c.getSharedPreferences(getString(R.string.studysession),Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = timerPreferences.edit();
         editor.putInt(getString(R.string.studysession),studySessions);
