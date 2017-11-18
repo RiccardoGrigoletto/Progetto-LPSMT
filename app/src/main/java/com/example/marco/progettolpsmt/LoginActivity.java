@@ -32,7 +32,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
-
+    private ProgressDialog progDialog;
     public FirebaseUser user;
     private FirebaseAuth mAuth;
 
@@ -54,6 +54,12 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        progDialog = new ProgressDialog(this);
+        progDialog.setMessage(getString(R.string.loading));
+        progDialog.setIndeterminate(false);
+        progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progDialog.setCancelable(true);
+
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             startMainActivity();
         }
@@ -67,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        setContentView(R.layout.login_activity);
+        setContentView(R.layout.activity_login);
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -110,11 +116,13 @@ public class LoginActivity extends AppCompatActivity {
     private void startMainActivity() {
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
+
+        this.finish();
     }
 
 
     private void createAccount(String email, String password) {
-        if (email != "" && password != "") {
+        if (!email.equals("") && !password.equals("")) {
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -145,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signIn(String email, String password) {
-        if (!email.equals("") && !password.equals("") && email != null && password != null) {
+        if (!email.equals("") && !password.equals("")) {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -153,12 +161,9 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                Toast.makeText(LoginActivity.this, "Logged In.",
-                                        Toast.LENGTH_SHORT).show();
                                 updateUI(user);
 
-                                Intent intent = new Intent(getSupportParentActivityIntent());
-                                startActivity(intent);
+                                startMainActivity();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w("login", "createUserWithEmail:failure", task.getException());
@@ -178,20 +183,13 @@ public class LoginActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d("google login", "firebaseAuthWithGoogle:" + acct.getId());
 
-        final ProgressDialog progDailog = new ProgressDialog(this);
-        progDailog.setMessage(getString(R.string.loading));
-        progDailog.setIndeterminate(false);
-        progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progDailog.setCancelable(true);
-        progDailog.show();
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
 
         Task<com.google.firebase.auth.AuthResult> credentialTask = mAuth.signInWithCredential(credential);
         credentialTask.addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progDailog.dismiss();
+                        progDialog.dismiss();
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("google login", "signInWithCredential:success");
@@ -215,6 +213,8 @@ public class LoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        progDialog.show();
+
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -230,5 +230,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
 
+
+    }
 }
