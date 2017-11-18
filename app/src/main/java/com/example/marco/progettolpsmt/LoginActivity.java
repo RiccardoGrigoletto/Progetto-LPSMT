@@ -32,7 +32,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
-    private ProgressDialog progDailog;
+    private ProgressDialog progDialog;
     public FirebaseUser user;
     private FirebaseAuth mAuth;
 
@@ -54,11 +54,11 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        progDailog = new ProgressDialog(this);
-        progDailog.setMessage(getString(R.string.loading));
-        progDailog.setIndeterminate(false);
-        progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progDailog.setCancelable(true);
+        progDialog = new ProgressDialog(this);
+        progDialog.setMessage(getString(R.string.loading));
+        progDialog.setIndeterminate(false);
+        progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progDialog.setCancelable(true);
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             startMainActivity();
@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        setContentView(R.layout.login_activity);
+        setContentView(R.layout.activity_login);
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -122,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void createAccount(String email, String password) {
-        if (!email.equals("") && !password.equals("") && email != null && password != null) {
+        if (!email.equals("") && !password.equals("")) {
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signIn(String email, String password) {
-        if (!email.equals("") && !password.equals("") && email != null && password != null) {
+        if (!email.equals("") && !password.equals("")) {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -163,8 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 updateUI(user);
 
-                                Intent intent = new Intent(getSupportParentActivityIntent());
-                                startActivity(intent);
+                                startMainActivity();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w("login", "createUserWithEmail:failure", task.getException());
@@ -190,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
         credentialTask.addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progDailog.dismiss();
+                        progDialog.dismiss();
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("google login", "signInWithCredential:success");
@@ -214,7 +213,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        progDailog.show();
+        progDialog.show();
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
