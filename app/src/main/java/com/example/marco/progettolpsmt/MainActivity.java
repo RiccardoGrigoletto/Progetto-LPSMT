@@ -1,9 +1,12 @@
 package com.example.marco.progettolpsmt;
 
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Exam;
+import com.example.marco.progettolpsmt.managers.CalendarManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,6 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import devlight.io.library.ntb.NavigationTabBar;
@@ -236,10 +241,20 @@ public class MainActivity extends AppCompatActivity {
     });
 }
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.action_timer) {
-            Intent intent = new Intent(getBaseContext(),TimerActivity.class);
-            startActivity(intent);
-            //finish();
+        switch (menuItem.getItemId()) {
+            case R.id.action_timer: {
+                Intent intent = new Intent(getBaseContext(), TimerActivity.class);
+                startActivity(intent);
+                //finish();
+            }
+            break;
+            case R.id.action_calendar: {
+                /*startActivity(CalendarManager.getIntent());*/
+                Intent intent = new Intent(Intent.ACTION_INSERT);
+                intent.setData(CalendarContract.Events.CONTENT_URI);
+                startActivity(intent);
+            }
+            break;
         }
         return super.onOptionsItemSelected(menuItem);
     }
