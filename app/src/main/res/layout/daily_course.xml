@@ -12,9 +12,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:textSize="25sp"
-        android:gravity="start"
-        android:layout_weight="0.8" />
+        android:layout_weight="0.8"
+        android:gravity="start" />
 
     <TextView
         android:id="@+id/hours"
@@ -24,9 +23,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:textSize="25sp"
-        android:gravity="end"
         android:layout_weight="0.2"
-        android:text="2h"
-        />
+        android:gravity="end"
+        android:text="2h" />
 </LinearLayout>

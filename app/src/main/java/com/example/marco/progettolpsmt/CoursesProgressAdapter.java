@@ -45,6 +45,12 @@ public class CoursesProgressAdapter<C> extends ArrayAdapter<Course> {
         if (v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.progress_bar_min, null);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
         }
 
 		/*
@@ -58,8 +64,8 @@ public class CoursesProgressAdapter<C> extends ArrayAdapter<Course> {
 
         if (i != null) {
 
-            TextView courseTitle = (TextView) v.findViewById(R.id.name);
-            ProgressBar coursePB = (ProgressBar) v.findViewById(R.id.indeterminateBar);
+            TextView courseTitle = v.findViewById(R.id.name);
+            ProgressBar coursePB = v.findViewById(R.id.indeterminateBar);
 
             courseTitle.setText(i.getName());
             /*coursePB.setProgress(i.getProgress());*/
