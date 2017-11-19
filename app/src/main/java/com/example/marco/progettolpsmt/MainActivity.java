@@ -249,10 +249,8 @@ public class MainActivity extends AppCompatActivity {
             }
             break;
             case R.id.action_calendar: {
-                /*startActivity(CalendarManager.getIntent());*/
-                Intent intent = new Intent(Intent.ACTION_INSERT);
-                intent.setData(CalendarContract.Events.CONTENT_URI);
-                startActivity(intent);
+                startActivity(CalendarManager.getIntent());
+
             }
             break;
         }
