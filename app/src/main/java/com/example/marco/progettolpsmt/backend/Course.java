@@ -276,4 +276,12 @@ public class Course implements Observer {
     public void update(Observable o, Object arg) {
         updateCourse();
     }
+
+    public void addArguments(ArrayList<Argument> arguments) {
+        this.arguments = arguments;
+    }
+
+    public void addExams(ArrayList<Exam> exams) {
+        this.exams = exams;
+    }
 }
