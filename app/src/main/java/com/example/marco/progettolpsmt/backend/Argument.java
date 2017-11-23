@@ -37,6 +37,13 @@ public class Argument extends Observable {
         done = false;
     }
 
+    public Argument(String name, Integer expectedTime) {
+        super();
+        this.name = name;
+        this.expectedTime = expectedTime;
+
+    }
+
     /**
      * Return the name of the argument.
      * @return argument's name

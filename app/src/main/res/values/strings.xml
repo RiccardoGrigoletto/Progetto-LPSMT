@@ -26,4 +26,8 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="create_course_button">CREATE/MODIFY</string>
+    <string name="courseNameVoid">please add a course name</string>
+    <string name="courseCFUVoid">please add CFU</string>
+    <string name="courseLoaded">course loaded</string>
 </resources>
