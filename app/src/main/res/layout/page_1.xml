@@ -5,12 +5,8 @@
     android:layout_height="match_parent"
     >
 
-    <ExpandableListView
-        android:id="@+id/coursesExtendableListView"
+    <ListView
+        android:id="@+id/coursesListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/box_margin"
-        android:background="@drawable/box"
-        android:elevation="@dimen/box_elevation"
-        android:translationZ="@dimen/box_translationZ" />
+        android:layout_height="wrap_content" />
 </android.support.design.widget.CoordinatorLayout>

@@ -1,13 +1,13 @@
 package com.example.marco.progettolpsmt;
 
 
-import android.content.ContentUris;
+import android.app.Service;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.CalendarContract;
-import android.support.annotation.RequiresApi;
+import android.os.IBinder;
+import android.os.ResultReceiver;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,9 +29,15 @@ import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Exam;
 import com.example.marco.progettolpsmt.managers.CalendarManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.Task;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventAttendee;
+import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.EventReminder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,11 +46,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import devlight.io.library.ntb.NavigationTabBar;
+
+import com.google.api.services.calendar.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     final int VIEWS = 3;
@@ -59,15 +70,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Firebase
         user = FirebaseAuth.getInstance().getCurrentUser();
         setContentView(R.layout.activity_main);
 
+        //Toast Login
         Toast.makeText(this,user.getDisplayName(),Toast.LENGTH_LONG).show();
 
         // Write a message to the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("courses");
-
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -80,7 +92,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*page creation*/
+        //create calendar TODO
+
+        //page creation
         final ViewPager viewPager = findViewById(R.id.vp_ntb);
         viewPager.setAdapter(new PagerAdapter() {
             @Override
@@ -119,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
                         ListView lvProgress = view.findViewById(R.id.courses_progress_list_view);
 
-                        ListView lvDay = view.findViewById(R.id.daily_events_list_view);
+                        ListView lvToday = view.findViewById(R.id.today_events_list_view);
 
 
                         CoursesProgressAdapter<Course> progressAdapter = new CoursesProgressAdapter<>(getBaseContext(),
@@ -128,27 +142,17 @@ public class MainActivity extends AppCompatActivity {
 
                         DailyCoursesAdapter<Course> adapter = new DailyCoursesAdapter<>(getBaseContext(),
                                 R.layout.daily_course, values);
-                        lvDay.setAdapter(adapter);
+                        lvToday.setAdapter(adapter);
                     }
                     break;
                     case 1: {
                         view = LayoutInflater.from(
                                 getBaseContext()).inflate(R.layout.page_1, null, false);
-                       /* RecyclerView coursesRV = view.findViewById(R.id.coursesRecyclerView);
-                        RecyclerView.Adapter myAdapter = new CoursesAdapter(values);
 
-                        // use a linear layout manager
-                        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getBaseContext());
-                        coursesRV.setLayoutManager(mLayoutManager);
+                        ListView courseLV = view.findViewById(R.id.coursesListView);
+                        CoursesAdapterMax coursesAdapter = new CoursesAdapterMax(getBaseContext(),values);
+                        courseLV.setAdapter(coursesAdapter);
 
-                        coursesRV.setAdapter(myAdapter);*/
-
-                        /*final View argument = LayoutInflater.from(getBaseContext())
-                                .inflate(R.layout.argument_view,null,false);
-                        coursesRV.addView(argument);*/
-
-                        ExpandableListView extendedLisView = view.findViewById(R.id.coursesExtendableListView);
-                        extendedLisView.setAdapter(new CourseExpandableListAdapter(getBaseContext(),values));
                     }
                     break;
                     case 2: {

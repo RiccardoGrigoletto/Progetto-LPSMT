@@ -30,4 +30,5 @@
     <string name="courseNameVoid">please add a course name</string>
     <string name="courseCFUVoid">please add CFU</string>
     <string name="courseLoaded">course loaded</string>
+    <string name="edit_course_button_description">edit course</string>
 </resources>

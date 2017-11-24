@@ -40,7 +40,7 @@ public class DatePickerFragment extends DialogFragment
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
         final View view1 = LayoutInflater.from(getActivity())
                 .inflate(R.layout.exam_edit_view,null,false);
-        ((TextView)view1.findViewById(R.id.editText5)).setText(dayOfMonth + " - " + month + " - " + year);
+        ((TextView)view1.findViewById(R.id.examDate)).setText(dayOfMonth + " - " + month + " - " + year);
         final LinearLayout ll = (LinearLayout) getActivity().findViewById(R.id.examsList);
         final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
         deleteArgumentButton.setOnClickListener(
