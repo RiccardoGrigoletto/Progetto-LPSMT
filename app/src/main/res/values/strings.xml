@@ -125,4 +125,13 @@
     <string name="courseCFUVoid">please add CFU</string>
     <string name="courseLoaded">course loaded</string>
     <string name="edit_course_button_description">edit course</string>
+
+    <!-- settings strings -->
+    <string name="settingsnumberofsessions">Number of Sessions</string>
+    <string name="settingstudystring">Study Session Duration</string>
+    <string name="settingsbreakstring">Break Session Duration</string>
+    <string name="settingslogoutstring">Log out from app</string>
+    <string name="settingstimerpaneltitle">Timer Settings</string>
+    <string name="settinglogoutpaneltitle">Log Out</string>
+
 </resources>

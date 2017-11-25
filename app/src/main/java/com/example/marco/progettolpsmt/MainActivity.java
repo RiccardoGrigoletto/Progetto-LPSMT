@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.marco.progettolpsmt.backend.Argument;
@@ -61,7 +62,9 @@ import com.google.api.services.calendar.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     final int VIEWS = 3;
-
+    private String[] studypickervalues = {"5","10","15","20","25","30","35","40","45","50","55","60"};
+    private String[] breakpickervalues = {"5","10","15","20","25","30"};
+    private String[] sessionpickervalues = {"1","2","3","4","5","6","7","8","9","10"};
 
     public FirebaseUser user;
     private FirebaseAuth mAuth;
@@ -159,12 +162,69 @@ public class MainActivity extends AppCompatActivity {
                     case 2: {
                         view = LayoutInflater.from(
                                 getBaseContext()).inflate(R.layout.settings, null, false);
-                        LinearLayout settingsLL = view.findViewById(R.id.settingsLinearLayout);
                         //numbers textfields
-                        final EditText numberofsession = view.findViewById(R.id.nsession);
-                        final EditText studyduration = view.findViewById(R.id.studyduration);
-                        final EditText breakduration = view.findViewById(R.id.breakduration);
+                        final NumberPicker numberofsession = view.findViewById(R.id.sessionpicker);
+                        final NumberPicker studyduration = view.findViewById(R.id.studypicker);
+                        final NumberPicker breakduration = view.findViewById(R.id.breakpicker);
                         //onchange listeners
+                        //numberofsession.setValue((int)TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this));
+                        studyduration.setValue((int)TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(MainActivity.this)/60000);
+
+                        //session number picker
+                        numberofsession.setMinValue(1);
+                        numberofsession.setMaxValue(10);
+                        numberofsession.setWrapSelectorWheel(true);
+                        numberofsession.setValue((int)TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this));
+                        numberofsession.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                    TimerSettingsSingleton.getInstance().setNumberOfStudySessions(numberofsession.getValue(), MainActivity.this);
+                                    Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
+                                    Toast.makeText(MainActivity.this, "Value Updated", Toast.LENGTH_LONG).show();
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+
+                        //study duration number picker
+
+                        studyduration.setMinValue(10);
+                        studyduration.setMaxValue(60);
+                        studyduration.setWrapSelectorWheel(true);
+                        studyduration.setValue((int)TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(MainActivity.this)/60000);
+                        studyduration.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                    TimerSettingsSingleton.getInstance().setDurationOfStudySessions(studyduration.getValue()*60000, MainActivity.this);
+                                    Toast.makeText(MainActivity.this, "Value Updated", Toast.LENGTH_LONG).show();
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                        //break duration number picker
+                        breakduration.setMaxValue(10);
+                        breakduration.setMinValue(1);
+                        breakduration.setWrapSelectorWheel(true);
+                        //breakduration.setValue((int)TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(MainActivity.this)/60000);
+                        breakduration.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                    TimerSettingsSingleton.getInstance().setDurationOfBreakSessions(breakduration.getValue()*60000, MainActivity.this);
+                                    Toast.makeText(MainActivity.this, "Value Updated", Toast.LENGTH_LONG).show();
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                       /* numberofsession.
                         numberofsession.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this)));
                         studyduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(MainActivity.this)/60000));
                         breakduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(MainActivity.this)/60000));
@@ -229,12 +289,8 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
                                 }
                             }
-                        });
+                        });*/
 
-
-                        ConstraintLayout settingStudyTime = (ConstraintLayout) getLayoutInflater().inflate(R.layout.setting_constraint,null);
-                        ((TextView)settingStudyTime.findViewById(R.id.name)).setText("ore di studio");
-                        settingsLL.addView(settingStudyTime);
 
                         Button logOut = view.findViewById(R.id.log_out);
                         logOut.setOnClickListener(new View.OnClickListener() {
@@ -354,5 +410,4 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.items, menu);
         return true;
     }
-
 }
