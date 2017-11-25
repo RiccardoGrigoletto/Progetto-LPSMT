@@ -1,56 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
-
-    <ListView
-        android:id="@+id/courses_progress_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:footerDividersEnabled="false"
-        android:layout_margin="@dimen/box_margin"
-        android:background="@drawable/box"
-        android:elevation="@dimen/box_elevation"
-        android:translationZ="@dimen/box_translationZ" />
+    android:layout_weight="0">
 
     <LinearLayout
-        android:id="@+id/textView2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:elevation="6dp"
-        android:translationZ="6dp"
-        android:background="@drawable/box"
-        android:layout_margin="@dimen/box_margin"
-        android:footerDividersEnabled="false"
-        android:orientation="vertical" >
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Today"
-            android:textAlignment="center"
-            android:textSize="24sp" />
 
         <ListView
-            android:id="@+id/today_events_list_view"
+            android:id="@+id/courses_progress_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/box_margin"
-            />
-        <TextView
+            android:layout_weight="0"
+            android:background="@drawable/box"
+            android:elevation="@dimen/box_elevation"
+            android:footerDividersEnabled="false"
+            android:translationZ="@dimen/box_translationZ" />
+
+        <LinearLayout
+            android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tomorrow"
-            android:textAlignment="center"
-            android:textSize="24sp" />
-        <ListView
-            android:id="@+id/tomorrow_events_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/box_margin"/>
+            android:layout_margin="@dimen/box_margin"
+            android:layout_weight="1"
+            android:background="@drawable/box"
+            android:elevation="@dimen/box_elevation"
+            android:footerDividersEnabled="false"
+            android:orientation="vertical"
+            android:translationZ="6dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Today"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <ListView
+                android:id="@+id/today_events_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/box_margin" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tomorrow"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <ListView
+                android:id="@+id/tomorrow_events_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/box_margin" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>

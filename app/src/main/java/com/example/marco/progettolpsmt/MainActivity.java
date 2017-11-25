@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
                                 getBaseContext()).inflate(R.layout.page_1, null, false);
 
                         ListView courseLV = view.findViewById(R.id.coursesListView);
+
                         CoursesAdapterMax coursesAdapter = new CoursesAdapterMax(getBaseContext(),values);
                         courseLV.setAdapter(coursesAdapter);
 

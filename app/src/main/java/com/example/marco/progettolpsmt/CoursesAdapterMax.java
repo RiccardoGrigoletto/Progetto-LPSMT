@@ -64,7 +64,7 @@ public class CoursesAdapterMax extends BaseAdapter {
             view = inflater.inflate(R.layout.course_card_view_max, viewGroup, false);
             final Course course = this.getItem(i);
             ((TextView) view.findViewById(R.id.courseName)).setText(course.getName());
-            ((TextView) view.findViewById(R.id.courseCFU1)).setText("23");
+            ((TextView) view.findViewById(R.id.courseCFU1)).setText("23"); /*TODO*/
 
             LinearLayout llArgs = (view.findViewById(R.id.argumentsLinearLayout));
             for (Argument arg : course.getArguments()) {
@@ -96,4 +96,6 @@ public class CoursesAdapterMax extends BaseAdapter {
         }
         return view;
     }
+
+
 }

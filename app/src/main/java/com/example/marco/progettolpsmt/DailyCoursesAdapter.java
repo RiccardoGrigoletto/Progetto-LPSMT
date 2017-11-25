@@ -7,6 +7,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import com.example.marco.progettolpsmt.backend.Course;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.zip.Inflater;
 
 /**
  * Created by ricca on 22/09/2017.
@@ -64,7 +67,7 @@ public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
 		 *
 		 * Therefore, i refers to the current Item object.
 		 */
-        Course i = objects.get(position);
+        final Course i = objects.get(position);
 
         if (i != null) {
 
@@ -77,6 +80,15 @@ public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
             Random randomGenerator = new Random();
             /*coursePB.setProgress(randomGenerator.nextInt(100));*/
 
+            ImageButton startTimer = v.findViewById(R.id.startTimerActivityImageButton);
+            startTimer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), TimerActivity.class);
+                    intent.putExtra("courseID",0);
+                    getContext().startActivity(intent);
+                }
+            });
         }
 
         // the view must be returned to our activity
