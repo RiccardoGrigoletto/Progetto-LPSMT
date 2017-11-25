@@ -35,7 +35,6 @@
             android:paddingBottom="10dp"
             android:paddingEnd="10dp"
             android:paddingLeft="10dp"
-            android:text="4"
             android:textAlignment="center" />
 
     </LinearLayout>
@@ -55,12 +54,11 @@
 
         <EditText
             android:id="@+id/studyduration"
-            android:layout_width="18dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
             android:inputType="number"
-            android:text="25"
             android:textAlignment="center" />
 
     </LinearLayout>
@@ -86,7 +84,6 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="number"
-            android:text="5"
             android:textAlignment="center" />
 
     </LinearLayout>

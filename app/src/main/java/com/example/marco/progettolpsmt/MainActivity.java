@@ -157,8 +157,9 @@ public class MainActivity extends AppCompatActivity {
                         final EditText breakduration = view.findViewById(R.id.breakduration);
                         //onchange listeners
                         numberofsession.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this)));
-                        studyduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(MainActivity.this)));
-                        breakduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(MainActivity.this)));
+                        studyduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(MainActivity.this)/60000));
+                        breakduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(MainActivity.this)/60000));
+                        //number of session text area
                         numberofsession.addTextChangedListener(new TextWatcher() {
                             @Override
                             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -171,15 +172,57 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void afterTextChanged(Editable editable) {
-                                Log.d("------------------>","During"+numberofsession.getText().toString());
-                                TimerSettingsSingleton.getInstance().setNumberOfStudySessions(Integer.parseInt(numberofsession.getText().toString()),MainActivity.this);
+                                 try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                         TimerSettingsSingleton.getInstance().setNumberOfStudySessions(Integer.parseInt(numberofsession.getText().toString()), MainActivity.this);
+                                         Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
+                                 }catch (Exception e){
+                                     Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                 }
+                             }
+                        });
+                        //study duration text area
+                        studyduration.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                Log.d("------------------>","before");
+                            }
 
-                                Toast.makeText(MainActivity.this, "Impossible Add preference",Toast.LENGTH_LONG).show();
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
 
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                    TimerSettingsSingleton.getInstance().setDurationOfStudySessions(Integer.parseInt(studyduration.getText().toString())*60000, MainActivity.this);
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                }
                             }
                         });
 
-                        Log.d("------------------>","During"+TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
+                        //break duration text area
+                        breakduration.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                Log.d("------------------>","before");
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                    TimerSettingsSingleton.getInstance().setDurationOfBreakSessions(Integer.parseInt(breakduration.getText().toString()), MainActivity.this);
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+
                         ConstraintLayout settingStudyTime = (ConstraintLayout) getLayoutInflater().inflate(R.layout.setting_constraint,null);
                         ((TextView)settingStudyTime.findViewById(R.id.name)).setText("ore di studio");
                         settingsLL.addView(settingStudyTime);

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.util.Log;
@@ -55,11 +56,15 @@ public class TimerActivity extends AppCompatActivity {
     final ValueAnimator reversefirstarc = ValueAnimator.ofFloat(100);
     final ValueAnimator reversesecondarc = ValueAnimator.ofFloat(100);
     final ValueAnimator reversethirdarc = ValueAnimator.ofFloat(100);
+    //backends classes
+    private Course course;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_timer);
         super.onCreate(savedInstanceState);
+        //backend example
+        course = new Course();
         //Dialog used in order to take data from user, that we need in order to initializate timer
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.timerinitializationpopup);
@@ -71,7 +76,7 @@ public class TimerActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                     }})
-                .setNegativeButton(android.R.string.no, null).show();;
+                .setNegativeButton(android.R.string.no, null).create();;
 
 
         Button yourButton = dialog.findViewById(R.id.button);
@@ -82,6 +87,9 @@ public class TimerActivity extends AppCompatActivity {
         //spinners
         coursespinner = findViewById(R.id.coursespinner);
         argumentspinner = findViewById(R.id.argumentspinner);
+
+       // coursespinner.set(course.getName());
+        ;
         //buttons
         startbutton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
@@ -104,7 +112,7 @@ public class TimerActivity extends AppCompatActivity {
                     breaktimetimer = Long.parseLong(breaktime.getText().toString())*60000;
                     isdialogsetted = true;
                     countdownview.updateShow(studytimetimer);
-                    initializeArcModel(thirdarc,secondarc,firstarc ,n_session,studytimetimer,breaktimetimer);
+                    initializeArcModel(n_session,studytimetimer,breaktimetimer);
                     initializeTimerView(thirdarc,secondarc,firstarc,mArcProgressStackView);
                     dialog.dismiss();
                 }
@@ -114,13 +122,11 @@ public class TimerActivity extends AppCompatActivity {
            if user doesn't set values, the system will use default setted values
          */
          if(isdialogsetted == false) {
-            n_session = TimerSettingsSingleton.getInstance().getNumberOfStudySessions(this);
-            studytimetimer = TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(this);
-            breaktimetimer = TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(this);
-            countdownview.updateShow(studytimetimer);
+             n_session = TimerSettingsSingleton.getInstance().getNumberOfStudySessions(this);
+             studytimetimer = TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(this);
+             breaktimetimer = TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(this);
+             countdownview.updateShow(studytimetimer);
          }
-         studytimetimer = 5000;
-         breaktimetimer = 5000;
 
         //ArcProgressView initialization
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -143,7 +149,7 @@ public class TimerActivity extends AppCompatActivity {
          * thirdarc = internal arch
          * Setting up Animators
          */
-        this.initializeArcModel(thirdarc,secondarc,firstarc ,n_session,studytimetimer,breaktimetimer);
+        this.initializeArcModel(n_session,studytimetimer,breaktimetimer);
         firstarc.setInterpolator(new LinearInterpolator());
         secondarc.setInterpolator(new LinearInterpolator());
         thirdarc.setInterpolator(new LinearInterpolator());
@@ -342,10 +348,10 @@ public class TimerActivity extends AppCompatActivity {
 
     }
 
-    private void initializeArcModel(ValueAnimator session, ValueAnimator study, ValueAnimator breakt , long numberofsessions , long studytime, long breaktime){
-        study.setDuration(studytime);
-        breakt.setDuration(breaktime);
-        session.setDuration((studytime+breaktime)*numberofsessions);
+    private void initializeArcModel(long numberofsessions , long studytime, long breaktime){
+        firstarc.setDuration(studytime);
+        secondarc.setDuration(breaktime);
+        thirdarc.setDuration((studytime+breaktime)*numberofsessions);
     }
 
     private void initializeTimerView(ValueAnimator session, ValueAnimator study, ValueAnimator breakt, ArcProgressStackView stackView){

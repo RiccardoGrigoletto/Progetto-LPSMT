@@ -26,52 +26,49 @@ public class TimerSettingsSingleton extends Application {
     }
 
     private TimerSettingsSingleton() {
-        ///timerPreferences = // c.getSharedPreferences((R.string.studysessiondefault),Context.MODE_PRIVATE);
-        ////SharedPreferences.Editor editor = timerPreferences.edit();
     }
 
     public void setNumberOfStudySessions(int studySessions, Context c){
         timerPreferences = PreferenceManager
                 .getDefaultSharedPreferences(c);
         SharedPreferences.Editor editor = timerPreferences.edit();
-        editor.putString("studysessions", String.valueOf(studySessions));
+        editor.putInt("studysession", studySessions);
         editor.commit();
-        /* timerPreferences = c.getSharedPreferences(getString(R.string.studysession),Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = timerPreferences.edit();
-        editor.putInt(getString(R.string.studysession),studySessions);
-        editor.commit();*/
     }
 
     public void setDurationOfStudySessions(int studyduration, Context c){
-         timerPreferences = PreferenceManager
+        timerPreferences = PreferenceManager
                 .getDefaultSharedPreferences(c);
         SharedPreferences.Editor editor = timerPreferences.edit();
-        editor.putString("studyduration", String.valueOf(studyduration));
-        editor.apply();
-
-        /*timerPreferences = c.getSharedPreferences(getString(R.string.studyduration),Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = timerPreferences.edit();
-        editor.putInt(getString(R.string.studyduration),studyduration);
-        editor.commit();*/
+        editor.putInt("studyduration", studyduration);
+        editor.commit();
     }
 
     public void setDurationOfBreakSessions(int breakduration, Context c){
-        /*timerPreferences = c.getSharedPreferences(getString(R.string.breakduration),Context.MODE_PRIVATE);
+        timerPreferences = PreferenceManager
+                .getDefaultSharedPreferences(c);
         SharedPreferences.Editor editor = timerPreferences.edit();
-        editor.putInt(getString(R.string.breakduration),breakduration);
-        editor.commit();*/
+        editor.putInt("breakduration", breakduration);
+        editor.commit();
     }
 
     public long getNumberOfStudySessions(Context c ){
-        return Long.parseLong(c.getResources().getString(R.string.studysession));
+        timerPreferences = PreferenceManager
+                .getDefaultSharedPreferences(c);
+
+        return (timerPreferences.getInt("studysession",99999));
     }
 
     public long getNumberOfBreakDuration(Context c ){
-        return Long.parseLong(c.getResources().getString(R.string.breakduration));
+        timerPreferences = PreferenceManager
+                .getDefaultSharedPreferences(c);
+        return (timerPreferences.getInt("breakduration",99999));
     }
 
     public long getNumberOfStudyDuration(Context c ){
-        return Long.parseLong(c.getResources().getString(R.string.studyduration));
+        timerPreferences = PreferenceManager
+                .getDefaultSharedPreferences(c);
+        return (timerPreferences.getInt("studyduration",99999));
     }
 
 }
