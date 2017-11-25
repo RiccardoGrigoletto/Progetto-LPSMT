@@ -14,12 +14,12 @@ import java.util.ArrayList;
  * Created by ricca on 25/10/2017.
  */
 
-class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHolder> {
+class CoursesAdapterMin extends RecyclerView.Adapter<CoursesAdapterMin.ViewHolder> {
 
     // declaring our ArrayList of items
     private ArrayList<Course> objects;
 
-    public CoursesAdapter(ArrayList<Course> objects) {
+    public CoursesAdapterMin(ArrayList<Course> objects) {
         super();
         this.objects =  objects;
     }
@@ -36,12 +36,12 @@ class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHolder> {
     }
     // Create new views (invoked by the layout manager)
     @Override
-    public CoursesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public CoursesAdapterMin.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                           int viewType) {
         // create a new view
 
         CardView v = (CardView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.course_card_view, parent, false);
+                .inflate(R.layout.course_card_view_min, parent, false);
         // set the view's size, margins, paddings and layout parameters
         ViewHolder vh = new ViewHolder(v);
         return vh;

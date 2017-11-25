@@ -31,15 +31,26 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Date"
+            android:text="Today"
             android:textAlignment="center"
-            android:textSize="@dimen/title_box"/>
+            android:textSize="24sp" />
 
         <ListView
-            android:id="@+id/daily_events_list_view"
+            android:id="@+id/today_events_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/box_margin"
             />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tomorrow"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+        <ListView
+            android:id="@+id/tomorrow_events_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/box_margin"/>
     </LinearLayout>
 </LinearLayout>
