@@ -1,5 +1,11 @@
 package com.example.marco.progettolpsmt.backend;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.example.marco.progettolpsmt.R;
+
 import java.util.Observable;
 
 /**
@@ -22,6 +28,7 @@ public class Settings extends Observable {
     private Integer regularCredits;     // Regular amount of credit for a course TODO not very sensible, but in use
 
     // Time settings
+    private SharedPreferences TimerPreferences ;
     private Integer studyDuration;      // Minutes for a study session
     private Integer pauseDuration;      // Minutes for a pause break between study sessions
     private Integer relaxDuration;      // Minutes for a relax break after $sessionAmount sessions
@@ -30,6 +37,8 @@ public class Settings extends Observable {
     // Feature settings TODO better settings
     private Boolean fullImmersion;
     private Boolean noDistraction;
+
+
 
     /**
      * Return the amount of hours per credit.
@@ -92,7 +101,7 @@ public class Settings extends Observable {
     public void setStudyDuration(Integer studyDuration) throws IllegalArgumentException {
         if (studyDuration <= 0)
             throw new IllegalArgumentException("'studyDuration' must be a non-zero positive number");
-        this.studyDuration = studyDuration;
+
     }
 
     /**

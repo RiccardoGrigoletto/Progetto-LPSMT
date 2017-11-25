@@ -13,6 +13,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,14 +23,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Exam;
+import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.example.marco.progettolpsmt.managers.CalendarManager;
 import com.google.android.gms.tasks.Task;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -45,7 +49,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -53,9 +56,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-
 import devlight.io.library.ntb.NavigationTabBar;
-
 import com.google.api.services.calendar.Calendar;
 
 public class MainActivity extends AppCompatActivity {
@@ -160,6 +161,77 @@ public class MainActivity extends AppCompatActivity {
                         view = LayoutInflater.from(
                                 getBaseContext()).inflate(R.layout.settings, null, false);
                         LinearLayout settingsLL = view.findViewById(R.id.settingsLinearLayout);
+                        //numbers textfields
+                        final EditText numberofsession = view.findViewById(R.id.nsession);
+                        final EditText studyduration = view.findViewById(R.id.studyduration);
+                        final EditText breakduration = view.findViewById(R.id.breakduration);
+                        //onchange listeners
+                        numberofsession.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this)));
+                        studyduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(MainActivity.this)/60000));
+                        breakduration.setText(String.valueOf(TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(MainActivity.this)/60000));
+                        //number of session text area
+                        numberofsession.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                Log.d("------------------>","before");
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+                                 try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                         TimerSettingsSingleton.getInstance().setNumberOfStudySessions(Integer.parseInt(numberofsession.getText().toString()), MainActivity.this);
+                                         Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
+                                 }catch (Exception e){
+                                     Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                 }
+                             }
+                        });
+                        //study duration text area
+                        studyduration.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                Log.d("------------------>","before");
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                    TimerSettingsSingleton.getInstance().setDurationOfStudySessions(Integer.parseInt(studyduration.getText().toString())*60000, MainActivity.this);
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                        //break duration text area
+                        breakduration.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                Log.d("------------------>","before");
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                    TimerSettingsSingleton.getInstance().setDurationOfBreakSessions(Integer.parseInt(breakduration.getText().toString()), MainActivity.this);
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
 
                         ConstraintLayout settingStudyTime = (ConstraintLayout) getLayoutInflater().inflate(R.layout.setting_constraint,null);
                         ((TextView)settingStudyTime.findViewById(R.id.name)).setText("ore di studio");
