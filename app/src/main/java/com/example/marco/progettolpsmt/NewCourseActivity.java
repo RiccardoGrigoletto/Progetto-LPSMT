@@ -92,7 +92,7 @@ public class NewCourseActivity extends AppCompatActivity {
 
         Spinner spinner = findViewById(R.id.CFUSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
-                R.array.CFU_array, android.R.layout.simple_spinner_item);
+                R.array.three_to_fifteen_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 

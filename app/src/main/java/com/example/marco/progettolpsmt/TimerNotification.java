@@ -58,8 +58,6 @@ public class TimerNotification {
         final String ticker = exampleString;
         final String title = res.getString(
                 R.string.pause_timer_notification_title_template, exampleString);
-        final String text = res.getString(
-                R.string.pause_timer_notification_placeholder_text_template, exampleString);
 
 
         builder = new NotificationCompat.Builder(context)

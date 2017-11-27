@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="CFU_array">
+    <string-array name="three_to_fifteen_array">
                 <item>3</item>
                 <item>4</item>
                 <item>5</item>
@@ -17,4 +17,22 @@
                 <item>15</item>
 
             </string-array>
+    <string-array name="one_to_four_array">
+                <item>1</item>
+                <item>2</item>
+                <item>3</item>
+                <item>4</item>
+    </string-array>
+    <string-array name="one_to_ten_array">
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+            <item>4</item>
+            <item>5</item>
+            <item>6</item>
+            <item>7</item>
+            <item>8</item>
+            <item>9</item>
+            <item>10</item>
+    </string-array>
 </resources>
