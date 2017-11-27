@@ -133,5 +133,6 @@
     <string name="settingslogoutstring">Log out from app</string>
     <string name="settingstimerpaneltitle">Timer Settings</string>
     <string name="settinglogoutpaneltitle">Log Out</string>
+    <string name="minutes">%1$ minutes</string>
 
 </resources>
