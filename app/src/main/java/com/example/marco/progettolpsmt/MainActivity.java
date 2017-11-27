@@ -321,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
         switch (menuItem.getItemId()) {
             case R.id.action_timer: {
                 Intent intent = new Intent(getBaseContext(), TimerActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
                 startActivity(intent);
                 //finish();
             }

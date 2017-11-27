@@ -1,29 +1,36 @@
 package com.example.marco.progettolpsmt;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.util.Log;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 //import com.example.marco.progettolpsmt.backend.Log;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
+import com.example.marco.progettolpsmt.managers.DBManager;
+
+import android.text.format.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import cn.iwgang.countdownview.CountdownView;
 import devlight.io.library.ArcProgressStackView;
 import static devlight.io.library.ArcProgressStackView.Model;
@@ -59,12 +66,27 @@ public class TimerActivity extends AppCompatActivity {
     //backends classes
     private Course course;
 
+    //Notification
+    TimerNotification timerNotification;
+
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle extras) {
         setContentView(R.layout.activity_timer);
-        super.onCreate(savedInstanceState);
+        super.onCreate(extras);
         //backend example
         course = new Course();
+
+        Course courseToStudy = null;
+        try {
+            if (extras != null) {
+                courseToStudy = DBManager.getCourse(extras.getInt("courseID"));
+            }
+        }
+        catch (NullPointerException e) {}
+        if (courseToStudy != null) {
+            /*TODO initialize the timer with the course: courseToStudy*/
+        }
+
         //Dialog used in order to take data from user, that we need in order to initializate timer
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.timerinitializationpopup);
@@ -205,11 +227,19 @@ public class TimerActivity extends AppCompatActivity {
             }
         });
 
+        final NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // Sets an ID for the notification, so it can be updated
+        final int notifyID = 1;
+        timerNotification = new TimerNotification();
+
+
         /**
          * Animator update listener. This methods are used to update graphics animation of
          * the ArchModel. Every circle own a method that update graphics valued differently as the other
          * due to different values setted by user before the animation starts.
          */
+
 
         firstarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -218,6 +248,7 @@ public class TimerActivity extends AppCompatActivity {
                         .setProgress((Float) animation.getAnimatedValue());
                 animationstate = animation.getCurrentPlayTime();
                 mArcProgressStackView.postInvalidate();
+
             }
         });
 
@@ -295,11 +326,14 @@ public class TimerActivity extends AppCompatActivity {
             @Override
             @TargetApi(Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
+                timerNotification.notify(getBaseContext(),"Studying",1);
+                final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
                 if(animationstate != 0) {
                     firstarc.resume();
                     thirdarc.resume();
                     countdownview.restart();
                     startbutton.setClickable(false);
+
                     return;
                 }
                 if(animationstatesecondarch != 0){
@@ -327,11 +361,14 @@ public class TimerActivity extends AppCompatActivity {
             @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
+                timerNotification.notify(getBaseContext(),"Break Time",1);
+                final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
                 firstarc.pause();
                 secondarc.pause();
                 thirdarc.pause();
                 countdownview.pause();
                 startbutton.setClickable(true);
+
             }
         });
 
@@ -372,5 +409,9 @@ public class TimerActivity extends AppCompatActivity {
         countdownview.updateShow(studytimetimer);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
 }
