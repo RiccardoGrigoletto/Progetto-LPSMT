@@ -1,6 +1,10 @@
 package com.example.marco.progettolpsmt;
 
 
+import com.google.api.services.calendar.CalendarScopes;
+
+
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
@@ -30,15 +34,18 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.marco.progettolpsmt.backend.Argument;
+import com.example.marco.progettolpsmt.backend.CalendarManagerSingleton;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Exam;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.example.marco.progettolpsmt.managers.CalendarManager;
 import com.google.android.gms.tasks.Task;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
+import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
@@ -62,9 +69,10 @@ import com.google.api.services.calendar.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     final int VIEWS = 3;
-    private String[] studypickervalues = {"5","10","15","20","25","30","35","40","45","50","55","60"};
-    private String[] breakpickervalues = {"5","10","15","20","25","30"};
-    private String[] sessionpickervalues = {"1","2","3","4","5","6","7","8","9","10"};
+
+    //calendar scopes
+    private static final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
+
 
     public FirebaseUser user;
     private FirebaseAuth mAuth;
@@ -166,6 +174,19 @@ public class MainActivity extends AppCompatActivity {
                         final NumberPicker numberofsession = view.findViewById(R.id.sessionpicker);
                         final NumberPicker studyduration = view.findViewById(R.id.studypicker);
                         final NumberPicker breakduration = view.findViewById(R.id.breakpicker);
+                        final Button CalendarButton = view.findViewById(R.id.calendar);
+
+                        CalendarButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                try{
+                                    Intent intent = new Intent(getBaseContext(), ProvaCalendar.class);
+                                    startActivity(intent);
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
                         //onchange listeners
                         //numberofsession.setValue((int)TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this));
                         studyduration.setValue((int)TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(MainActivity.this)/60000);

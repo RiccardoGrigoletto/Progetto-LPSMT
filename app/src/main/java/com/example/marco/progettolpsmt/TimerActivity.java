@@ -1,7 +1,6 @@
 package com.example.marco.progettolpsmt;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -13,12 +12,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.util.Log;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 //import com.example.marco.progettolpsmt.backend.Log;
 import com.example.marco.progettolpsmt.backend.Course;
@@ -34,17 +30,17 @@ public class TimerActivity extends AppCompatActivity {
     private int mCounter = 0;
     public final static int MODEL_COUNT = 3;
     private ArcProgressStackView mArcProgressStackView;
-    private Button startbutton;
+    private Button startButton;
     private Button pause;
     private Button settings;
     private CountdownView  countdownview;
-    private long animationstate=0,animationstatesecondarch =0,thirdarchanimationstate=0;
-    private long n_session = 4;
-    private long studytimetimer;
-    private Spinner coursespinner;
-    private Spinner argumentspinner;
-    private long breaktimetimer;
-    private boolean isdialogsetted = false;
+    private long animationstate=0, animationStateSecondArch =0, thirdArchAnimationState =0;
+    private long nSession = 4;
+    private long studyTimeTimer;
+    private Spinner courseSpinner;
+    private Spinner argumentSpinner;
+    private long breakTimeTimer;
+    private boolean isDialogSetted = false;
     private Course courses;
     //circle creation
     private ArrayList<Model> models;
@@ -53,11 +49,13 @@ public class TimerActivity extends AppCompatActivity {
     final ValueAnimator secondarc = ValueAnimator.ofFloat(100);
     final ValueAnimator thirdarc = ValueAnimator.ofFloat(100);
     //on finish animation declaration
-    final ValueAnimator reversefirstarc = ValueAnimator.ofFloat(100);
-    final ValueAnimator reversesecondarc = ValueAnimator.ofFloat(100);
-    final ValueAnimator reversethirdarc = ValueAnimator.ofFloat(100);
+    final ValueAnimator reverseFirstArch = ValueAnimator.ofFloat(100);
+    final ValueAnimator reverseSecondArch = ValueAnimator.ofFloat(100);
+    final ValueAnimator reverseThirdArch = ValueAnimator.ofFloat(100);
     //backends classes
     private Course course;
+    //settings dialog
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -65,9 +63,14 @@ public class TimerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //backend example
         course = new Course();
-        //Dialog used in order to take data from user, that we need in order to initializate timer
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.timerinitializationpopup);
+        Button confirmTemporarySettingsButton = dialog.findViewById(R.id.button);
+        //textbox of the dialog
+        final EditText sessions = dialog.findViewById(R.id.editText2);
+        final EditText studyTimeDialogTextbox = dialog.findViewById(R.id.editText3);
+        final EditText breakTimeDialogTextbox = dialog.findViewById(R.id.editText4);
+        //Dialog used in order to take data from user, that we need in order to initializate timer
         final AlertDialog confirmchangecourseargumentdialog = new AlertDialog.Builder(this)
                 .setTitle("Change Course or Argument")
                 .setMessage("Are you sure that you want to change argument or course?\n You will lose current progress..")
@@ -79,19 +82,15 @@ public class TimerActivity extends AppCompatActivity {
                 .setNegativeButton(android.R.string.no, null).create();;
 
 
-        Button yourButton = dialog.findViewById(R.id.button);
-        //textbox of the dialog
-        final EditText sessions = dialog.findViewById(R.id.editText2);
-        final EditText studytime = dialog.findViewById(R.id.editText3);
-        final EditText breaktime = dialog.findViewById(R.id.editText4);
+
         //spinners
-        coursespinner = findViewById(R.id.coursespinner);
-        argumentspinner = findViewById(R.id.argumentspinner);
+        courseSpinner = findViewById(R.id.coursespinner);
+        argumentSpinner = findViewById(R.id.argumentspinner);
 
        // coursespinner.set(course.getName());
         ;
         //buttons
-        startbutton = (Button) findViewById(R.id.startbtn);
+        startButton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
         settings = (Button) findViewById(R.id.settings);
         //testual timer
@@ -102,17 +101,17 @@ public class TimerActivity extends AppCompatActivity {
         models = new ArrayList<>();
 
         //adding listener to buttons
-        yourButton.setOnClickListener(new View.OnClickListener() {
+        confirmTemporarySettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ( !((sessions.getText()).toString().equals("")) && !((studytime.getText()).toString().equals("")) && !((breaktime.getText()).toString().equals(""))) {
+                if ( !((sessions.getText()).toString().equals("")) && !((studyTimeDialogTextbox.getText()).toString().equals("")) && !((breakTimeDialogTextbox.getText()).toString().equals(""))) {
                     //go on here and dismiss dialog
-                    n_session = Integer.parseInt(sessions.getText().toString());
-                    studytimetimer = Long.parseLong(studytime.getText().toString())*60000;
-                    breaktimetimer = Long.parseLong(breaktime.getText().toString())*60000;
-                    isdialogsetted = true;
-                    countdownview.updateShow(studytimetimer);
-                    initializeArcModel(n_session,studytimetimer,breaktimetimer);
+                    nSession = Integer.parseInt(sessions.getText().toString());
+                    studyTimeTimer = Long.parseLong(studyTimeDialogTextbox.getText().toString())*60000;
+                    breakTimeTimer = Long.parseLong(breakTimeDialogTextbox.getText().toString())*60000;
+                    isDialogSetted = true;
+                    countdownview.updateShow(studyTimeTimer);
+                    initializeArcModel(nSession, studyTimeTimer, breakTimeTimer);
                     initializeTimerView(thirdarc,secondarc,firstarc,mArcProgressStackView);
                     dialog.dismiss();
                 }
@@ -121,11 +120,11 @@ public class TimerActivity extends AppCompatActivity {
          /*
            if user doesn't set values, the system will use default setted values
          */
-         if(isdialogsetted == false) {
-             n_session = TimerSettingsSingleton.getInstance().getNumberOfStudySessions(this);
-             studytimetimer = TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(this);
-             breaktimetimer = TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(this);
-             countdownview.updateShow(studytimetimer);
+         if(isDialogSetted == false) {
+             nSession = TimerSettingsSingleton.getInstance().getNumberOfStudySessions(this);
+             studyTimeTimer = TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(this);
+             breakTimeTimer = TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(this);
+             countdownview.updateShow(studyTimeTimer);
          }
 
         //ArcProgressView initialization
@@ -144,12 +143,12 @@ public class TimerActivity extends AppCompatActivity {
         mArcProgressStackView.setModels(models);
         mArcProgressStackView.setSweepAngle(270);
         /**
-         * firstarc == external arch
-         * secondarc = middle arch
-         * thirdarc = internal arch
+         * firstArch == external arch
+         * secondArch = middle arch
+         * thirdArch = internal arch
          * Setting up Animators
          */
-        this.initializeArcModel(n_session,studytimetimer,breaktimetimer);
+        this.initializeArcModel(nSession, studyTimeTimer, breakTimeTimer);
         firstarc.setInterpolator(new LinearInterpolator());
         secondarc.setInterpolator(new LinearInterpolator());
         thirdarc.setInterpolator(new LinearInterpolator());
@@ -157,9 +156,9 @@ public class TimerActivity extends AppCompatActivity {
         /**
          * setting up on finish animation
          */
-        reversefirstarc.setDuration(2000);
-        reversesecondarc.setDuration(2000);
-        reversethirdarc.setDuration(2000);
+        reverseFirstArch.setDuration(2000);
+        reverseSecondArch.setDuration(2000);
+        reverseThirdArch.setDuration(2000);
         /**
          * On end listeners. This listeners are used in order to allow graphic sync between circles.
          * When a circle animation end, the onEndListener update
@@ -169,7 +168,7 @@ public class TimerActivity extends AppCompatActivity {
             public void onAnimationEnd(final Animator animation) {
                 mCounter = 0;
                 animationstate = 0;
-                countdownview.start(breaktimetimer);
+                countdownview.start(breakTimeTimer);
                 secondarc.start();
             }
             @Override
@@ -181,12 +180,12 @@ public class TimerActivity extends AppCompatActivity {
         secondarc.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(final Animator animation) {
-                animationstatesecondarch= 0;
+                animationStateSecondArch = 0;
                 thirdarc.pause();
                /* mArcProgressStackView.getModels().get(MODEL_COUNT-2).setProgress(0);
                 mArcProgressStackView.getModels().get(MODEL_COUNT-3).setProgress(0);*/
-               reversefirstarc.reverse();
-               reversesecondarc.reverse();
+               reverseFirstArch.reverse();
+               reverseSecondArch.reverse();
             }
             @Override
             public void onAnimationRepeat(final Animator animation) {
@@ -197,7 +196,7 @@ public class TimerActivity extends AppCompatActivity {
         thirdarc.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(final Animator animation) {
-                reversethirdarc.reverse();
+                reverseThirdArch.reverse();
             }
             @Override
             public void onAnimationRepeat(final Animator animation) {
@@ -226,7 +225,7 @@ public class TimerActivity extends AppCompatActivity {
             public void onAnimationUpdate(final ValueAnimator animation) {
                 mArcProgressStackView.getModels().get(MODEL_COUNT-2)  //Math.min(mCounter, MODEL_COUNT - 2)
                         .setProgress((Float) animation.getAnimatedValue());
-                animationstatesecondarch = animation.getCurrentPlayTime();
+                animationStateSecondArch = animation.getCurrentPlayTime();
                 mArcProgressStackView.postInvalidate();
             }
         });
@@ -237,50 +236,50 @@ public class TimerActivity extends AppCompatActivity {
                 //mArcProgressStackView.getModels().get(MODEL_COUNT - 1).setProgress(session);
                 mArcProgressStackView.getModels().get(MODEL_COUNT-1)  //Math.min(mCounter, MODEL_COUNT - 2)
                         .setProgress((Float) animation.getAnimatedValue());
-                thirdarchanimationstate = animation.getCurrentPlayTime();
+                thirdArchAnimationState = animation.getCurrentPlayTime();
                 mArcProgressStackView.postInvalidate();
             }
         });
         /**
          * reverse animation on finish
          */
-        reversefirstarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        reverseFirstArch.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation) {
                 //mArcProgressStackView.getModels().get(MODEL_COUNT - 1).setProgress(session);
                 mArcProgressStackView.getModels().get(MODEL_COUNT-3)
                         .setProgress((Float) animation.getAnimatedValue());
-                thirdarchanimationstate = animation.getCurrentPlayTime();
+                thirdArchAnimationState = animation.getCurrentPlayTime();
                 mArcProgressStackView.postInvalidate();
             }
         });
-        reversesecondarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        reverseSecondArch.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation) {
                 //mArcProgressStackView.getModels().get(MODEL_COUNT - 1).setProgress(session);
                 mArcProgressStackView.getModels().get(MODEL_COUNT-2)  //Math.min(mCounter, MODEL_COUNT - 2)
                         .setProgress((Float) animation.getAnimatedValue());
-                thirdarchanimationstate = animation.getCurrentPlayTime();
+                thirdArchAnimationState = animation.getCurrentPlayTime();
                 mArcProgressStackView.postInvalidate();
             }
         });
-        reversethirdarc.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        reverseThirdArch.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation) {
                 //mArcProgressStackView.getModels().get(MODEL_COUNT - 1).setProgress(session);
                 mArcProgressStackView.getModels().get(MODEL_COUNT-2)  //Math.min(mCounter, MODEL_COUNT - 2)
                         .setProgress((Float) animation.getAnimatedValue());
-                thirdarchanimationstate = animation.getCurrentPlayTime();
+                thirdArchAnimationState = animation.getCurrentPlayTime();
                 mArcProgressStackView.postInvalidate();
             }
         });
 
         //revers animation onEnd listener
 
-        reversesecondarc.addListener(new AnimatorListenerAdapter() {
+        reverseSecondArch.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(final Animator animation) {
-                startbutton.setClickable(true);
+                startButton.setClickable(true);
             }
             @Override
             public void onAnimationRepeat(final Animator animation) {
@@ -291,7 +290,7 @@ public class TimerActivity extends AppCompatActivity {
         /**
          * Button listeners
          */
-        startbutton.setOnClickListener(new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             @TargetApi(Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
@@ -299,27 +298,27 @@ public class TimerActivity extends AppCompatActivity {
                     firstarc.resume();
                     thirdarc.resume();
                     countdownview.restart();
-                    startbutton.setClickable(false);
+                    startButton.setClickable(false);
                     return;
                 }
-                if(animationstatesecondarch != 0){
+                if(animationStateSecondArch != 0){
                     secondarc.resume();
                     thirdarc.resume();
                     countdownview.restart();
-                    startbutton.setClickable(false);
+                    startButton.setClickable(false);
                     return;
                 }
-                if(thirdarchanimationstate != 0 ){
+                if(thirdArchAnimationState != 0 ){
                     firstarc.start();
                     thirdarc.resume();
-                    startbutton.setClickable(false);
+                    startButton.setClickable(false);
                     return;
                 }
                 firstarc.start();
                 thirdarc.start();
-                countdownview.start(studytimetimer);
+                countdownview.start(studyTimeTimer);
                 //cambiare il colore del bottone
-                startbutton.setClickable(false);
+                startButton.setClickable(false);
             }
         });
 
@@ -331,7 +330,7 @@ public class TimerActivity extends AppCompatActivity {
                 secondarc.pause();
                 thirdarc.pause();
                 countdownview.pause();
-                startbutton.setClickable(true);
+                startButton.setClickable(true);
             }
         });
 
@@ -358,8 +357,8 @@ public class TimerActivity extends AppCompatActivity {
         firstarc.cancel();
         secondarc.cancel();
         thirdarc.cancel();
-        animationstatesecondarch = 0;
-        thirdarchanimationstate = 0;
+        animationStateSecondArch = 0;
+        thirdArchAnimationState = 0;
         animationstate = 0;
         stackView.getModels().get(MODEL_COUNT-2)  //Math.min(mCounter, MODEL_COUNT - 2)
                 .setProgress(0);
@@ -367,9 +366,9 @@ public class TimerActivity extends AppCompatActivity {
                 .setProgress(0);
         stackView.getModels().get(MODEL_COUNT-3)  //Math.min(mCounter, MODEL_COUNT - 2)
                 .setProgress(0);
-        startbutton.setClickable(true);
+        startButton.setClickable(true);
         countdownview.stop();
-        countdownview.updateShow(studytimetimer);
+        countdownview.updateShow(studyTimeTimer);
     }
 
 

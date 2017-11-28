@@ -1,5 +1,7 @@
 package com.example.marco.progettolpsmt.backend;
 
+import android.support.annotation.NonNull;
+
 import java.util.*;
 
 /**
@@ -20,12 +22,22 @@ public class Course implements Observer {
     private int timeExpected;
     private List<Argument> arguments;
     private List<Exam> exams;
+    private int[] days;
+    private int[] hours;
     private Settings settings;
 
     /**
      * Constructor for a default course.
      */
     public Course() {
+        /*this.days = new int[7];
+        days[0] = 1;
+        days[2] = 1;
+        days[4] = 1;
+        this.hours = new int[24];
+        days[0] = 1;
+        days[13] = 1;
+        days[15] = 1;*/
         name = "Untitled Course";
         // Regional settings defaults
         Settings.DEFAULT.setHoursPerCredit(25);
@@ -272,6 +284,15 @@ public class Course implements Observer {
         }
     }
 
+    /**
+     *
+     * @param days
+     *
+     * set when a user want to do certain course study session
+     */
+    public void setStudyDays(int[] days){
+        this.days = days;
+    }
     @Override
     public void update(Observable o, Object arg) {
         updateCourse();
