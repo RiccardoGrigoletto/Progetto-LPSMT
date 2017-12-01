@@ -1,24 +1,25 @@
 package com.example.marco.progettolpsmt;
 
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.services.calendar.CalendarScopes;
 
 
-
-import android.app.Service;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.ResultReceiver;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
+import android.provider.CalendarContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,22 +28,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
-import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.marco.progettolpsmt.backend.Argument;
-import com.example.marco.progettolpsmt.backend.CalendarManagerSingleton;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Exam;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.example.marco.progettolpsmt.managers.CalendarManager;
-import com.google.android.gms.tasks.Task;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.ExponentialBackOff;
@@ -57,21 +52,49 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import java.io.FileInputStream;
+
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
 import devlight.io.library.ntb.NavigationTabBar;
-import com.google.api.services.calendar.Calendar;
+import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.example.marco.progettolpsmt.ProvaCalendar.REQUEST_ACCOUNT_PICKER;
+import static com.example.marco.progettolpsmt.ProvaCalendar.REQUEST_AUTHORIZATION;
+import static com.example.marco.progettolpsmt.ProvaCalendar.REQUEST_PERMISSION_GET_ACCOUNTS;
 
 public class MainActivity extends AppCompatActivity {
     final int VIEWS = 3;
 
     //calendar scopes
-    private static final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
+    // Projection array. Creating indices for this array instead of doing
+// dynamic lookups improves performance.
+    public static final String[] EVENT_PROJECTION = new String[]{
+            CalendarContract.Calendars._ID,                           // 0
+            CalendarContract.Calendars.ACCOUNT_NAME,                  // 1
+            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,         // 2
+            CalendarContract.Calendars.OWNER_ACCOUNT                  // 3
+    };
+    final Event event = new Event()
+            .setSummary("Google I/O 2015")
+            .setLocation("800 Howard St., San Francisco, CA 94103")
+            .setDescription("A chance to hear more about Google's developer products.");
+
+    com.google.api.services.calendar.Calendar mService = null;
+    HttpTransport transport = AndroidHttp.newCompatibleTransport();
+    JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+    GoogleAccountCredential login=null;
+    final String calendarId = "primary";
+    // The indices for the projection array above.
+    private final int PROJECTION_ID_INDEX = 0;
+    private static final int PROJECTION_ACCOUNT_NAME_INDEX = 1;
+    private static final int PROJECTION_DISPLAY_NAME_INDEX = 2;
+    private static final int PROJECTION_OWNER_ACCOUNT_INDEX = 3;
 
 
     public FirebaseUser user;
@@ -87,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Toast Login
-        Toast.makeText(this,user.getDisplayName(),Toast.LENGTH_LONG).show();
+        Toast.makeText(this, user.getDisplayName(), Toast.LENGTH_LONG).show();
 
         // Write a message to the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -162,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                                 getBaseContext()).inflate(R.layout.page_1, null, false);
 
                         ListView courseLV = view.findViewById(R.id.coursesListView);
-                        CoursesAdapterMax coursesAdapter = new CoursesAdapterMax(getBaseContext(),values);
+                        CoursesAdapterMax coursesAdapter = new CoursesAdapterMax(getBaseContext(), values);
                         courseLV.setAdapter(coursesAdapter);
 
                     }
@@ -179,12 +202,173 @@ public class MainActivity extends AppCompatActivity {
                         CalendarButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                try{
-                                    Intent intent = new Intent(getBaseContext(), ProvaCalendar.class);
-                                    startActivity(intent);
-                                }catch (Exception e){
-                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                List<String> googleAccounts = new ArrayList<String>();
+
+                                final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
+                                Account[] accounts = AccountManager.get(MainActivity.this).getAccounts();
+                                for (Account account : accounts) {
+                                    if (account.type.equals("com.google") &&  user.getEmail().equals(account.name)) {
+                                        login = GoogleAccountCredential.usingOAuth2(
+                                                getApplicationContext(),Arrays.asList(SCOPES))
+                                                .setBackOff(new ExponentialBackOff())
+                                                .setSelectedAccountName(account.name);
+                                    }
                                 }
+
+                                /*
+                                * querying the calendar
+                                * */
+                                mService = new com.google.api.services.calendar.Calendar.Builder(
+                                        transport, jsonFactory, login)
+                                        .setApplicationName("Progetto-LPSMT")
+                                        .build();
+                               /* Cursor cur = null;
+                                ContentResolver cr = getContentResolver();
+                                Uri uri = CalendarContract.Calendars.CONTENT_URI;
+                                String selection = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
+                                        + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND ("
+                                        + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?))";
+                                String[] selectionArgs = new String[]{"robertimarco16@gmail.com","com.google","robertimarco16@gmail.com"};
+// Submit the query and get a Cursor object back.
+
+                                if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
+                                    return;
+                                }
+                                cur = cr.query(uri, EVENT_PROJECTION, selection,  selectionArgs, null);
+                                long calID = 0;
+                                //getting user calendars
+                                while (cur.moveToNext()) {
+
+
+                                    String displayName = null;
+                                    String accountName = null;
+                                    String ownerName = null;
+
+
+
+                                    // Get the field values
+                                    calID = cur.getLong(PROJECTION_ID_INDEX);
+                                    displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
+                                    accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
+                                    ownerName = cur.getString(PROJECTION_OWNER_ACCOUNT_INDEX);
+                                    Log.d("entrato------>",""+calID);
+                                    Log.d("accountname---->",""+accountName);
+                                    Log.d("displayname---->",""+displayName);
+                                    // Do something with the values...
+                                    long startMillis = 0;
+                                    long endMillis = 0;
+                                    Calendar beginTime = Calendar.getInstance();
+                                    beginTime.set(2017, 12, 25, 7, 30);
+                                    startMillis = beginTime.getTimeInMillis();
+                                    Calendar endTime = Calendar.getInstance();
+                                    endTime.set(2017, 12, 25, 8, 45);
+                                    endMillis = endTime.getTimeInMillis();
+
+
+                                    ContentResolver contentResolver = getContentResolver();
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.DTSTART, startMillis);
+                                    values.put(CalendarContract.Events.DTEND, endMillis);
+                                    values.put(CalendarContract.Events.TITLE, "Jazzercise");
+                                    values.put(CalendarContract.Events.DESCRIPTION, "Group workout");
+                                    values.put(CalendarContract.Events.CALENDAR_ID, calID);
+                                    values.put(CalendarContract.Events.EVENT_TIMEZONE, "Europe/Rome");
+                                    if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                                        // TODO: Consider calling
+                                        //    ActivityCompat#requestPermissions
+                                        // here to request the missing permissions, and then overriding
+                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                        //                                          int[] grantResults)
+                                        // to handle the case where the user grants the permission. See the documentation
+                                        // for ActivityCompat#requestPermissions for more details.
+                                        return;
+                                    }
+                                    Uri lel = cr.insert(CalendarContract.Events.CONTENT_URI, values);*/
+
+
+                                DateTime startDateTime = new DateTime("2017-12-02T09:00:00-07:00");
+                                EventDateTime start = new EventDateTime()
+                                        .setDateTime(startDateTime)
+                                        .setTimeZone(TimeZone.getDefault().toString());
+                                event.setStart(start);
+
+                                DateTime endDateTime = new DateTime("2017-12-02T17:00:00-07:00");
+                                EventDateTime end = new EventDateTime()
+                                        .setDateTime(endDateTime)
+                                        .setTimeZone(TimeZone.getDefault().toString());
+                                event.setEnd(end);
+
+                                String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
+                                event.setRecurrence(Arrays.asList(recurrence));
+
+                                EventAttendee[] attendees = new EventAttendee[] {
+                                        new EventAttendee().setEmail("robertimarco16@gmail.com"),
+                                };
+                                event.setAttendees(Arrays.asList(attendees));
+
+                                EventReminder[] reminderOverrides = new EventReminder[] {
+                                        new EventReminder().setMethod("email").setMinutes(24 * 60),
+                                        new EventReminder().setMethod("popup").setMinutes(10),
+                                };
+                                Event.Reminders reminders = new Event.Reminders()
+                                        .setUseDefault(false)
+                                        .setOverrides(Arrays.asList(reminderOverrides));
+                                event.setReminders(reminders);
+
+
+                                @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+                                    @Override
+                                    protected String doInBackground(Void... params) {
+                                        try {
+                                            mService.events().insert(calendarId,event).execute();
+                                        } catch (Exception e) {
+                                           // Toast.makeText(MainActivity.this, "Sboret", Toast.LENGTH_LONG).show();
+                                            /*startActivityForResult(
+                                                    ((UserRecoverableAuthIOException) e).getIntent(),
+                                                    REQUEST_AUTHORIZATION);*/
+                                            e.printStackTrace();
+                                        }
+                                        return null;
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(String token) {
+                                       // Toast.makeText(MainActivity.this, "Onesto", Toast.LENGTH_LONG).show();
+                                    }
+
+                                };
+                                task.execute();
+
+
+
+
+
+
+/*
+                                ProvaCalendar p = new ProvaCalendar();
+                                p.insertEvent();*/
+
+                               /* java.util.Calendar beginTime = java.util.Calendar.getInstance();
+                                beginTime.set(2012, 0, 19, 7, 30);
+                                java.util.Calendar endTime = java.util.Calendar.getInstance();
+                                endTime.set(2012, 0, 19, 8, 30);
+                                Intent intent = new Intent(Intent.ACTION_INSERT)
+                                        .setData(CalendarContract.Events.CONTENT_URI)
+                                        .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis())
+                                        .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
+                                        .putExtra(CalendarContract.Events.TITLE, "Yoga")
+                                        .putExtra(CalendarContract.Events.DESCRIPTION, "Group class")
+                                        .putExtra(CalendarContract.Events.EVENT_LOCATION, "The gym")
+                                        .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY)
+                                        .putExtra(Intent.EXTRA_EMAIL, "rowan@example.com,trevor@example.com");
+                                startActivity(intent);*/
                             }
                         });
                         //onchange listeners
@@ -431,4 +615,72 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.items, menu);
         return true;
     }
+
+    protected void onActivityResult(
+            int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case REQUEST_ACCOUNT_PICKER:
+                String accountName =
+                        data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                login.setSelectedAccountName(accountName);
+                @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+                    @Override
+                    protected String doInBackground(Void... params) {
+                        try {
+                            mService.events().insert(calendarId,event).execute();
+                        } catch (IOException e) {
+                            // Toast.makeText(MainActivity.this, "Sboret", Toast.LENGTH_LONG).show();
+                            startActivityForResult(
+                                    login.newChooseAccountIntent(),
+                                    REQUEST_ACCOUNT_PICKER);
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(String token) {
+                        // Toast.makeText(MainActivity.this, "Onesto", Toast.LENGTH_LONG).show();
+                    }
+
+                };
+                task.execute();
+                break;
+            case REQUEST_AUTHORIZATION:
+                login.setSelectedAccountName("robertimarco16@gmail.com");
+                if (resultCode == RESULT_OK) {
+                    @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> task2 = new AsyncTask<Void, Void, String>() {
+                        @Override
+                        protected String doInBackground(Void... params) {
+                            try {
+                                mService.events().insert(calendarId,event).execute();
+                            } catch (IOException e) {
+                                // Toast.makeText(MainActivity.this, "Sboret", Toast.LENGTH_LONG).show();
+                                startActivityForResult(
+                                        login.newChooseAccountIntent(),
+                                        REQUEST_ACCOUNT_PICKER);
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(String token) {
+                            // Toast.makeText(MainActivity.this, "Onesto", Toast.LENGTH_LONG).show();
+                        }
+
+                    };
+                    task2.execute();
+                }
+                break;
+        }
+    }
+    public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, MainActivity.this);
+    }
+
 }
+
+
