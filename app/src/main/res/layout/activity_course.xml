@@ -180,6 +180,12 @@
 
             </LinearLayout>
 
+            <Button
+                android:id="@+id/addEventButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="add Event to Calendar (STATIC)" />
+
         </LinearLayout>
 
         <Button
