@@ -71,8 +71,9 @@ public class TimerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle extras) {
-        setContentView(R.layout.activity_timer);
         super.onCreate(extras);
+        setContentView(R.layout.activity_timer);
+
         //backend example
         course = new Course();
 
@@ -412,6 +413,6 @@ public class TimerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        timerNotification.cancel(this);
     }
-
 }

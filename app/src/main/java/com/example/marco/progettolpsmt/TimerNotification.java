@@ -120,7 +120,7 @@ public class TimerNotification {
                                 PendingIntent.FLAG_UPDATE_CURRENT))*/
 
                 // Automatically dismiss the notification when it is touched.
-                .setAutoCancel(true);
+                .setAutoCancel(false);
 
         notify(context, builder.build());
     }
@@ -158,6 +158,7 @@ public class TimerNotification {
             }
         };
     }
+
 
     public NotificationCompat.Builder getBuilder() {
         return builder;
