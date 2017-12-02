@@ -66,15 +66,15 @@
         android:layout_weight="0.08" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/cancelbutton"
         android:layout_width="192dp"
         android:layout_height="wrap_content"
-        android:text="Confirm" />
+        android:text="Cancel" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="196dp"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="Confirm" />
 
 </LinearLayout>
