@@ -48,5 +48,6 @@
     <string name="settingstimerpaneltitle">Timer Settings</string>
     <string name="settinglogoutpaneltitle">Log Out</string>
     <string name="minutes">%1$ minutes</string>
+    <string name="add_study_date_label">study dates</string>
 
 </resources>

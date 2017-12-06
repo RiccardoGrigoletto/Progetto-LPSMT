@@ -2,26 +2,26 @@
 <resources>
 
     <string-array name="three_to_fifteen_array">
-                <item>3</item>
-                <item>4</item>
-                <item>5</item>
-                <item>6</item>
-                <item>7</item>
-                <item>8</item>
-                <item>9</item>
-                <item>10</item>
-                <item>11</item>
-                <item>12</item>
-                <item>13</item>
-                <item>14</item>
-                <item>15</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
 
-            </string-array>
+    </string-array>
     <string-array name="one_to_four_array">
-                <item>1</item>
-                <item>2</item>
-                <item>3</item>
-                <item>4</item>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+            <item>4</item>
     </string-array>
     <string-array name="one_to_ten_array">
             <item>1</item>
@@ -34,5 +34,14 @@
             <item>8</item>
             <item>9</item>
             <item>10</item>
+    </string-array>
+    <string-array name="week_days">
+        <item>mon</item>
+        <item>tue</item>
+        <item>wed</item>
+        <item>thu</item>
+        <item>fri</item>
+        <item>sat</item>
+        <item>sun</item>
     </string-array>
 </resources>

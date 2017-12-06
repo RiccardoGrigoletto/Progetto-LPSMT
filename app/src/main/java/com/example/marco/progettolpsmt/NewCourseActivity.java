@@ -1,10 +1,13 @@
 package com.example.marco.progettolpsmt;
 
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -20,7 +23,9 @@ import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Exam;
 import com.example.marco.progettolpsmt.managers.DBManager;
+import com.google.api.client.util.DateTime;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -118,6 +123,7 @@ public class NewCourseActivity extends AppCompatActivity {
                         });
             }
         });
+
         FloatingActionButton addExamButton = findViewById(R.id.addExamButton);
 
         addExamButton.setOnClickListener(new View.OnClickListener() {
@@ -142,8 +148,56 @@ public class NewCourseActivity extends AppCompatActivity {
                }
             }
         });
+        FloatingActionButton addSudyDateButton = findViewById(R.id.addStudyDateButton);
+
+        final LinearLayout linearLayoutStudyDates = findViewById(R.id.studyDateList);
+
+        addSudyDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final View view1 = LayoutInflater.from(getBaseContext())
+                        .inflate(R.layout.study_date_edit_view,null,false);
+
+                Spinner studyDateSpinner = view1.findViewById(R.id.studyDate);
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
+                        R.array.week_days, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                studyDateSpinner.setAdapter(adapter);
+
+                final TextView studyDateFrom = view1.findViewById(R.id.studyDateFrom);
+                final TextView studyDateTo = view1.findViewById(R.id.studyDateTo);
+
+                studyDateFrom.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showTimePickerDialog(view, R.id.studyDateFrom);
+                    }
+                });
+                studyDateTo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showTimePickerDialog(view, R.id.studyDateTo);
+                    }
+                });
+
+                linearLayoutStudyDates.addView(view1);
+                final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
+                deleteArgumentButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                linearLayoutStudyDates.removeView(view1);
+
+                            }
+                        });
+            }
+        });
+
 
     }
+
+
 
     private Course createCourse() {
         //name
@@ -154,6 +208,7 @@ public class NewCourseActivity extends AppCompatActivity {
             toast.show();
             return null;
         }
+        //cfu
         Integer cfu = Integer.parseInt(((Spinner)(findViewById(R.id.CFUSpinner))).getSelectedItem().toString());
         if (cfu == null) {
             ((Spinner)findViewById(R.id.CFUSpinner)).setActivated(true);
@@ -161,6 +216,7 @@ public class NewCourseActivity extends AppCompatActivity {
             toast.show();
             return null;
         }
+        //arguments
         LinearLayout argumentsLinearLayout = findViewById(R.id.argumentsList);
         ArrayList<Argument> arguments = new ArrayList<>();
         for (int i = 0; i < argumentsLinearLayout.getChildCount(); i++) {
@@ -168,9 +224,23 @@ public class NewCourseActivity extends AppCompatActivity {
             Integer expectedHours = Integer.parseInt(((TextView)argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentExpectedHours)).getText().toString());
             arguments.add(new Argument(argumentName,expectedHours));
         }
+        //exams
         LinearLayout examsLinearLayout = findViewById(R.id.examsList);
         ArrayList<Exam> exams = new ArrayList<>();
         DateFormat df = new SimpleDateFormat("dd-MM-YYYY");
+        for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
+            Date examDate = null;
+            try {
+                examDate = df.parse(((TextView)argumentsLinearLayout.getChildAt(i).findViewById(R.id.examDate)).getText().toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
+                //DATE ERROR RECOVERY
+            }
+            exams.add(new Exam(examDate));
+        }
+        //study sessions
+        LinearLayout studyDatesLinearLayout = findViewById(R.id.studyDateList);
+        //todo
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
             try {
@@ -194,8 +264,12 @@ public class NewCourseActivity extends AppCompatActivity {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
     }
-
-
-
+    private void showTimePickerDialog(View view, int id) {
+        Bundle extras = new Bundle();
+        extras.putInt(TimePickerFragment.resIdKey,id);
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.setArguments(extras);
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
 
 }

@@ -24,16 +24,16 @@ import java.util.Date;
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Use the current time as the default values for the picker
-        final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int dayOfmonth = c.get(Calendar.DAY_OF_MONTH);
-        // Create a new instance of TimePickerDialog and return it
-        DatePickerDialog dpd = new DatePickerDialog(getActivity(), this, year, month, dayOfmonth);
-        dpd.getDatePicker().setMinDate(new Date().getTime());
-        return dpd;
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int dayOfmonth = c.get(Calendar.DAY_OF_MONTH);
+            // Create a new instance of TimePickerDialog and return it
+            DatePickerDialog dpd = new DatePickerDialog(getActivity(), this, year, month, dayOfmonth);
+            dpd.getDatePicker().setMinDate(new Date().getTime());
+            return dpd;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class DatePickerFragment extends DialogFragment
         final View view1 = LayoutInflater.from(getActivity())
                 .inflate(R.layout.exam_edit_view,null,false);
         ((TextView)view1.findViewById(R.id.examDate)).setText(dayOfMonth + " - " + month + " - " + year);
-        final LinearLayout ll = (LinearLayout) getActivity().findViewById(R.id.examsList);
+        final LinearLayout ll = getActivity().findViewById(R.id.examsList);
         final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
         deleteArgumentButton.setOnClickListener(
                 new View.OnClickListener() {
