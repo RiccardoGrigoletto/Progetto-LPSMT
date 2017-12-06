@@ -180,6 +180,13 @@ public class NewCourseActivity extends AppCompatActivity {
                 }
             });
 
+        Button addEventButton = findViewById(R.id.addEventButton);
+        addEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getResultsFromApi();
+            }
+        });
 
         Button createCourseButton = findViewById(R.id.addCourseButton);
 
