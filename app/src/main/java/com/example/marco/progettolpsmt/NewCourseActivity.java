@@ -26,6 +26,7 @@ import com.example.marco.progettolpsmt.backend.Exam;
 import com.example.marco.progettolpsmt.managers.DBManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.DateTime;
+import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
 
 import java.sql.Time;
@@ -33,6 +34,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -136,7 +138,12 @@ public class NewCourseActivity extends AppCompatActivity {
                         });
             }
         });
-
+        // Initialize credentials and service object.
+        mCredential = GoogleAccountCredential.usingOAuth2(
+                getApplicationContext(), Arrays.asList(SCOPES))
+                .setBackOff(new ExponentialBackOff());
+        mProgress = new ProgressDialog(this);
+        mProgress.setMessage("Calling Google Calendar ...");
         FloatingActionButton addExamButton = findViewById(R.id.addExamButton);
 
         addExamButton.setOnClickListener(new View.OnClickListener() {
