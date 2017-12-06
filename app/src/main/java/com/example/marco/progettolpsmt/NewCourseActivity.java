@@ -2,6 +2,7 @@ package com.example.marco.progettolpsmt;
 
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -23,7 +24,9 @@ import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Exam;
 import com.example.marco.progettolpsmt.managers.DBManager;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.CalendarScopes;
 
 import java.sql.Time;
 import java.text.DateFormat;
@@ -39,6 +42,16 @@ import java.util.Objects;
  */
 
 public class NewCourseActivity extends AppCompatActivity {
+    GoogleAccountCredential mCredential;
+    ProgressDialog mProgress;
+
+    static final int REQUEST_ACCOUNT_PICKER = 1000;
+    static final int REQUEST_AUTHORIZATION = 1001;
+    static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
+    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
+
+    private static final String PREF_ACCOUNT_NAME = "accountName";
+    private static final String[] SCOPES = {CalendarScopes.CALENDAR};
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
