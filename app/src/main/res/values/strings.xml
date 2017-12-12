@@ -37,7 +37,7 @@
     <string name="courseLoaded">course loaded</string>
     <string name="edit_course_button_description">edit course</string>
     <string name="pause_timer_notification_title_template">Timer: %1$s</string>
-        <string name="action_share">Share</string>
+    <string name="action_share">Share</string>
     <string name="action_reply">Reply</string>
     <string name="restart">restart</string>
     <!-- settings strings -->
