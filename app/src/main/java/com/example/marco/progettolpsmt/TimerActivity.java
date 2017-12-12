@@ -25,11 +25,15 @@ import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.example.marco.progettolpsmt.managers.DBManager;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import cn.iwgang.countdownview.CountdownView;
 import devlight.io.library.ArcProgressStackView;
 import static devlight.io.library.ArcProgressStackView.Model;
+import com.example.marco.progettolpsmt.managers.CourseManagerSingleton;
 
 
 public class
@@ -62,6 +66,15 @@ TimerActivity extends AppCompatActivity {
     final ValueAnimator reverseThirdArch = ValueAnimator.ofFloat(100);
     //backends classes
     private Course course;
+    //alert dialog
+    private AlertDialog confirmChangeCourseArgumentDialog = null;
+    private AlertDialog stopAlerDialog = null;
+    private AlertDialog backButtonAlertDialog = null;
+    //button pause binary flag
+    private int pauseBtnBinaryFlag = 1 ;
+    //timestamps
+    private Date initialTimeStamp;
+    private Date timeStampFromInterruption;
 
     //Notification
     TimerNotification timerNotification;
@@ -77,7 +90,7 @@ TimerActivity extends AppCompatActivity {
         Course courseToStudy = null;
         try {
             if (extras != null) {
-                courseToStudy = DBManager.getCourse(extras.getInt("courseID"));
+                courseToStudy = CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")) ;
             }
         }
         catch (NullPointerException e) {}
@@ -89,7 +102,8 @@ TimerActivity extends AppCompatActivity {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.timerinitializationpopup);
 
-        final AlertDialog confirmchangecourseargumentdialog = new AlertDialog.Builder(this)
+        //
+        confirmChangeCourseArgumentDialog = new AlertDialog.Builder(this)
                 .setTitle("Change Course or Argument")
                 .setMessage("Are you sure that you want to change argument or course?\n You will lose current progress..")
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -109,10 +123,10 @@ TimerActivity extends AppCompatActivity {
         //spinners
         courseSpinner = findViewById(R.id.coursespinner);
         argumentSpinner = findViewById(R.id.argumentspinner);
-
         //buttons
         startButton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
+        pause.setEnabled(false);
         settings = (Button) findViewById(R.id.settings);
         //testual timer
         countdownView = findViewById(R.id.countdownview);
@@ -151,10 +165,7 @@ TimerActivity extends AppCompatActivity {
            if user doesn't set values, the system will use default setted values
          */
          if(isDialogSetted == false) {
-             nSession = TimerSettingsSingleton.getInstance().getNumberOfStudySessions(this);
-             studyTimeTimer = TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(this);
-             breakTimeTimer = TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(this);
-             countdownView.updateShow(studyTimeTimer);
+            readFromSharedPreferences();
          }
 
         //ArcProgressView initialization
@@ -329,28 +340,34 @@ TimerActivity extends AppCompatActivity {
                     firstArch.resume();
                     thirdArch.resume();
                     countdownView.restart();
-                    startButton.setClickable(false);
+                    startButton.setEnabled(false);
                     return;
                 }
                 if(animationStateSecondArch != 0){
                     secondArch.resume();
                     thirdArch.resume();
                     countdownView.restart();
-                    startButton.setClickable(false);
+                    startButton.setEnabled(false);
                     return;
                 }
                 if(thirdArchAnimationState != 0 ){
                     firstArch.start();
                     thirdArch.resume();
                     countdownView.restart();
-                    startButton.setClickable(false);
+                    startButton.setEnabled(false);
                     return;
                 }
                 countdownView.start(studyTimeTimer);
                 firstArch.start();
                 thirdArch.start();
                 //cambiare il colore del bottone
-                startButton.setClickable(false);
+                startButton.setEnabled(false);
+                settings.setEnabled(false);
+                initialTimeStamp = new Date();
+                Log.d("lel---->",""+initialTimeStamp);
+                courseSpinner.setEnabled(false);
+                argumentSpinner.setEnabled(false);
+                pause.setEnabled(true);
             }
         });
 
@@ -358,13 +375,31 @@ TimerActivity extends AppCompatActivity {
             @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                timerNotification.notify(getBaseContext(),"Break Time",1);
-                final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
-                firstArch.pause();
-                secondArch.pause();
-                thirdArch.pause();
-                countdownView.pause();
-                startButton.setClickable(true);
+
+                if(pauseBtnBinaryFlag != 0) {
+                    pause.setText("STOP");
+                    timerNotification.notify(getBaseContext(), "Timer Paused", 1);
+                    final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
+                    firstArch.pause();
+                    secondArch.pause();
+                    thirdArch.pause();
+                    countdownView.pause();
+                    startButton.setEnabled(true);
+
+                    pauseBtnBinaryFlag = 0;
+                }
+                else if(pauseBtnBinaryFlag ==0){
+                    pause.setText("PAUSE");
+                    //ritornare i timestamp
+                    initializeTimerView(mArcProgressStackView);
+                    courseSpinner.setEnabled(true);
+                    argumentSpinner.setEnabled(true);
+                    startButton.setEnabled(true);
+                    pause.setEnabled(false);
+                    pauseBtnBinaryFlag = 1;
+                }
+                Log.d("pflag------>",""+pauseBtnBinaryFlag);
+                timeStampFromInterruption = new Date();
 
             }
         });
@@ -389,8 +424,9 @@ TimerActivity extends AppCompatActivity {
         secondArch.setDuration(breaktime);
         thirdArch.setDuration((studytime+breaktime)*numberofsessions);
     }
-
+//test
     private void initializeTimerView(ArcProgressStackView stackView){
+        readFromSharedPreferences();
         firstArch.cancel();
         secondArch.cancel();
         thirdArch.cancel();
@@ -406,11 +442,43 @@ TimerActivity extends AppCompatActivity {
         startButton.setClickable(true);
         countdownView.stop();
         countdownView.updateShow(studyTimeTimer);
+
+    }
+
+    private void initializeSpinners(){
+        
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         timerNotification.cancel(this);
+        timeStampFromInterruption = new Date();
+    }
+
+    protected void onStop() {
+        super.onStop();
+        timeStampFromInterruption = new Date();
+    }
+
+    public void onBackPressed() {
+        backButtonAlertDialog = new AlertDialog.Builder(this)
+                .setTitle("Change Course or Argument")
+                .setMessage("Are you sure that you want to change argument or course?\n You will lose current progress..")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        TimerActivity.super.onBackPressed();
+                    }})
+                .setNegativeButton(android.R.string.no, null).create();;
+        backButtonAlertDialog.show();
+
+    }
+
+    private void readFromSharedPreferences(){
+        nSession = TimerSettingsSingleton.getInstance().getNumberOfStudySessions(this);
+        studyTimeTimer = TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(this);
+        breakTimeTimer = TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(this);
+        countdownView.updateShow(studyTimeTimer);
     }
 }
