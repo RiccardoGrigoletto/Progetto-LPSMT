@@ -71,7 +71,7 @@ TimerActivity extends AppCompatActivity {
     private AlertDialog stopAlerDialog = null;
     private AlertDialog backButtonAlertDialog = null;
     //button pause binary flag
-    private int pauseBtnBinaryFlag = 0 ;
+    private int pauseBtnBinaryFlag = 1 ;
     //timestamps
     private Date initialTimeStamp;
     private Date timeStampFromInterruption;
@@ -126,6 +126,7 @@ TimerActivity extends AppCompatActivity {
         //buttons
         startButton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
+        pause.setEnabled(false);
         settings = (Button) findViewById(R.id.settings);
         //testual timer
         countdownView = findViewById(R.id.countdownview);
@@ -366,7 +367,7 @@ TimerActivity extends AppCompatActivity {
                 Log.d("lel---->",""+initialTimeStamp);
                 courseSpinner.setEnabled(false);
                 argumentSpinner.setEnabled(false);
-
+                pause.setEnabled(true);
             }
         });
 
@@ -375,26 +376,29 @@ TimerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(pauseBtnBinaryFlag == 0) {
+                if(pauseBtnBinaryFlag != 0) {
                     pause.setText("STOP");
-                    timerNotification.notify(getBaseContext(), "Break Time", 1);
+                    timerNotification.notify(getBaseContext(), "Timer Paused", 1);
                     final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
-
                     firstArch.pause();
                     secondArch.pause();
                     thirdArch.pause();
                     countdownView.pause();
                     startButton.setEnabled(true);
-                    pauseBtnBinaryFlag = 1;
+
+                    pauseBtnBinaryFlag = 0;
                 }
-                else if(pauseBtnBinaryFlag !=0){
+                else if(pauseBtnBinaryFlag ==0){
                     pause.setText("PAUSE");
                     //ritornare i timestamp
                     initializeTimerView(mArcProgressStackView);
                     courseSpinner.setEnabled(true);
                     argumentSpinner.setEnabled(true);
-                    pauseBtnBinaryFlag = 0;
+                    startButton.setEnabled(true);
+                    pause.setEnabled(false);
+                    pauseBtnBinaryFlag = 1;
                 }
+                Log.d("pflag------>",""+pauseBtnBinaryFlag);
                 timeStampFromInterruption = new Date();
 
             }
@@ -420,7 +424,7 @@ TimerActivity extends AppCompatActivity {
         secondArch.setDuration(breaktime);
         thirdArch.setDuration((studytime+breaktime)*numberofsessions);
     }
-
+//test
     private void initializeTimerView(ArcProgressStackView stackView){
         readFromSharedPreferences();
         firstArch.cancel();
