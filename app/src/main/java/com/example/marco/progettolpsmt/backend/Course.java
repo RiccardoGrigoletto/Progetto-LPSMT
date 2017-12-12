@@ -1,5 +1,9 @@
 package com.example.marco.progettolpsmt.backend;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.*;
 
 /**
@@ -15,6 +19,17 @@ import java.util.*;
  * @see Exam
  */
 public class Course implements Observer {
+    private FirebaseFirestore db;
+    @Exclude private DocumentReference onFirestore; // non lo esclude...
+
+    public DocumentReference getOnFirestore() {
+        return onFirestore;
+    }
+
+    public void setOnFirestore(DocumentReference onFirestore) {
+        this.onFirestore = onFirestore;
+    }
+
     private String name;
     private int credits;
     private int timeExpected;
@@ -26,6 +41,8 @@ public class Course implements Observer {
      * Constructor for a default course.
      */
     public Course() {
+        db = FirebaseFirestore.getInstance();
+
         name = "Untitled Course";
         // Regional settings defaults
         Settings.DEFAULT.setHoursPerCredit(25);
@@ -42,6 +59,27 @@ public class Course implements Observer {
         arguments = new ArrayList<>();
         exams = new ArrayList<>();
         timeExpected = credits * Settings.DEFAULT.getHoursPerCredit() * 60;
+    }
+
+    /**
+     * Update the object representation on Firestore.
+     */
+    public void updateOnFirestore() {
+        if (onFirestore == null) {
+            onFirestore = db.collection("users").document("here-fireauth-uid")
+                    .collection("courses").document();
+        }
+        onFirestore.set(this);
+    }
+
+    /**
+     * Remove the object representation on Firestore
+     */
+    public void removeOnFirestore() {
+        if (onFirestore != null) {
+            onFirestore.delete();
+            onFirestore = null;
+        }
     }
 
     /**
@@ -176,16 +214,16 @@ public class Course implements Observer {
      * @throws NullPointerException
      */
     public void setSettings(Settings settings) throws NullPointerException {
-        if (settings == null)
-            throw new NullPointerException();
-
-        // Remove the course for the previous settings (if any)
-        if (this.settings != null) {
-            this.settings.deleteObserver(this);
-        }
-
-        this.settings = settings;
-        settings.addObserver(this);
+//        if (settings == null)
+////            throw new NullPointerException();
+//
+//        // Remove the course for the previous settings (if any)
+//        if (this.settings != null) {
+//            this.settings.deleteObserver(this);
+//        }
+//
+//        this.settings = settings;
+//        settings.addObserver(this);
     }
 
     /**
