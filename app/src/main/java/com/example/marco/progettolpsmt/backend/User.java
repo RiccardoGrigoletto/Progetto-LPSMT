@@ -53,8 +53,8 @@ public class User extends Observable {
                         return;
                     }
 
-                    Map<String, Object> change = documentSnapshot.getData();
-                    name = (String) change.get("name");
+//                    Map<String, Object> change = documentSnapshot.getData();
+//                    name = (String) change.get("name");
                     // FIX java.lang.ClassCastException: java.util.HashMap cannot be cast to com.example.marco.progettolpsmt.backend.Settings
                     //settings = (Settings) change.get("settings");
 

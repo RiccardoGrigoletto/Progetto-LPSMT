@@ -5,9 +5,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -20,27 +22,24 @@ import com.example.marco.progettolpsmt.backend.Exam;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by ricca on 24/11/2017.
  */
 
-public class CoursesAdapterMax extends BaseAdapter {
+public class CoursesAdapterMax extends ArrayAdapter<Course> {
 
     ArrayList<Course> courses;
     LayoutInflater inflater;
     Context context;
-    CoursesAdapterMax(Context context) {
-        this.inflater = LayoutInflater.from(context);
-        this.courses = new ArrayList<>();
+
+    public CoursesAdapterMax(@NonNull Context context, int resource, @NonNull List<Course> objects) {
+        super(context, resource, objects);
         this.context = context;
+        this.courses = (ArrayList<Course>) objects;
     }
 
-    public CoursesAdapterMax(Context context, ArrayList<Course> values) {
-        this.inflater = LayoutInflater.from(context);
-        this.courses = values;
-        this.context = context;
-    }
 
     @Override
     public int getCount() {
@@ -60,40 +59,41 @@ public class CoursesAdapterMax extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
+
         if (view == null) {
-            view = inflater.inflate(R.layout.course_card_view_max, viewGroup, false);
-            final Course course = this.getItem(i);
-            ((TextView) view.findViewById(R.id.courseName)).setText(course.getName());
-            ((TextView) view.findViewById(R.id.courseCFU1)).setText("23"); /*TODO*/
-
-            LinearLayout llArgs = (view.findViewById(R.id.argumentsLinearLayout));
-            for (Argument arg : course.getArguments()) {
-                View view1 = inflater.inflate(R.layout.item_head_1, null, false);
-                ((TextView) view1.findViewById(R.id.argumentName)).setText(arg.getName());
-                ((ProgressBar) view1.findViewById(R.id.argumentProgressBar)).setProgress(arg.computeStudyTimeSpent());
-                llArgs.addView(view1);
-            }
-            LinearLayout llExams = (view.findViewById(R.id.examsLinearLayout));
-            for (Exam exam : course.getExams()) {
-                View view1 = inflater.inflate(R.layout.item_head_2, null, false);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(exam.getDate());
-                ((TextView) view1.findViewById(R.id.examTextView)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
-                        calendar.get(Calendar.MONTH) + " - " + calendar.get(Calendar.YEAR));
-                llExams.addView(view1);
-            }
-            view.findViewById(R.id.editCourseButton).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("courseID",0); /*TODO INSERT DIN ID */
-                    Intent intent = new Intent(view.getContext(),NewCourseActivity.class);
-                    intent.putExtras(bundle);
-                    context.startActivity(intent);
-                }
-            });
-
+            inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.course_card_view_max, null);
         }
+        final Course course = this.getItem(i);
+        ((TextView) view.findViewById(R.id.courseName)).setText(course.getName());
+        ((TextView) view.findViewById(R.id.courseCFU1)).setText(Integer.toString(course.getCredits()));
+
+        LinearLayout llArgs = (view.findViewById(R.id.argumentsLinearLayout));
+        for (Argument arg : course.getArguments()) {
+            View view1 = inflater.inflate(R.layout.item_head_1, null, false);
+            ((TextView) view1.findViewById(R.id.argumentName)).setText(arg.getName());
+            ((ProgressBar) view1.findViewById(R.id.argumentProgressBar)).setProgress(arg.computeStudyTimeSpent());
+            llArgs.addView(view1);
+        }
+        LinearLayout llExams = (view.findViewById(R.id.examsLinearLayout));
+        for (Exam exam : course.getExams()) {
+            View view1 = inflater.inflate(R.layout.item_head_2, null, false);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(exam.getDate());
+            ((TextView) view1.findViewById(R.id.examTextView)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
+                    calendar.get(Calendar.MONTH) + " - " + calendar.get(Calendar.YEAR));
+            llExams.addView(view1);
+        }
+        view.findViewById(R.id.editCourseButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString("courseID", course.getName());
+                Intent intent = new Intent(view.getContext(), NewCourseActivity.class);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
         return view;
     }
 

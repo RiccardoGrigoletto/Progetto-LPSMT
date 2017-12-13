@@ -2,9 +2,7 @@ package com.example.marco.progettolpsmt;
 
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,19 +19,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.marco.progettolpsmt.backend.Argument;
+
 import com.example.marco.progettolpsmt.backend.Course;
-import com.example.marco.progettolpsmt.backend.Exam;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
+import com.example.marco.progettolpsmt.backend.User;
 import com.example.marco.progettolpsmt.managers.CalendarManager;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 //import com.google.firebase.database.DataSnapshot;
 //import com.google.firebase.database.DatabaseError;
 //import com.google.firebase.database.DatabaseReference;
@@ -41,29 +37,47 @@ import com.google.firebase.auth.FirebaseUser;
 //import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.ConcurrentModificationException;
+import java.util.Observable;
+import java.util.Observer;
+
 import devlight.io.library.ntb.NavigationTabBar;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Observer {
     final int VIEWS = 3;
-    private String[] studypickervalues = {"5","10","15","20","25","30","35","40","45","50","55","60"};
-    private String[] breakpickervalues = {"5","10","15","20","25","30"};
-    private String[] sessionpickervalues = {"1","2","3","4","5","6","7","8","9","10"};
 
-    public FirebaseUser user;
-    private FirebaseAuth mAuth;
+    public User user;
 
+    ArrayList<Course> courses;
+    CoursesProgressAdapter<Course> progressAdapter;
+    DailyCoursesAdapter<Course> dailyAdapter;
+    CoursesAdapterMax coursesAdapter;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        user = User.getInstance();
+        user.setName("ugo");
+        user.updateOnFirestore();
+        user.addObserver(this);
+        courses = (ArrayList) user.getCourses();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //Firebase
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        user = User.getInstance();
+        user.setName("ugo");
+        user.updateOnFirestore();
+        user.addObserver(this);
+        courses = (ArrayList) user.getCourses();
+
         setContentView(R.layout.activity_main);
 
         //Toast Login
-        Toast.makeText(this,user.getDisplayName(),Toast.LENGTH_LONG).show();
+        Toast.makeText(this,user.getName(),Toast.LENGTH_LONG).show();
 
         // Write a message to the database
 //        FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -104,19 +118,12 @@ public class MainActivity extends AppCompatActivity {
             public Object instantiateItem(final ViewGroup container, final int position) {
                 View view = null;
 
-                ArrayList<Course> values = new ArrayList<>();
-                Course c1 = new Course();
-                c1.setName("fisica");
-                c1.addArgument(new Argument());
-                c1.addArgument(new Argument());
-                c1.addExam(new Exam(new Date()));
-                c1.addExam(new Exam(new Date()));
-                values.add(c1);
-                values.add(new Course());
+                courses = (ArrayList<Course>) user.getCourses();
 
                 switch (position) {
                     case 0: {
                         view = LayoutInflater.from(
+
                                 getBaseContext()).inflate(R.layout.page_0, null, false);
 
                         ListView lvProgress = view.findViewById(R.id.courses_progress_list_view);
@@ -124,13 +131,13 @@ public class MainActivity extends AppCompatActivity {
                         ListView lvToday = view.findViewById(R.id.today_events_list_view);
 
 
-                        CoursesProgressAdapter<Course> progressAdapter = new CoursesProgressAdapter<>(getBaseContext(),
-                                R.layout.progress_bar_min, values);
+                        progressAdapter = new CoursesProgressAdapter<>(getBaseContext(),
+                                R.layout.progress_bar_min, courses);
                         lvProgress.setAdapter(progressAdapter);
 
-                        DailyCoursesAdapter<Course> adapter = new DailyCoursesAdapter<>(getBaseContext(),
-                                R.layout.daily_course, values);
-                        lvToday.setAdapter(adapter);
+                        dailyAdapter = new DailyCoursesAdapter<>(getBaseContext(),
+                                R.layout.daily_course, courses);
+                        lvToday.setAdapter(dailyAdapter);
                     }
                     break;
                     case 1: {
@@ -139,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
                         ListView courseLV = view.findViewById(R.id.coursesListView);
 
-                        CoursesAdapterMax coursesAdapter = new CoursesAdapterMax(getBaseContext(),values);
+                        coursesAdapter = new CoursesAdapterMax(getBaseContext(),R.layout.course_card_view_max,courses);
                         courseLV.setAdapter(coursesAdapter);
 
                     }
@@ -374,5 +381,27 @@ public class MainActivity extends AppCompatActivity {
         d.show();
 
 
+    }
+
+    @Override
+    public void update(Observable o, Object arg) throws ConcurrentModificationException {
+        ArrayList<Course> newCourses = (ArrayList) user.getCourses();
+        boolean exception = false;
+        try {
+            for (Course c : newCourses) {
+                if (courses.contains(c)) {
+                    newCourses.remove(c);
+                }
+            }
+        }
+        catch (ConcurrentModificationException e) {
+            exception=true;
+        }
+        if (!exception) {
+            courses = newCourses;
+            progressAdapter.addAll(newCourses);
+            dailyAdapter.addAll(newCourses);
+            coursesAdapter.addAll(newCourses);
+        }
     }
 }

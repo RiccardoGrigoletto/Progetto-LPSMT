@@ -68,10 +68,8 @@ public class CoursesProgressAdapter<C> extends ArrayAdapter<Course> {
             ProgressBar coursePB = v.findViewById(R.id.indeterminateBar);
 
             courseTitle.setText(i.getName());
-            /*coursePB.setProgress(i.getProgress());*/
-            /*****TMP*****/
-            Random randomGenerator = new Random();
-            coursePB.setProgress(randomGenerator.nextInt(100));
+            coursePB.setProgress((int) i.computeProgress());
+
 
         }
 

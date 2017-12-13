@@ -71,21 +71,17 @@ public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
 
         if (i != null) {
 
-            TextView courseTitle = (TextView) v.findViewById(R.id.name);
-            /*ProgressBar coursePB = (ProgressBar) v.findViewById(R.id.indeterminateBar);*/
+            TextView courseTitle = v.findViewById(R.id.name);
+            TextView courseStudyTime = v.findViewById(R.id.hours);
 
             courseTitle.setText(i.getName());
-            /*coursePB.setProgress(i.getProgress());*/
-            /*****TMP*****/
-            Random randomGenerator = new Random();
-            /*coursePB.setProgress(randomGenerator.nextInt(100));*/
-
+            courseStudyTime.setText("10h");
             ImageButton startTimer = v.findViewById(R.id.startTimerActivityImageButton);
             startTimer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), TimerActivity.class);
-                    intent.putExtra("courseID",0);
+                    intent.putExtra("courseID",i.getName());
                     view.getContext().startActivity(intent);
                 }
             });

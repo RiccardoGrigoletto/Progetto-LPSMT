@@ -44,6 +44,11 @@ public class Argument extends Observable {
 
     }
 
+    public Argument(String argumentName, Settings difficulty) {
+        super();
+
+    }
+
     /**
      * Return the name of the argument.
      * @return argument's name

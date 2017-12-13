@@ -1,5 +1,6 @@
 package com.example.marco.progettolpsmt.backend;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -66,7 +67,7 @@ public class Course implements Observer {
      */
     public void updateOnFirestore() {
         if (onFirestore == null) {
-            onFirestore = db.collection("users").document("here-fireauth-uid")
+            onFirestore = db.collection("users").document(FirebaseAuth.getInstance().getUid())
                     .collection("courses").document();
         }
         onFirestore.set(this);
@@ -321,5 +322,11 @@ public class Course implements Observer {
 
     public void addExams(ArrayList<Exam> exams) {
         this.exams = exams;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() != Course.class) return false;
+        return this.name == ((Course)obj).getName();
     }
 }

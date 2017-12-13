@@ -21,7 +21,10 @@ import android.widget.Toast;
 
 import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
+import com.example.marco.progettolpsmt.backend.Evaluation;
 import com.example.marco.progettolpsmt.backend.Exam;
+import com.example.marco.progettolpsmt.backend.Settings;
+import com.example.marco.progettolpsmt.backend.User;
 import com.example.marco.progettolpsmt.managers.DBManager;
 import com.google.api.client.util.DateTime;
 
@@ -42,65 +45,27 @@ public class NewCourseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        User u = User.getInstance();
         Bundle extras = getIntent().getExtras();
         setContentView(R.layout.activity_course);
         Course courseToEdit = null;
         try {
             if (extras != null) {
-                courseToEdit = DBManager.getCourse(extras.getInt("courseID"));
+                ArrayList<Course> courses = (ArrayList) u.getCourses();
+                String courseNameToEdit = extras.getString("courseID");
+                for (Course c: courses) {
+                    if (c.getName().equals(courseNameToEdit))
+                        courseToEdit = c;
+                }
             }
         }
         catch (NullPointerException e) {}
-        if (courseToEdit != null) {
-            ((TextView)findViewById(R.id.courseName)).setText(courseToEdit.getName());
-            ((Spinner)findViewById(R.id.CFUSpinner)).setSelection(courseToEdit.getCredits()-3,true);
-            final LinearLayout linearLayoutArguments = findViewById(R.id.argumentsList);
-            for (Argument argument:courseToEdit.getArguments()) {
-                final View view1 = LayoutInflater.from(getBaseContext())
-                        .inflate(R.layout.argument_edit_view,null,false);
-                ((EditText)view1.findViewById(R.id.argumentName)).setText(argument.getName());
-                ((EditText)view1.findViewById(R.id.argumentExpectedHours)).setText(Integer.toString(argument.getExpectedTime()));
-                final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
 
-                linearLayoutArguments.addView(view1);
-
-                deleteArgumentButton.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                linearLayoutArguments.removeView(view1);
-
-                            }
-                        });
-            }
-            for (Exam exam:courseToEdit.getExams()) {
-                final View view1 = LayoutInflater.from(getBaseContext())
-                        .inflate(R.layout.exam_edit_view,null,false);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(exam.getDate());
-                ((TextView)view1.findViewById(R.id.examDate)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
-                        calendar.get(Calendar.MONTH) + " - " + calendar.get(Calendar.YEAR));
-                final LinearLayout ll = findViewById(R.id.examsList);
-                final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
-                deleteArgumentButton.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                ll.removeView(view1);
-
-                            }
-                        });
-                ll.addView(view1);
-            }
-
-        }
-
-        Spinner spinner = findViewById(R.id.CFUSpinner);
+        Spinner cfuSpinner = findViewById(R.id.CFUSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
                 R.array.three_to_fifteen_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
+        cfuSpinner.setAdapter(adapter);
         final LinearLayout linearLayoutArguments = findViewById(R.id.argumentsList);
 
         FloatingActionButton addArgumentButton = findViewById(R.id.addArgumentButton);
@@ -111,7 +76,10 @@ public class NewCourseActivity extends AppCompatActivity {
 
                 final View view1 = LayoutInflater.from(getBaseContext())
                         .inflate(R.layout.argument_edit_view,null,false);
-                linearLayoutArguments.addView(view1);
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
+                        R.array.difficulty_array, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                ((Spinner)view1.findViewById(R.id.difficulty)).setAdapter(adapter);
                 final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
                 deleteArgumentButton.setOnClickListener(
                         new View.OnClickListener() {
@@ -121,6 +89,8 @@ public class NewCourseActivity extends AppCompatActivity {
 
                             }
                         });
+                linearLayoutArguments.addView(view1);
+
             }
         });
 
@@ -136,23 +106,31 @@ public class NewCourseActivity extends AppCompatActivity {
 
         Button createCourseButton = findViewById(R.id.addCourseButton);
 
+        final Course finalCourseToEdit = courseToEdit;
         createCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Course course = createCourse();
-               if (course != null) {
-                   DBManager.uploadCourse(course);
-                   Toast toast = Toast.makeText(getApplicationContext(), R.string.courseLoaded, Toast.LENGTH_LONG);
-                   toast.show();
-                   finish();
-               }
+                Course course;
+                if (finalCourseToEdit != null) {
+                    //todo edit existing course
+                    course= createCourse(finalCourseToEdit);
+
+                }
+                else {
+                    course = createCourse(null);
+                }
+                if (course != null) {
+                    Toast toast = Toast.makeText(getApplicationContext(), R.string.courseLoaded, Toast.LENGTH_LONG);
+                    toast.show();
+                    finish();
+                }
             }
         });
-        FloatingActionButton addSudyDateButton = findViewById(R.id.addStudyDateButton);
+        FloatingActionButton addStudyDateButton = findViewById(R.id.addStudyDateButton);
 
         final LinearLayout linearLayoutStudyDates = findViewById(R.id.studyDateList);
 
-        addSudyDateButton.setOnClickListener(new View.OnClickListener() {
+        addStudyDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -193,25 +171,77 @@ public class NewCourseActivity extends AppCompatActivity {
                         });
             }
         });
+        /**
+         Edit course
+         */
+        if (courseToEdit != null) {
+            //populate activity
+            ((TextView)findViewById(R.id.courseName)).setText(courseToEdit.getName());
+            ((Spinner)findViewById(R.id.CFUSpinner)).setSelection(courseToEdit.getCredits()-3,true);
+            for (Argument argument:courseToEdit.getArguments()) {
+                final View view1 = LayoutInflater.from(getBaseContext())
+                        .inflate(R.layout.argument_edit_view,null,false);
+                ((EditText)view1.findViewById(R.id.argumentName)).setText(argument.getName());
+                ArrayAdapter<CharSequence> difficultyAdapter = ArrayAdapter.createFromResource(getBaseContext(),
+                        R.array.difficulty_array, android.R.layout.simple_spinner_item);
+                difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                ((Spinner)view1.findViewById(R.id.difficulty)).setAdapter(difficultyAdapter);
+                int position = argument.getDifficulty().getPosition();
+                ((Spinner)view1.findViewById(R.id.difficulty)).setSelection(argument.getDifficulty().getPosition(),true);
+                final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
 
+                linearLayoutArguments.addView(view1);
+
+                deleteArgumentButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                linearLayoutArguments.removeView(view1);
+
+                            }
+                        });
+            }
+            for (Exam exam:courseToEdit.getExams()) {
+                final View view1 = LayoutInflater.from(getBaseContext())
+                        .inflate(R.layout.exam_edit_view,null,false);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(exam.getDate());
+                ((TextView)view1.findViewById(R.id.examDate)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
+                        calendar.get(Calendar.MONTH) + " - " + calendar.get(Calendar.YEAR));
+                final LinearLayout ll = findViewById(R.id.examsList);
+                final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
+                deleteArgumentButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ll.removeView(view1);
+
+                            }
+                        });
+                ll.addView(view1);
+            }
+
+        }
 
     }
 
 
 
-    private Course createCourse() {
+    private Course createCourse(@Nullable Course from) {
+        Course course;
+        User u = User.getInstance();
         //name
-        String name = ((TextView)findViewById(R.id.courseName)).getText().toString();
+        String name = ((TextView) findViewById(R.id.courseName)).getText().toString();
         if (Objects.equals(name, "")) {
-            ((TextView)findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
+            ((TextView) findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
             Toast toast = Toast.makeText(this, R.string.courseNameVoid, Toast.LENGTH_LONG);
             toast.show();
             return null;
         }
         //cfu
-        Integer cfu = Integer.parseInt(((Spinner)(findViewById(R.id.CFUSpinner))).getSelectedItem().toString());
+        Integer cfu = Integer.parseInt(((Spinner) (findViewById(R.id.CFUSpinner))).getSelectedItem().toString());
         if (cfu == null) {
-            ((Spinner)findViewById(R.id.CFUSpinner)).setActivated(true);
+            ((Spinner) findViewById(R.id.CFUSpinner)).setActivated(true);
             Toast toast = Toast.makeText(this, R.string.courseCFUVoid, Toast.LENGTH_LONG);
             toast.show();
             return null;
@@ -220,9 +250,52 @@ public class NewCourseActivity extends AppCompatActivity {
         LinearLayout argumentsLinearLayout = findViewById(R.id.argumentsList);
         ArrayList<Argument> arguments = new ArrayList<>();
         for (int i = 0; i < argumentsLinearLayout.getChildCount(); i++) {
-            String argumentName = ((TextView)argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentName)).getText().toString();
-            Integer expectedHours = Integer.parseInt(((TextView)argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentExpectedHours)).getText().toString());
-            arguments.add(new Argument(argumentName,expectedHours));
+            String argumentName = ((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentName)).getText().toString();
+            /*String expectedHoursString = ((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentExpectedHours)).getText().toString();
+            Integer expectedHours = 25;
+            try {
+                 expectedHours = Integer.parseInt(expectedHoursString);
+            }
+            catch (NumberFormatException e) {}
+            arguments.add(new Argument(argumentName, expectedHours));*/
+            Evaluation difficulty;
+            Spinner evaluationSpinner = (findViewById(R.id.difficulty));
+            try {
+                switch (evaluationSpinner.getSelectedItem().toString()) {
+                    case "super easy":
+                        difficulty = Evaluation.SUPER_EASY;
+                        break;
+                    case "easy":
+                        difficulty = Evaluation.EASY;
+                        break;
+                    case "regular":
+                        difficulty = Evaluation.REGULAR;
+                        break;
+                    case "hard":
+                        difficulty = Evaluation.HARD;
+                        break;
+                    case "super hard":
+                        difficulty = Evaluation.SUPER_HARD;
+                        break;
+                    default:
+                        difficulty = Evaluation.REGULAR;
+                        break;
+                }
+            }
+            catch (NullPointerException e) {
+                difficulty = Evaluation.REGULAR;
+            }
+            Argument newArgument = new Argument();
+            newArgument.setDifficulty(difficulty);
+            try {
+                newArgument.setName(argumentName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            arguments.add(newArgument);
+
+
+
         }
         //exams
         LinearLayout examsLinearLayout = findViewById(R.id.examsList);
@@ -231,7 +304,7 @@ public class NewCourseActivity extends AppCompatActivity {
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
             try {
-                examDate = df.parse(((TextView)argumentsLinearLayout.getChildAt(i).findViewById(R.id.examDate)).getText().toString());
+                examDate = df.parse(((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.examDate)).getText().toString());
             } catch (ParseException e) {
                 e.printStackTrace();
                 //DATE ERROR RECOVERY
@@ -244,19 +317,26 @@ public class NewCourseActivity extends AppCompatActivity {
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
             try {
-                examDate = df.parse(((TextView)argumentsLinearLayout.getChildAt(i).findViewById(R.id.examDate)).getText().toString());
+                examDate = df.parse(((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.examDate)).getText().toString());
             } catch (ParseException e) {
                 e.printStackTrace();
                 //DATE ERROR RECOVERY
             }
             exams.add(new Exam(examDate));
         }
-        Course course = new Course();
+        if (from == null) {
+            course = new Course();
+        }
+        else {
+            u.getCourses().remove(from);
+            course = from;
+        }
         course.setName(name);
         course.setCredits(cfu);
         if (arguments.size() > 0) course.addArguments(arguments);
         if (exams.size() > 0) course.addExams(exams);
 
+        course.updateOnFirestore();
         return course;
     }
 

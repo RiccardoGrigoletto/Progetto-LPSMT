@@ -44,4 +44,12 @@
         <item>sat</item>
         <item>sun</item>
     </string-array>
+    <string-array name="difficulty_array">
+        <item>super easy</item>
+        <item>easy</item>
+        <item>regular</item>
+        <item>hard</item>
+        <item>super hard</item>
+    </string-array>
+
 </resources>

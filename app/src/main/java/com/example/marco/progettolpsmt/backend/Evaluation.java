@@ -23,4 +23,13 @@ public enum Evaluation {
     public double getValue() {
         return value;
     }
+
+    public int getPosition() {
+        if (value == 0.50) return 0;
+        if (value == 0.75)  return 1;
+
+        if (value == 1.25)  return 3;
+        if (value == 1.50) return 4;
+        return 2;
+    }
 }
