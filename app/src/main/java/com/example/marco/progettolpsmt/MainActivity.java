@@ -49,22 +49,22 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public User user;
 
     ArrayList<Course> courses;
-    CoursesProgressAdapter<Course> progressAdapter;
     DailyCoursesAdapter<Course> dailyAdapter;
     CoursesAdapterMax coursesAdapter;
 
-    protected void onResume() {
 
-        super.onResume();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         refresh();
     }
 
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
         //Firebase
         user = User.getInstance();
-        user.setName("ugo");
+        user.setName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
         user.updateOnFirestore();
         user.addObserver(this);
         courses = (ArrayList) user.getCourses();
@@ -106,14 +106,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
                                 getBaseContext()).inflate(R.layout.page_0, null, false);
 
-                        ListView lvProgress = view.findViewById(R.id.courses_progress_list_view);
-
                         ListView lvToday = view.findViewById(R.id.today_events_list_view);
-
-
-                        progressAdapter = new CoursesProgressAdapter<>(getBaseContext(),
-                                R.layout.progress_bar_min, courses);
-                        lvProgress.setAdapter(progressAdapter);
 
                         dailyAdapter = new DailyCoursesAdapter<>(getBaseContext(),
                                 R.layout.daily_course, courses);
@@ -391,7 +384,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private void refresh() {
 
         try {
-            progressAdapter.notifyDataSetChanged();
             dailyAdapter.notifyDataSetChanged();
             coursesAdapter.notifyDataSetChanged();
         }

@@ -67,12 +67,15 @@ public class CoursesAdapterMax extends ArrayAdapter<Course> {
         final Course course = this.getItem(i);
         ((TextView) view.findViewById(R.id.courseName)).setText(course.getName());
         ((TextView) view.findViewById(R.id.courseCFU1)).setText(Integer.toString(course.getCredits()));
+        ((ProgressBar) view.findViewById(R.id.progressBar4)).setProgress((int)course.computeProgress());
 
         LinearLayout llArgs = (view.findViewById(R.id.argumentsLinearLayout));
+        llArgs.removeAllViews();
         for (Argument arg : course.getArguments()) {
+            android.util.Log.d("arguments", "name: " + arg.getName() + " progress: " + arg.computeProgress());
             View view1 = inflater.inflate(R.layout.item_head_1, null, false);
             ((TextView) view1.findViewById(R.id.argumentName)).setText(arg.getName());
-            ((ProgressBar) view1.findViewById(R.id.argumentProgressBar)).setProgress(arg.computeStudyTimeSpent());
+            ((ProgressBar) view1.findViewById(R.id.argumentProgressBar)).setProgress((int)arg.computeProgress());
             llArgs.addView(view1);
         }
         LinearLayout llExams = (view.findViewById(R.id.examsLinearLayout));
@@ -81,7 +84,7 @@ public class CoursesAdapterMax extends ArrayAdapter<Course> {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(exam.getDate());
             ((TextView) view1.findViewById(R.id.examTextView)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
-                    calendar.get(Calendar.MONTH) + " - " + calendar.get(Calendar.YEAR));
+                    (calendar.get(Calendar.MONTH)+1) + " - " + calendar.get(Calendar.YEAR));
             llExams.addView(view1);
         }
         view.findViewById(R.id.editCourseButton).setOnClickListener(new View.OnClickListener() {

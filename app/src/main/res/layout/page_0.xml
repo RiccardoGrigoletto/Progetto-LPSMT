@@ -1,65 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<android.support.design.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="0">
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
+
+        android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="50dp"
-        android:orientation="vertical">
+        android:layout_margin="@dimen/box_margin"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/box"
+        android:elevation="@dimen/box_elevation"
+        android:footerDividersEnabled="false"
+        android:orientation="vertical"
+        android:translationZ="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Today"
+            android:textAlignment="center"
+            android:textSize="24sp" />
 
         <ListView
-            android:id="@+id/courses_progress_list_view"
+            android:id="@+id/today_events_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/box_margin"
-            android:layout_weight="0"
-            android:background="@drawable/box"
-            android:elevation="@dimen/box_elevation"
-            android:footerDividersEnabled="false"
-            android:translationZ="@dimen/box_translationZ" />
+            android:layout_margin="@dimen/box_margin" />
 
-        <LinearLayout
-            android:id="@+id/textView2"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/box_margin"
-            android:layout_weight="1"
-            android:background="@drawable/box"
-            android:elevation="@dimen/box_elevation"
-            android:footerDividersEnabled="false"
-            android:orientation="vertical"
-            android:translationZ="6dp">
+            android:text="Tomorrow"
+            android:textAlignment="center"
+            android:textSize="24sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Today"
-                android:textAlignment="center"
-                android:textSize="24sp" />
-
-            <ListView
-                android:id="@+id/today_events_list_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/box_margin" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Tomorrow"
-                android:textAlignment="center"
-                android:textSize="24sp" />
-
-            <ListView
-                android:id="@+id/tomorrow_events_list_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/box_margin" />
-        </LinearLayout>
+        <ListView
+            android:id="@+id/tomorrow_events_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/box_margin" />
     </LinearLayout>
-</FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>
+
