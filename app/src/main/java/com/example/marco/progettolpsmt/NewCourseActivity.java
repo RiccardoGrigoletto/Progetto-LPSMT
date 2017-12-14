@@ -673,7 +673,7 @@ public class NewCourseActivity extends AppCompatActivity {
                     .setSummary(((TextView)findViewById(R.id.courseName)).getText().toString())
                     .setDescription("Happy studying");
 
-            DateTime startDateTime = new DateTime("2017-12-03T09:00:00");
+            DateTime startDateTime = new DateTime(new Date());
             EventDateTime start = new EventDateTime()
                     .setDateTime(startDateTime)
                     .setTimeZone(Calendar.getInstance().getTimeZone().toString());
