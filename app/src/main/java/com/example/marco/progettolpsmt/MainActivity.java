@@ -79,21 +79,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
         //Toast Login
         Toast.makeText(this,user.getName(),Toast.LENGTH_LONG).show();
 
-        // Write a message to the database
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("courses");
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                System.out.println(dataSnapshot.getValue());
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
         //create calendar TODO
 
         //page creation
@@ -398,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             exception=true;
         }
         if (!exception) {
-            courses = newCourses;
+            courses.addAll(newCourses);
             progressAdapter.addAll(newCourses);
             dailyAdapter.addAll(newCourses);
             coursesAdapter.addAll(newCourses);
