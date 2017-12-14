@@ -84,9 +84,16 @@ public class NewCourseActivity extends AppCompatActivity {
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = {CalendarScopes.CALENDAR};
+    private ArrayList<Date> startStudyEventDates;
+    private ArrayList<Date> endStudyEventDates;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //init of study event arraylists
+
+        startStudyEventDates = new ArrayList<Date>();
+        endStudyEventDates  = new ArrayList<Date>();
+
         User u = User.getInstance();
         Bundle extras = getIntent().getExtras();
         setContentView(R.layout.activity_course);
@@ -368,15 +375,19 @@ public class NewCourseActivity extends AppCompatActivity {
         //study sessions
         LinearLayout studyDatesLinearLayout = findViewById(R.id.studyDateList);
         //todo
-        for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
-            Date examDate = null;
+        for (int i = 0; i < studyDatesLinearLayout.getChildCount(); i++) {
+            Date studyDate = null;
             try {
-                examDate = df.parse(((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.examDate)).getText().toString());
+                studyDate = df.parse(((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.studyDate)).getText().toString());
             } catch (ParseException e) {
                 e.printStackTrace();
                 //DATE ERROR RECOVERY
             }
-            exams.add(new Exam(examDate));
+
+            //building calendar format dates ( studydate gg-mm-yyyy -> yyyy-mm-ggThh:mm)
+            StringBuilder stringDateBuilder = new StringBuilder();
+
+
         }
         if (from == null) {
             course = new Course();
@@ -657,34 +668,27 @@ public class NewCourseActivity extends AppCompatActivity {
          */
         private Event crateEventFromAPI() throws IOException {
 
-            Event event = new Event()
-                    .setSummary("Google I/O 2015")
-                    .setLocation("800 Howard St., San Francisco, CA 94103")
-                    .setDescription("A chance to hear more about Google's developer products.");
 
-            DateTime startDateTime = new DateTime("2017-12-03T09:00:00-07:00");
+            Event event = new Event()
+                    .setSummary(((TextView)findViewById(R.id.courseName)).getText().toString())
+                    .setDescription("Happy studying");
+
+            DateTime startDateTime = new DateTime("2017-12-03T09:00:00");
             EventDateTime start = new EventDateTime()
                     .setDateTime(startDateTime)
-                    .setTimeZone("America/Los_Angeles");
+                    .setTimeZone(Calendar.getInstance().getTimeZone().toString());
             event.setStart(start);
 
-            DateTime endDateTime = new DateTime("2017-12-03T17:00:00-07:00");
+            DateTime endDateTime = new DateTime("2017-12-03T17:00:00");
             EventDateTime end = new EventDateTime()
                     .setDateTime(endDateTime)
-                    .setTimeZone("America/Los_Angeles");
+                    .setTimeZone(Calendar.getInstance().getTimeZone().toString());
             event.setEnd(end);
 
-            String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
+            String[] recurrence = new String[] {"RRULE:FREQ=WEEKLY;WKST=SU;BYDAY=FR;UNTIL=20141203T173500Z"};
             event.setRecurrence(Arrays.asList(recurrence));
 
-            EventAttendee[] attendees = new EventAttendee[] {
-                    new EventAttendee().setEmail("lpage@example.com"),
-                    new EventAttendee().setEmail("sbrin@example.com"),
-            };
-            event.setAttendees(Arrays.asList(attendees));
-
             EventReminder[] reminderOverrides = new EventReminder[] {
-                    new EventReminder().setMethod("email").setMinutes(24 * 60),
                     new EventReminder().setMethod("popup").setMinutes(10),
             };
             Event.Reminders reminders = new Event.Reminders()
