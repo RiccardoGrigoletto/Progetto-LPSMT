@@ -13,6 +13,10 @@ public class Exam {
 
     public Exam() {}
 
+    public Exam(Date date) {
+        this.date = date;
+    }
+
     /**
      * Return the exam's date
      * @return date

@@ -140,10 +140,37 @@ public class NewCourseActivity extends AppCompatActivity {
         //exams
         FloatingActionButton addExamButton = findViewById(R.id.addExamButton);
 
+        final LinearLayout linearLayoutExams = findViewById(R.id.examsList);
+
+
         addExamButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showDatePickerDialog(view);
+
+                    final View view1 = LayoutInflater.from(getBaseContext())
+                            .inflate(R.layout.exam_edit_view,null,false);
+                    final TextView examDate = view1.findViewById(R.id.examDate);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+
+                    examDate.setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
+                            (calendar.get(Calendar.MONTH)+1) + " - " + calendar.get(Calendar.YEAR));
+                    examDate.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showDatePickerDialog(v,R.id.examDate);
+                        }
+                    });
+                    final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
+                    deleteArgumentButton.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    linearLayoutExams.removeView(view1);
+
+                                }
+                            });
+                    linearLayoutExams.addView(view1);
                 }
             });
 
@@ -381,8 +408,11 @@ public class NewCourseActivity extends AppCompatActivity {
         return course;
     }
 
-    public void showDatePickerDialog (View v) {
+    public void showDatePickerDialog(View v, int id) {
+        Bundle extras = new Bundle();
+        extras.putInt(DatePickerFragment.resIdKey,id);
         DialogFragment newFragment = new DatePickerFragment();
+        newFragment.setArguments(extras);
         newFragment.show(getFragmentManager(), "datePicker");
     }
     private void showTimePickerDialog(View view, int id) {
