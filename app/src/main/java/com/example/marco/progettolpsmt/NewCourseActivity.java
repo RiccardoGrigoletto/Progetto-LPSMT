@@ -33,8 +33,10 @@ import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Evaluation;
 import com.example.marco.progettolpsmt.backend.Exam;
+import com.example.marco.progettolpsmt.backend.Log;
 import com.example.marco.progettolpsmt.backend.Settings;
 import com.example.marco.progettolpsmt.backend.User;
+import com.example.marco.progettolpsmt.managers.CalendarManager;
 import com.example.marco.progettolpsmt.managers.DBManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -84,15 +86,17 @@ public class NewCourseActivity extends AppCompatActivity {
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = {CalendarScopes.CALENDAR};
-    private ArrayList<Date> startStudyEventDates;
-    private ArrayList<Date> endStudyEventDates;
+    private ArrayList<String> day;
+    private ArrayList<String> startHour;
+    private ArrayList<String> endHour;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //init of study event arraylists
 
-        startStudyEventDates = new ArrayList<Date>();
-        endStudyEventDates  = new ArrayList<Date>();
+        day = new ArrayList<String>();
+        startHour  = new ArrayList<String>();
+        endHour = new ArrayList<String>();
 
         User u = User.getInstance();
         Bundle extras = getIntent().getExtras();
@@ -183,7 +187,6 @@ public class NewCourseActivity extends AppCompatActivity {
                 if (course != null) {
                     Toast toast = Toast.makeText(getApplicationContext(), R.string.courseLoaded, Toast.LENGTH_LONG);
                     toast.show();
-                    finish();
                 }
             }
         });
@@ -361,7 +364,7 @@ public class NewCourseActivity extends AppCompatActivity {
         //exams
         LinearLayout examsLinearLayout = findViewById(R.id.examsList);
         ArrayList<Exam> exams = new ArrayList<>();
-        DateFormat df = new SimpleDateFormat("dd-MM-YYYY");
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
             try {
@@ -370,25 +373,24 @@ public class NewCourseActivity extends AppCompatActivity {
                 e.printStackTrace();
                 //DATE ERROR RECOVERY
             }
-            exams.add(new Exam(examDate));
+            //exams.add(new Exam(examDate));
+
         }
         //study sessions
         LinearLayout studyDatesLinearLayout = findViewById(R.id.studyDateList);
         //todo
         for (int i = 0; i < studyDatesLinearLayout.getChildCount(); i++) {
-            Date studyDate = null;
+            android.util.Log.d("studydateslenght.---->",""+studyDatesLinearLayout.getChildCount());
             try {
-                studyDate = df.parse(((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.studyDate)).getText().toString());
-            } catch (ParseException e) {
+                day.add(((Spinner) studyDatesLinearLayout.getChildAt(i).findViewById(R.id.studyDate)).getSelectedItem().toString());
+                startHour.add(((TextView) studyDatesLinearLayout.getChildAt(i).findViewById(R.id.studyDateFrom)).getText().toString());
+                endHour.add(((TextView) studyDatesLinearLayout.getChildAt(i).findViewById(R.id.studyDateTo)).getText().toString());
+            } catch (Exception e) {
                 e.printStackTrace();
                 //DATE ERROR RECOVERY
             }
-
-            //building calendar format dates ( studydate gg-mm-yyyy -> yyyy-mm-ggThh:mm)
-            StringBuilder stringDateBuilder = new StringBuilder();
-
-
         }
+        getResultsFromApi();
         if (from == null) {
             course = new Course();
         }
@@ -668,49 +670,30 @@ public class NewCourseActivity extends AppCompatActivity {
          */
         private Event crateEventFromAPI() throws IOException {
 
-
-            Event event = new Event()
-                    .setSummary(((TextView)findViewById(R.id.courseName)).getText().toString())
-                    .setDescription("Happy studying");
-
-            DateTime startDateTime = new DateTime(new Date());
-            EventDateTime start = new EventDateTime()
-                    .setDateTime(startDateTime)
-                    .setTimeZone(Calendar.getInstance().getTimeZone().toString());
-            event.setStart(start);
-
-            DateTime endDateTime = new DateTime("2017-12-03T17:00:00");
-            EventDateTime end = new EventDateTime()
-                    .setDateTime(endDateTime)
-                    .setTimeZone(Calendar.getInstance().getTimeZone().toString());
-            event.setEnd(end);
-
-            String[] recurrence = new String[] {"RRULE:FREQ=WEEKLY;WKST=SU;BYDAY=FR;UNTIL=20141203T173500Z"};
-            event.setRecurrence(Arrays.asList(recurrence));
-
-            EventReminder[] reminderOverrides = new EventReminder[] {
-                    new EventReminder().setMethod("popup").setMinutes(10),
-            };
-            Event.Reminders reminders = new Event.Reminders()
-                    .setUseDefault(false)
-                    .setOverrides(Arrays.asList(reminderOverrides));
-            event.setReminders(reminders);
-
-            String calendarId = "primary";
-            event = mService.events().insert(calendarId, event).execute();
-
-
-            return event;
+            Event formattedEvent = null;
+            String courseName = ((TextView)findViewById(R.id.courseName)).getText().toString();
+            try{
+                //test
+                SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy");
+                Date d = format.parse("11/01/2018");
+                formattedEvent = CalendarManager.eventBuilder(day.get(0),startHour.get(0),endHour.get(0),courseName,d );
+                String calendarId = "primary";
+                formattedEvent = mService.events().insert(calendarId, formattedEvent).execute();
+            }catch (Exception  e) {
+                e.printStackTrace();
+            }
+            return formattedEvent;
         }
 
         @Override
         protected void onPreExecute() {
-            mProgress.show();
+            //mProgress.show();
         }
 
         @Override
         protected void onPostExecute(Event output) {
             mProgress.hide();
+            finish();
             /*if (output == null || output.size() == 0) {
                 Toast.makeText(getApplicationContext(),"No results returned.", Toast.LENGTH_LONG);
             } else {
