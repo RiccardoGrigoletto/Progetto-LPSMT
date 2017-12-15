@@ -12,6 +12,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -75,9 +76,12 @@ public class User extends Observable {
                             return;
                         }
 
-                        Course changedCourse;
+                        Course changedCourse = null;
                         for (DocumentChange change : querySnapshot.getDocumentChanges()) {
-                            changedCourse = change.getDocument().toObject(Course.class);
+                            DocumentSnapshot ds = change.getDocument();
+                            changedCourse = ds.toObject(Course.class);
+
+
                             changedCourse.setOnFirestore(change.getDocument().getReference());
 
                             if (change.getType() == DocumentChange.Type.ADDED) {
@@ -129,7 +133,7 @@ public class User extends Observable {
         return instance;
     }
 
-    public List<Course> getCourses() {
+    @Exclude public List<Course> getCourses() {
         return courses;
     }
 

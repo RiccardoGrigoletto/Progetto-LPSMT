@@ -183,14 +183,14 @@ public class Demo {
         for (Exam exam: c.getExams()) {
             System.out.print("\t\t\t");
 
-            int daysLeft = exam.getDaysLeft();
+            /*int daysLeft = exam.getDaysLeft();
             if (daysLeft < 0) {
                 System.out.print("["+ -daysLeft + " days ago]\t");
             } else if (daysLeft == 0) {
                 System.out.print("[today]\t\t\t");
             } else {
                 System.out.print("["+ daysLeft + " days left]\t");
-            }
+            }*/
 
             System.out.print(exam.getDate().toString());
 

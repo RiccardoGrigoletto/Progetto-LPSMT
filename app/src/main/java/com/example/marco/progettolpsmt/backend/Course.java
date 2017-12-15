@@ -316,12 +316,17 @@ public class Course implements Observer {
         updateCourse();
     }
 
-    public void addArguments(ArrayList<Argument> arguments) {
+    public void setArguments(ArrayList<Argument> arguments) {
         this.arguments = arguments;
     }
-
-    public void addExams(ArrayList<Exam> exams) {
+    public void clearArguments() {
+        this.arguments.clear();
+    }
+    public void setExams(ArrayList<Exam> exams) {
         this.exams = exams;
+    }
+    public void clearExams() {
+        this.exams.clear();
     }
 
     @Override

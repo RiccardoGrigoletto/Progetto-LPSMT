@@ -3,7 +3,6 @@ package com.example.marco.progettolpsmt;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,8 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -38,6 +35,7 @@ import com.example.marco.progettolpsmt.backend.Settings;
 import com.example.marco.progettolpsmt.backend.User;
 import com.example.marco.progettolpsmt.managers.CalendarManager;
 import com.example.marco.progettolpsmt.managers.DBManager;
+import com.example.marco.progettolpsmt.backend.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -57,7 +55,6 @@ import com.google.api.services.calendar.model.EventReminder;
 import com.google.api.services.calendar.model.Events;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -66,6 +63,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -154,12 +152,41 @@ public class NewCourseActivity extends AppCompatActivity {
                 .setBackOff(new ExponentialBackOff());
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Calling Google Calendar ...");
+
+        //exams
         FloatingActionButton addExamButton = findViewById(R.id.addExamButton);
+
+        final LinearLayout linearLayoutExams = findViewById(R.id.examsList);
+
 
         addExamButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showDatePickerDialog(view);
+
+                    final View view1 = LayoutInflater.from(getBaseContext())
+                            .inflate(R.layout.exam_edit_view,null,false);
+                    final TextView examDate = view1.findViewById(R.id.examDate);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+
+                    examDate.setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
+                            (calendar.get(Calendar.MONTH)+1) + " - " + calendar.get(Calendar.YEAR));
+                    examDate.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showDatePickerDialog(v,R.id.examDate);
+                        }
+                    });
+                    final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
+                    deleteArgumentButton.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    linearLayoutExams.removeView(view1);
+
+                                }
+                            });
+                    linearLayoutExams.addView(view1);
                 }
             });
 
@@ -179,7 +206,6 @@ public class NewCourseActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Course course;
                 if (finalCourseToEdit != null) {
-                    //todo edit existing course
                     course= createCourse(finalCourseToEdit);
 
                 }
@@ -273,7 +299,7 @@ public class NewCourseActivity extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(exam.getDate());
                 ((TextView)view1.findViewById(R.id.examDate)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
-                        calendar.get(Calendar.MONTH) + " - " + calendar.get(Calendar.YEAR));
+                        (calendar.get(Calendar.MONTH)+1) + " - " + calendar.get(Calendar.YEAR));
                 final LinearLayout ll = findViewById(R.id.examsList);
                 final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
                 deleteArgumentButton.setOnClickListener(
@@ -317,30 +343,24 @@ public class NewCourseActivity extends AppCompatActivity {
         ArrayList<Argument> arguments = new ArrayList<>();
         for (int i = 0; i < argumentsLinearLayout.getChildCount(); i++) {
             String argumentName = ((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentName)).getText().toString();
-            /*String expectedHoursString = ((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentExpectedHours)).getText().toString();
-            Integer expectedHours = 25;
-            try {
-                 expectedHours = Integer.parseInt(expectedHoursString);
-            }
-            catch (NumberFormatException e) {}
-            arguments.add(new Argument(argumentName, expectedHours));*/
+
             Evaluation difficulty;
-            Spinner evaluationSpinner = (findViewById(R.id.difficulty));
+            Spinner evaluationSpinner = argumentsLinearLayout.getChildAt(i).findViewById(R.id.difficulty);
             try {
-                switch (evaluationSpinner.getSelectedItem().toString()) {
-                    case "super easy":
+                switch (evaluationSpinner.getSelectedItemPosition()) {
+                    case 0:
                         difficulty = Evaluation.SUPER_EASY;
                         break;
-                    case "easy":
+                    case 1:
                         difficulty = Evaluation.EASY;
                         break;
-                    case "regular":
+                    case 2:
                         difficulty = Evaluation.REGULAR;
                         break;
-                    case "hard":
+                    case 3:
                         difficulty = Evaluation.HARD;
                         break;
-                    case "super hard":
+                    case 4:
                         difficulty = Evaluation.SUPER_HARD;
                         break;
                     default:
@@ -353,6 +373,7 @@ public class NewCourseActivity extends AppCompatActivity {
             }
             Argument newArgument = new Argument();
             newArgument.setDifficulty(difficulty);
+
             try {
                 newArgument.setName(argumentName);
             } catch (Exception e) {
@@ -365,12 +386,11 @@ public class NewCourseActivity extends AppCompatActivity {
         }
         //exams
         LinearLayout examsLinearLayout = findViewById(R.id.examsList);
-
-        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        DateFormat df = new SimpleDateFormat("dd - MM - yyyy", new Locale("it"));
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
             try {
-                examDate = df.parse(((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.examDate)).getText().toString());
+                examDate = df.parse(((TextView) examsLinearLayout.getChildAt(i).findViewById(R.id.examDate)).getText().toString());
             } catch (ParseException e) {
                 e.printStackTrace();
                 //DATE ERROR RECOVERY
@@ -380,9 +400,7 @@ public class NewCourseActivity extends AppCompatActivity {
         }
         //study sessions
         LinearLayout studyDatesLinearLayout = findViewById(R.id.studyDateList);
-        //todo
         for (int i = 0; i < studyDatesLinearLayout.getChildCount(); i++) {
-            android.util.Log.d("studydateslenght.---->",""+studyDatesLinearLayout.getChildCount());
             try {
                 day.add(((Spinner) studyDatesLinearLayout.getChildAt(i).findViewById(R.id.studyDate)).getSelectedItem().toString());
                 startHour.add(((TextView) studyDatesLinearLayout.getChildAt(i).findViewById(R.id.studyDateFrom)).getText().toString());
@@ -392,25 +410,35 @@ public class NewCourseActivity extends AppCompatActivity {
                 //DATE ERROR RECOVERY
             }
         }
+
         getResultsFromApi();
+
+        //create a new course
         if (from == null) {
             course = new Course();
         }
+        //inizializzo corso da modificare
         else {
-            u.getCourses().remove(from);
             course = from;
         }
+
         course.setName(name);
         course.setCredits(cfu);
-        if (arguments.size() > 0) course.addArguments(arguments);
-        if (exams.size() > 0) course.addExams(exams);
+
+        if (arguments.size() > 0) course.setArguments(arguments);
+        else course.clearArguments();
+        if (exams.size() > 0) course.setExams(exams);
+        else course.clearExams();
 
         course.updateOnFirestore();
         return course;
     }
 
-    public void showDatePickerDialog (View v) {
+    public void showDatePickerDialog(View v, int id) {
+        Bundle extras = new Bundle();
+        extras.putInt(DatePickerFragment.resIdKey,id);
         DialogFragment newFragment = new DatePickerFragment();
+        newFragment.setArguments(extras);
         newFragment.show(getFragmentManager(), "datePicker");
     }
     private void showTimePickerDialog(View view, int id) {
