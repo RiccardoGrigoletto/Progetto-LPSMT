@@ -1,5 +1,7 @@
 package com.example.marco.progettolpsmt.backend;
 
+import com.google.firebase.firestore.Exclude;
+
 import java.util.Date;
 
 /**
@@ -9,13 +11,7 @@ public class Exam {
     private Date date;
     private String details;
 
-    /**
-     * Contructor for an exam in a certain date.
-     * @param date date
-     */
-    public Exam(Date date) {
-        this.date = date;
-    }
+    public Exam() {}
 
     /**
      * Return the exam's date
@@ -53,7 +49,7 @@ public class Exam {
      * Return how many days are left (positive) / passed (negative).
      * @return days left/passed
      */
-    public int getDaysLeft() {
+    @Exclude public int getDaysLeft() {
         // TODO fix the by 1 day problem (now+24h - now = 1 day, now+24h-1ms - now = 0 days)
         int days = (int) ((date.getTime() - new Date().getTime()) / (1_000 * 60 * 60 * 24));
 
