@@ -53,19 +53,14 @@ public class MainActivity extends AppCompatActivity implements Observer {
     DailyCoursesAdapter<Course> dailyAdapter;
     CoursesAdapterMax coursesAdapter;
 
-    @Override
     protected void onResume() {
+
         super.onResume();
-        user = User.getInstance();
-        user.setName("ugo");
-        user.updateOnFirestore();
-        user.addObserver(this);
-        courses = (ArrayList) user.getCourses();
+        refresh();
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onStart() {
+        super.onStart();
 
         //Firebase
         user = User.getInstance();
@@ -237,8 +232,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
 
 
-    /*floating button listener*/
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.newCourse);
+        /*floating button listener*/
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.newCourse);
         fab.setOnClickListener(new View.OnClickListener()
 
     {
@@ -370,23 +365,38 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void update(Observable o, Object arg) throws ConcurrentModificationException {
-        ArrayList<Course> newCourses = (ArrayList) user.getCourses();
-        boolean exception = false;
+        // quando sei qui dentro, courses e gia aggiornato
+        refresh();
+
+//        ArrayList<Course> newCourses = (ArrayList) user.getCourses();
+//        boolean exception = false;
+//        try {
+//            for (Course c : newCourses) {
+//                if (courses.contains(c)) {
+//                    newCourses.remove(c);
+//                }
+//            }
+//        }
+//        catch (ConcurrentModificationException e) {
+//            exception=true;
+//        }
+//        if (!exception) {
+//            courses.addAll(newCourses);
+//            progressAdapter.addAll(newCourses);
+//            dailyAdapter.addAll(newCourses);
+//            coursesAdapter.addAll(newCourses);
+//        }
+    }
+
+    private void refresh() {
+
         try {
-            for (Course c : newCourses) {
-                if (courses.contains(c)) {
-                    newCourses.remove(c);
-                }
-            }
+            progressAdapter.notifyDataSetChanged();
+            dailyAdapter.notifyDataSetChanged();
+            coursesAdapter.notifyDataSetChanged();
         }
-        catch (ConcurrentModificationException e) {
-            exception=true;
-        }
-        if (!exception) {
-            courses.addAll(newCourses);
-            progressAdapter.addAll(newCourses);
-            dailyAdapter.addAll(newCourses);
-            coursesAdapter.addAll(newCourses);
+        catch (Exception e) {
+
         }
     }
 }

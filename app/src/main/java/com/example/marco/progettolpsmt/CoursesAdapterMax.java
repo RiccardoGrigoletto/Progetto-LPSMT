@@ -91,6 +91,7 @@ public class CoursesAdapterMax extends ArrayAdapter<Course> {
                 bundle.putString("courseID", course.getName());
                 Intent intent = new Intent(view.getContext(), NewCourseActivity.class);
                 intent.putExtras(bundle);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
         });
