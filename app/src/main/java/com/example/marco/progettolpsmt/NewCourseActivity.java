@@ -89,6 +89,7 @@ public class NewCourseActivity extends AppCompatActivity {
     private ArrayList<String> day;
     private ArrayList<String> startHour;
     private ArrayList<String> endHour;
+    private ArrayList<Exam> exams;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +98,7 @@ public class NewCourseActivity extends AppCompatActivity {
         day = new ArrayList<String>();
         startHour  = new ArrayList<String>();
         endHour = new ArrayList<String>();
+        exams  = new ArrayList<>();
 
         User u = User.getInstance();
         Bundle extras = getIntent().getExtras();
@@ -363,7 +365,7 @@ public class NewCourseActivity extends AppCompatActivity {
         }
         //exams
         LinearLayout examsLinearLayout = findViewById(R.id.examsList);
-        ArrayList<Exam> exams = new ArrayList<>();
+
         DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
@@ -670,19 +672,31 @@ public class NewCourseActivity extends AppCompatActivity {
          */
         private Event crateEventFromAPI() throws IOException {
 
-            Event formattedEvent = null;
+            Event studyEvent = null;
+            Event examEvent = null;
             String courseName = ((TextView)findViewById(R.id.courseName)).getText().toString();
+
             try{
-                //test
-                SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy");
-                Date d = format.parse("11/01/2018");
-                formattedEvent = CalendarManager.eventBuilder(day.get(0),startHour.get(0),endHour.get(0),courseName,d );
-                String calendarId = "primary";
-                formattedEvent = mService.events().insert(calendarId, formattedEvent).execute();
+                //adding study sessions in google calendar
+                for(int i = 0 ; i < day.size();i++ ){
+                    if(exams.size() != 0){
+                        studyEvent = CalendarManager.eventBuilder(day.get(i),startHour.get(i),endHour.get(i),courseName ,exams.get(0).getDate());
+                    }
+                    else{
+                        studyEvent = CalendarManager.eventBuilder(day.get(i),startHour.get(i),endHour.get(i),courseName ,null);
+                    }
+
+                    studyEvent = mService.events().insert("primary", studyEvent).execute();
+                }
+                //adding exams in google calendar
+                for(int i = 0 ; i < exams.size(); i++){
+                    examEvent = CalendarManager.examEventBuilder(exams.get(i).getDate(),courseName);
+                    examEvent = mService.events().insert("primary", examEvent).execute();
+                }
             }catch (Exception  e) {
                 e.printStackTrace();
             }
-            return formattedEvent;
+            return studyEvent;
         }
 
         @Override

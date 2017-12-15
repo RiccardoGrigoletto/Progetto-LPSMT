@@ -15,6 +15,7 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.EventReminder;
 
+import java.lang.invoke.ConstantCallSite;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.ParseException;
@@ -47,7 +48,6 @@ public final class CalendarManager {
         Pair <String,String> returnPairDates;
         String strtDateFormatted;
         String endDateFormatted;
-
         //start date building
         StringBuilder dateBuilder = new StringBuilder();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -78,15 +78,51 @@ public final class CalendarManager {
 
     }
 
+    public static Event examEventBuilder(Date examDate, String courseName){
+
+        Date endExamDate = new Date();
+        endExamDate.setTime(examDate.getTime()+24*60*60*1000);
+        DateFormat examFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String startDate = "";
+        String endDate ="";
+        try {
+            startDate = examFormatter.format(examDate);
+            endDate = examFormatter.format(endExamDate);
+            Log.d("end-date",""+endDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //creating calendar event
+        Event event = new Event()
+                .setSummary(courseName)
+                .setDescription("Happy exam");
+
+        DateTime startDateTime = new DateTime(startDate+"T00:00:00");
+        EventDateTime start = new EventDateTime()
+                .setDateTime(startDateTime)
+                .setTimeZone(Calendar.getInstance().getTimeZone().getID());
+        event.setStart(start);
+        DateTime endDateTime = new DateTime(endDate+"T00:00:00");
+        EventDateTime end = new EventDateTime()
+                .setDateTime(endDateTime)
+                .setTimeZone(Calendar.getInstance().getTimeZone().getID());
+        event.setEnd(end);
+
+        EventReminder[] reminderOverrides = new EventReminder[] {
+                new EventReminder().setMethod("popup").setMinutes(10),
+        };
+        Event.Reminders reminders = new Event.Reminders()
+                .setUseDefault(false)
+                .setOverrides(Arrays.asList(reminderOverrides));
+        event.setReminders(reminders);
+        return event;
+    }
+
     public static Event eventBuilder(String day, String strtHour, String endHour, String courseName, @Nullable Date examDate){
 
         //getting dates
 
         Pair eventDates = calendarEventDatesStringBuilder(strtHour,endHour);
-
-        Log.e("strtDate",""+eventDates.first);
-        Log.e("strtDate",""+eventDates.second);
-
         //creating calendar event
         Event event = new Event()
                 .setSummary(courseName)
