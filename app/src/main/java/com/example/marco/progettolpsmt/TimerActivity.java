@@ -451,7 +451,7 @@ TimerActivity extends AppCompatActivity {
         countdownView.updateShow(studyTimeTimer);
 
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
