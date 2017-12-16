@@ -597,7 +597,8 @@ TimerActivity extends AppCompatActivity {
         String argumentSelected = (String) argumentSpinner.getSelectedItem();
         for(int i = 0 ; i < userArguments.size(); i++){
             if(userArguments.get(i).getName().equals(argumentSelected)){
-                return userArguments.get(i).get;
+                //todo adjusr return items
+                return i;
             }
         }
         return 0;
