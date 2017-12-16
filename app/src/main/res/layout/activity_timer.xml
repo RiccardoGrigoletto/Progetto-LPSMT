@@ -134,7 +134,7 @@
     </LinearLayout>
 
     <Spinner
-        android:id="@+id/coursespinner"
+        android:id="@+id/argumentSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -146,7 +146,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
-        android:id="@+id/argumentspinner"
+        android:id="@+id/courseSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"

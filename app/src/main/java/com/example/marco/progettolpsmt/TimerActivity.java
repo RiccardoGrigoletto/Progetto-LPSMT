@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +34,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import cn.iwgang.countdownview.CountdownView;
 import devlight.io.library.ArcProgressStackView;
@@ -82,25 +84,13 @@ TimerActivity extends AppCompatActivity {
     private com.example.marco.progettolpsmt.backend.Log studyLog;
     //Notification
     TimerNotification timerNotification;
-
+    //courses of the user
+    private List<Course> userCourses;
+    private List<Argument> userArguments;
     @Override
     protected void onCreate(final Bundle extras) {
         super.onCreate(extras);
         setContentView(R.layout.activity_timer);
-
-        //backend example
-        course = new Course();
-
-        Course courseToStudy = null;
-        try {
-            if (extras != null) {
-                courseToStudy = CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")) ;
-            }
-        }
-        catch (NullPointerException e) {}
-        if (courseToStudy != null) {
-            /*TODO initialize the timer with the course: courseToStudy*/
-        }
 
         //Dialog used in order to take data from user, that we need in order to initializate timer
         final Dialog dialog = new Dialog(this);
@@ -127,8 +117,8 @@ TimerActivity extends AppCompatActivity {
         final EditText studyTime = dialog.findViewById(R.id.editText3);
         final EditText breakTime = dialog.findViewById(R.id.editText4);
         //spinners
-        courseSpinner = findViewById(R.id.coursespinner);
-        argumentSpinner = findViewById(R.id.argumentspinner);
+        courseSpinner = findViewById(R.id.courseSpinner);
+        argumentSpinner = findViewById(R.id.argumentSpinner);
         //buttons
         startButton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
@@ -140,6 +130,22 @@ TimerActivity extends AppCompatActivity {
         mArcProgressStackView = (ArcProgressStackView) findViewById(R.id.apsv_presentation);
         //model array
         models = new ArrayList<>();
+
+        /**
+         * setting courses with extras
+         */
+
+        try {
+            /**
+             * SETTING UP course and argument spinner here
+             *
+             */
+            initiCourseSpinner();
+            if (extras != null) {
+                preSelectItem(CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")).getName());
+            }
+        }
+        catch (NullPointerException e) {}
 
         //adding listener to buttons
         confirmTimerTemporaryChanges.setOnClickListener(new View.OnClickListener() {
@@ -166,7 +172,25 @@ TimerActivity extends AppCompatActivity {
             }
         });
 
+        /**
+         * after course being selected, argument are setted
+         */
 
+        courseSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedCourse = courseSpinner.getSelectedItem().toString();
+                List<Argument> argList = getArgumentsFromCourse(selectedCourse);
+                if(argList.size() != 0){
+                    initiArgumentSpinner(argList);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
          /*
            if user doesn't set values, the system will use default setted values
          */
@@ -424,14 +448,19 @@ TimerActivity extends AppCompatActivity {
 
     }
 
+
     private void initializeArcModel(long numberofsessions , long studytime, long breaktime){
         breaktime = breakTimeTimer;
         firstArch.setDuration(studytime);
-        Log.d("breaktimemtimer--->",""+breaktime);
         secondArch.setDuration(breaktime);
         thirdArch.setDuration((studytime+breaktime)*numberofsessions);
     }
-//test
+
+    /**
+     * Method useed in order to init all the timer values
+     * @param stackView
+     * @return void
+     */
     private void initializeTimerView(ArcProgressStackView stackView){
         readFromSharedPreferences();
         firstArch.cancel();
@@ -464,6 +493,13 @@ TimerActivity extends AppCompatActivity {
         timeStampFromInterruption = new Date();
     }
 
+    /**
+     * catching button back pressed event in order to save study progress logs and in order to offer to users a
+     * way for recovering a possible mistake.
+     * @param
+     * @retun is void
+     */
+
     public void onBackPressed() {
         backButtonAlertDialog = new AlertDialog.Builder(this)
                 .setTitle("Change Course or Argument")
@@ -478,10 +514,96 @@ TimerActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * method used in order to get defaults timer params from shared preferences.
+     * @param
+     * @return void
+     */
     private void readFromSharedPreferences(){
         nSession = TimerSettingsSingleton.getInstance().getNumberOfStudySessions(this);
         studyTimeTimer = TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(this);
         breakTimeTimer = TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(this);
         countdownView.updateShow(studyTimeTimer);
     }
+
+
+    /**
+     * method that initialize course spinner
+     */
+    private void initiCourseSpinner(){
+        //saving users courses
+        userCourses = new ArrayList<Course>();
+        userCourses = User.getInstance().getCourses();
+
+        //setting course spinner
+        ArrayList<String> coursesNames = new ArrayList<String>();
+        for(int i = 0; i < User.getInstance().getCourses().size(); i++ ){
+            coursesNames.add(User.getInstance().getCourses().get(i).getName());
+        }
+        ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,coursesNames);
+        courseSpinner.setAdapter(courseAdapter);
+
+
+    }
+
+    /**
+     * method that initialize argument spinner
+     */
+    private void initiArgumentSpinner(List<Argument> arguments){
+        //setting course spinner
+        userArguments = arguments;
+        ArrayList<String> argumentsName = new ArrayList<String>();
+        for(int i = 0; i < arguments.size(); i++ ){
+            argumentsName.add(arguments.get(i).getName());
+        }
+        ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,argumentsName);
+        argumentSpinner.setAdapter(courseAdapter);
+
+
+    }
+    /**
+     * method that return all the arguments from a given course name
+     * @param courseName
+     * @return
+     */
+    private List<Argument> getArgumentsFromCourse(String courseName){
+            for(int i = 0 ; i < userCourses.size(); i++){
+                if(userCourses.get(i).getName().equals(courseName)){
+                    return userCourses.get(i).getArguments();
+                }
+            }
+            //if no arguments, return null
+            return null;
+    }
+
+    /**
+     *getting elem position and set pre selected item
+     */
+
+    public void preSelectItem(String name) {
+        boolean doWeStopTheLoop = false;
+        for (int i = 0; i < this.courseSpinner.getAdapter().getCount() && !doWeStopTheLoop; i++) {
+            if (((String) courseSpinner.getItemAtPosition(i)) == name) {
+                courseSpinner.setSelection(i);
+                doWeStopTheLoop = true; //you can use break; too
+            }
+        }
+    }
+
+    /**
+     * method used to get argument id
+     */
+    public int getArgumentId(){
+        String argumentSelected = (String) argumentSpinner.getSelectedItem();
+        for(int i = 0 ; i < userArguments.size(); i++){
+            if(userArguments.get(i).getName().equals(argumentSelected)){
+                return userArguments.get(i).get;
+            }
+        }
+        return 0;
+    }
+
+
 }
+
+
