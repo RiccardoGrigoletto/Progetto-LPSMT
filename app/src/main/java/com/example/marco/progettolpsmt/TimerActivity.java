@@ -16,13 +16,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
 //import com.example.marco.progettolpsmt.backend.Log;
+import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
+import com.example.marco.progettolpsmt.backend.StudyLog;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
+import com.example.marco.progettolpsmt.backend.User;
 import com.example.marco.progettolpsmt.managers.DBManager;
 
 import java.sql.Timestamp;
@@ -75,7 +79,7 @@ TimerActivity extends AppCompatActivity {
     //timestamps
     private Date initialTimeStamp;
     private Date timeStampFromInterruption;
-
+    private com.example.marco.progettolpsmt.backend.Log studyLog;
     //Notification
     TimerNotification timerNotification;
 
@@ -116,6 +120,8 @@ TimerActivity extends AppCompatActivity {
 
         Button confirmTimerTemporaryChanges = dialog.findViewById(R.id.button);
         Button cancelTimerTemporaryChanges  = dialog.findViewById(R.id.cancelbutton);
+        //studyLog
+        studyLog = new StudyLog();
         //textbox of the dialog
         final EditText sessions = dialog.findViewById(R.id.editText2);
         final EditText studyTime = dialog.findViewById(R.id.editText3);
@@ -363,8 +369,7 @@ TimerActivity extends AppCompatActivity {
                 //cambiare il colore del bottone
                 startButton.setEnabled(false);
                 settings.setEnabled(false);
-                initialTimeStamp = new Date();
-                Log.d("lel---->",""+initialTimeStamp);
+                studyLog.setStart(new Date());
                 courseSpinner.setEnabled(false);
                 argumentSpinner.setEnabled(false);
                 pause.setEnabled(true);
@@ -398,8 +403,10 @@ TimerActivity extends AppCompatActivity {
                     pause.setEnabled(false);
                     pauseBtnBinaryFlag = 1;
                 }
-                Log.d("pflag------>",""+pauseBtnBinaryFlag);
-                timeStampFromInterruption = new Date();
+
+                Argument a = new Argument();
+                studyLog.setEnd(new Date());
+                a.addLog(studyLog);
 
             }
         });
@@ -444,11 +451,7 @@ TimerActivity extends AppCompatActivity {
         countdownView.updateShow(studyTimeTimer);
 
     }
-
-    private void initializeSpinners(){
-        
-    }
-
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();

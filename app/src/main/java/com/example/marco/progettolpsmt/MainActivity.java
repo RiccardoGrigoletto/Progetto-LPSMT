@@ -161,10 +161,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
                         numberofsession.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                try {
                                     String temp = (String) numberofsession.getItemAtPosition(i);
                                     TimerSettingsSingleton.getInstance().setNumberOfStudySessions(Integer.parseInt(temp), MainActivity.this);
-                                    Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
                                 }catch (Exception e){
                                     e.printStackTrace();
                                     Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
@@ -316,10 +315,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
             public void onClick(View v) {
                 try {
                     TimerSettingsSingleton.getInstance().setDurationOfStudySessions(np.getValue()*60000, MainActivity.this);
-                    Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(getApplicationContext()));
                     Toast.makeText(MainActivity.this, "Value Updated", Toast.LENGTH_LONG).show();
                 }catch (Exception e){
-                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Impossible Update Values.", Toast.LENGTH_LONG).show();
                 }
                 ((TextView)findViewById(R.id.studyDurationSelector))
                         .setText(np.getValue() + " minutes");
@@ -355,10 +353,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
             public void onClick(View v) {
                 try {
                     TimerSettingsSingleton.getInstance().setDurationOfBreakSessions(np.getValue()*60000, MainActivity.this);
-                    Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(getApplicationContext()));
                     Toast.makeText(MainActivity.this, "Value Updated", Toast.LENGTH_LONG).show();
                 }catch (Exception e){
-                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Impossible Update Values.", Toast.LENGTH_LONG).show();
                 }
                 ((TextView)findViewById(R.id.breakDurationSelector)).setText(np.getValue() + " minutes");
                 d.dismiss();

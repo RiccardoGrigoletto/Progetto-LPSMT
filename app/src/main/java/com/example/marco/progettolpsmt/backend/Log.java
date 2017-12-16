@@ -22,6 +22,9 @@ public abstract class Log {
         this.end = end;
     }
 
+    public Log() {
+    }
+
     /**
      * Return when the event started.
      * @return when started
@@ -36,5 +39,14 @@ public abstract class Log {
      */
     public Date getEnd() {
         return end;
+    }
+
+
+    public void setStart(Date start) {
+        this.start = start;
+    }
+
+    public void setEnd(Date end) {
+        this.end = end;
     }
 }
