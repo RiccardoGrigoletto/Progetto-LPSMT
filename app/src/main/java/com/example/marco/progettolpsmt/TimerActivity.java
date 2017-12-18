@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 //import com.example.marco.progettolpsmt.backend.Log;
 import com.example.marco.progettolpsmt.backend.Argument;
@@ -87,6 +88,9 @@ TimerActivity extends AppCompatActivity {
     //courses of the user
     private List<Course> userCourses;
     private List<Argument> userArguments;
+    private Argument studyingArgument;
+    //boundle elements
+    private String boundleArgument = null;
     @Override
     protected void onCreate(final Bundle extras) {
         super.onCreate(extras);
@@ -130,7 +134,6 @@ TimerActivity extends AppCompatActivity {
         mArcProgressStackView = (ArcProgressStackView) findViewById(R.id.apsv_presentation);
         //model array
         models = new ArrayList<>();
-
         /**
          * setting courses with extras
          */
@@ -142,10 +145,15 @@ TimerActivity extends AppCompatActivity {
              */
             initiCourseSpinner();
             if (extras != null) {
-                preSelectItem(CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")).getName());
+                preSelectItem(extras.getString("courseID"));
+                //CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")).getName()
             }
+            //test TODO delete this line of code
+             boundleArgument = getIntent().getStringExtra("courseID");
         }
-        catch (NullPointerException e) {}
+        catch (NullPointerException e) {
+                Toast.makeText(TimerActivity.this, "Impossible Getting Courses/Arguments", Toast.LENGTH_LONG).show();
+        }
 
         //adding listener to buttons
         confirmTimerTemporaryChanges.setOnClickListener(new View.OnClickListener() {
@@ -179,10 +187,16 @@ TimerActivity extends AppCompatActivity {
         courseSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String selectedCourse = courseSpinner.getSelectedItem().toString();
-                List<Argument> argList = getArgumentsFromCourse(selectedCourse);
-                if(argList.size() != 0){
+                try{
+                    String selectedCourse = courseSpinner.getSelectedItem().toString();
+                    List<Argument> argList = getArgumentsFromCourse(selectedCourse);
                     initiArgumentSpinner(argList);
+                    if(boundleArgument != null){
+                        preSelectItem(boundleArgument);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Toast.makeText(TimerActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -191,6 +205,26 @@ TimerActivity extends AppCompatActivity {
 
             }
         });
+
+        argumentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+              //  try {
+                    String selectedArgument = argumentSpinner.getSelectedItem().toString();
+                    setStudyArgument(selectedArgument);
+               // }catch(Exception e){
+              //      Toast.makeText(TimerActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+              //  }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+
          /*
            if user doesn't set values, the system will use default setted values
          */
@@ -428,9 +462,12 @@ TimerActivity extends AppCompatActivity {
                     pauseBtnBinaryFlag = 1;
                 }
 
-                Argument a = new Argument();
-                studyLog.setEnd(new Date());
-                a.addLog(studyLog);
+                try {
+                    studyLog.setEnd(new Date());
+                    studyingArgument.addLog(studyLog);
+                }catch(Exception e){
+                    Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+                }
 
             }
         });
@@ -485,12 +522,26 @@ TimerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         timerNotification.cancel(this);
-        timeStampFromInterruption = new Date();
+        try {
+            if(studyLog.getStart() != null) {
+                studyLog.setEnd(new Date());
+                studyingArgument.addLog(studyLog);
+            }
+        }catch(Exception e){
+            Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+        }
     }
 
     protected void onStop() {
         super.onStop();
-        timeStampFromInterruption = new Date();
+        try {
+            if(studyLog.getStart() != null) {
+                studyLog.setEnd(new Date());
+                studyingArgument.addLog(studyLog);
+            }
+        }catch(Exception e){
+            Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -502,12 +553,20 @@ TimerActivity extends AppCompatActivity {
 
     public void onBackPressed() {
         backButtonAlertDialog = new AlertDialog.Builder(this)
-                .setTitle("Change Course or Argument")
-                .setMessage("Are you sure that you want to change argument or course?\n You will lose current progress..")
+                .setTitle("Exiting Timer")
+                .setMessage("Do you really want to leave this session? Don't worry, all the progress will be saved!")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         TimerActivity.super.onBackPressed();
+                        try {
+                            if(studyLog.getStart() != null){
+                                studyLog.setEnd(new Date());
+                                studyingArgument.addLog(studyLog);
+                            }
+                        }catch(Exception e){
+                            Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+                        }
                     }})
                 .setNegativeButton(android.R.string.no, null).create();;
         backButtonAlertDialog.show();
@@ -542,8 +601,6 @@ TimerActivity extends AppCompatActivity {
         }
         ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,coursesNames);
         courseSpinner.setAdapter(courseAdapter);
-
-
     }
 
     /**
@@ -551,14 +608,20 @@ TimerActivity extends AppCompatActivity {
      */
     private void initiArgumentSpinner(List<Argument> arguments){
         //setting course spinner
-        userArguments = arguments;
         ArrayList<String> argumentsName = new ArrayList<String>();
-        for(int i = 0; i < arguments.size(); i++ ){
-            argumentsName.add(arguments.get(i).getName());
+        if(arguments.size() != 0 ){
+            userArguments = arguments;
+            for(int i = 0; i < arguments.size(); i++ ){
+                argumentsName.add(arguments.get(i).getName());
+            }
+            ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,argumentsName);
+            argumentSpinner.setAdapter(courseAdapter);
         }
-        ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,argumentsName);
-        argumentSpinner.setAdapter(courseAdapter);
-
+        else{
+            argumentsName.add("");
+            ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,argumentsName);
+            argumentSpinner.setAdapter(courseAdapter);
+        }
 
     }
     /**
@@ -583,7 +646,8 @@ TimerActivity extends AppCompatActivity {
     public void preSelectItem(String name) {
         boolean doWeStopTheLoop = false;
         for (int i = 0; i < this.courseSpinner.getAdapter().getCount() && !doWeStopTheLoop; i++) {
-            if (((String) courseSpinner.getItemAtPosition(i)) == name) {
+            String tmp = (String) courseSpinner.getItemAtPosition(i);
+            if (tmp.equals(name)) {
                 courseSpinner.setSelection(i);
                 doWeStopTheLoop = true; //you can use break; too
             }
@@ -591,17 +655,11 @@ TimerActivity extends AppCompatActivity {
     }
 
     /**
-     * method used to get argument id
+     * method used to get studying argument
      */
-    public int getArgumentId(){
-        String argumentSelected = (String) argumentSpinner.getSelectedItem();
-        for(int i = 0 ; i < userArguments.size(); i++){
-            if(userArguments.get(i).getName().equals(argumentSelected)){
-                //todo adjusr return items
-                return i;
-            }
-        }
-        return 0;
+
+    private void setStudyArgument(String studyingArgument){
+        this.studyingArgument = User.getInstance().getArgumentByName(studyingArgument);
     }
 
 
