@@ -404,6 +404,12 @@ TimerActivity extends AppCompatActivity {
             @Override
             @TargetApi(Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
+                /**
+                 * in order to avoid sync pause/stop button,
+                 * here this button will be forced to Pause status
+                 */
+                pauseBtnBinaryFlag = 1;
+                pause.setText(R.string.timerPauseButton);
                 timerNotification.notify(getBaseContext(),"Studying",1);
                 final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
                 if(animationStateThirdArch != 0) {
@@ -432,11 +438,6 @@ TimerActivity extends AppCompatActivity {
                 thirdArch.start();
                 startButton.setEnabled(false);
                 settings.setEnabled(false);
-                /**
-                 * in order to avoid sync pause/stop button,
-                 * here this button will be forced to Pause status
-                 */
-                pauseBtnBinaryFlag = 1;
                 studyLog.setStart(new Date());
                 courseSpinner.setEnabled(false);
                 argumentSpinner.setEnabled(false);
@@ -450,7 +451,7 @@ TimerActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if(pauseBtnBinaryFlag != 0) {
-                    pause.setText("STOP");
+                    pause.setText(R.string.timerStopButton);
                     timerNotification.notify(getBaseContext(), "Timer Paused", 1);
                     final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
                     firstArch.pause();
@@ -462,7 +463,7 @@ TimerActivity extends AppCompatActivity {
                     pauseBtnBinaryFlag = 0;
                 }
                 else if(pauseBtnBinaryFlag ==0){
-                    pause.setText("PAUSE");
+                    pause.setText(R.string.timerPauseButton);
                     initializeTimerView(mArcProgressStackView);
                     courseSpinner.setEnabled(true);
                     argumentSpinner.setEnabled(true);

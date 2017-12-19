@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * Created by ricca on 19/11/2017.
  */
 
-public final class CalendarManager {
+public final class CalendarUtils {
 
 
     public static Intent getIntent() {

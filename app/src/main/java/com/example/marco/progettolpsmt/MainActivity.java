@@ -4,7 +4,6 @@ package com.example.marco.progettolpsmt;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,7 +16,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,7 +34,7 @@ import android.widget.Toast;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.example.marco.progettolpsmt.backend.User;
-import com.example.marco.progettolpsmt.managers.CalendarManager;
+import com.example.marco.progettolpsmt.managers.CalendarUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -291,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
             break;
             case R.id.action_calendar: {
-                startActivity(CalendarManager.getIntent());
+                startActivity(CalendarUtils.getIntent());
 
             }
             break;
