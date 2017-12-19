@@ -194,6 +194,12 @@ TimerActivity extends AppCompatActivity {
                     if(boundleArgument != null){
                         preSelectItem(boundleArgument);
                     }
+                    /**
+                     * after set boundleArgument as preSelectedItem, a null value is assigned to this wariable, in order to
+                     * avoid problems if user change courses on timer(there was a problem when user changed selected course, i due to non-null
+                     * value of this variable, the selected courses didn't change
+                     */
+                    boundleArgument = null;
                 }catch (Exception e){
                     e.printStackTrace();
                     Toast.makeText(TimerActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
@@ -424,9 +430,13 @@ TimerActivity extends AppCompatActivity {
                 countdownView.start(studyTimeTimer);
                 firstArch.start();
                 thirdArch.start();
-                //cambiare il colore del bottone
                 startButton.setEnabled(false);
                 settings.setEnabled(false);
+                /**
+                 * in order to avoid sync pause/stop button,
+                 * here this button will be forced to Pause status
+                 */
+                pauseBtnBinaryFlag = 1;
                 studyLog.setStart(new Date());
                 courseSpinner.setEnabled(false);
                 argumentSpinner.setEnabled(false);
@@ -453,7 +463,6 @@ TimerActivity extends AppCompatActivity {
                 }
                 else if(pauseBtnBinaryFlag ==0){
                     pause.setText("PAUSE");
-                    //ritornare i timestamp
                     initializeTimerView(mArcProgressStackView);
                     courseSpinner.setEnabled(true);
                     argumentSpinner.setEnabled(true);
