@@ -1,10 +1,12 @@
 package com.example.marco.progettolpsmt;
 
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -69,6 +71,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class NewCourseActivity extends AppCompatActivity {
     GoogleAccountCredential mCredential;
     ProgressDialog mProgress;
+    private AlertDialog deleteCourseDialog = null;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -91,7 +94,7 @@ public class NewCourseActivity extends AppCompatActivity {
         endHour = new ArrayList<String>();
         exams  = new ArrayList<>();
 
-        User u = User.getInstance();
+        final User u = User.getInstance();
         Bundle extras = getIntent().getExtras();
         setContentView(R.layout.activity_course);
         Course courseToEdit = null;
@@ -103,10 +106,10 @@ public class NewCourseActivity extends AppCompatActivity {
                     if (c.getName().equals(courseNameToEdit))
                         courseToEdit = c;
                 }
+
             }
         }
         catch (NullPointerException e) {}
-
         Spinner cfuSpinner = findViewById(R.id.CFUSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
                 R.array.three_to_fifteen_array, android.R.layout.simple_spinner_item);
@@ -305,7 +308,26 @@ public class NewCourseActivity extends AppCompatActivity {
                         });
                 ll.addView(view1);
             }
-
+            Button deleteButton = findViewById(R.id.deleteCourseButton);
+            deleteButton.setVisibility(View.VISIBLE);
+            final Course finalCourseToEdit1 = courseToEdit;
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteCourseDialog = new AlertDialog.Builder(NewCourseActivity.this)
+                            .setTitle("Deleting course")
+                            .setMessage("Do you really want to delete this course?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    u.getCourses().remove(finalCourseToEdit1);
+                                    u.updateOnFirestore();
+                                    finish();
+                                }})
+                            .setNegativeButton(android.R.string.no, null).create();
+                    deleteCourseDialog.show();
+                }
+            });
         }
 
     }

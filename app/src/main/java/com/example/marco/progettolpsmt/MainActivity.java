@@ -57,6 +57,9 @@ import com.google.firebase.auth.FirebaseAuth;
 //import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -89,7 +92,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     ArrayList<Course> courses;
     ArrayList<Event> dailyStudySessions;
-    DailyCoursesAdapter<Event> dailyAdapter;
+    DailyCoursesAdapter<Event> todayAdapter;
+    DailyCoursesAdapter<Event> tomorrowAdapter;
     CoursesAdapterMax coursesAdapter;
 
 
@@ -151,9 +155,15 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
                         ListView lvToday = view.findViewById(R.id.today_events_list_view);
 
-                        dailyAdapter = new DailyCoursesAdapter<>(getBaseContext(),
+                        todayAdapter = new DailyCoursesAdapter<>(getBaseContext(),
                                 R.layout.daily_course, dailyStudySessions);
-                        lvToday.setAdapter(dailyAdapter);
+                        lvToday.setAdapter(todayAdapter);
+
+                        ListView lvTomorrow = view.findViewById(R.id.tomorrow_events_list_view);
+
+                        tomorrowAdapter = new DailyCoursesAdapter<>(getBaseContext(),
+                                R.layout.daily_course, dailyStudySessions);
+                        lvTomorrow.setAdapter(tomorrowAdapter);
 
                         getResultsFromApi();
                     }
@@ -404,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private void refresh() {
 
         try {
-            dailyAdapter.notifyDataSetChanged();
+            todayAdapter.notifyDataSetChanged();
             coursesAdapter.notifyDataSetChanged();
         } catch (Exception e) {
 
@@ -616,9 +626,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         private List<Event> getDataFromApi(Date targetDay) throws IOException {
             // List the next 10 events from the primary calendar.
             DateTime day = new DateTime(targetDay);
-            day.isDateOnly();
             DateTime maxDay = new DateTime(day.getValue()+1000*60*60*48);
-            List<String> eventStrings = new ArrayList<String>();
             Events events = mService.events().list("primary")
                     .setMaxResults(50)
                     .setTimeMin(day)
@@ -648,14 +656,24 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         @Override
         protected void onPreExecute() {
-            mProgress.show();
+            //mProgress.show();
         }
 
         @Override
         protected void onPostExecute(List<Event> output) {
             mProgress.hide();
             dailyStudySessions = (ArrayList<Event>) output;
-            dailyAdapter.notifyDataSetChanged();
+            ArrayList<Event> res = new ArrayList<>();
+            for (Course c : user.getCourses()) {
+                for (Event e: dailyStudySessions) {
+                    if (c.getName().equals(e.getSummary())) res.add(e);
+                }
+            }
+            dailyStudySessions = res;
+            todayAdapter.setObjects(todayEvents(dailyStudySessions));
+            todayAdapter.notifyDataSetChanged();
+            tomorrowAdapter.setObjects(tomorrowEvents(dailyStudySessions));
+            tomorrowAdapter.notifyDataSetChanged();
 
         }
 
@@ -675,4 +693,53 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
         }
     }
+
+    private void filterEvents(ArrayList<Event> dailyStudySessions) {
+        for (Course c : user.getCourses()) {
+            for (Event e: dailyStudySessions) {
+                if (c.getName() != e.getSummary()) dailyStudySessions.remove(e);
+            }
+        }
+    }
+
+    private ArrayList<Event> tomorrowEvents(ArrayList<Event> dailyStudySessions) {
+        ArrayList<Event> res = new ArrayList<>();
+        Calendar startDay = Calendar.getInstance();
+        Calendar endDay = Calendar.getInstance();
+
+        int year = startDay.get(Calendar.YEAR);
+        int month = startDay.get(Calendar.MONTH);
+        int day = startDay.get(Calendar.DATE);
+        startDay.set(year, month, day+1, 0, 0, 0);
+        endDay.set(year,month,day+1,23,59,59);
+
+        for (Event e: dailyStudySessions) {
+            long eventTime = e.getStart().getDateTime().getValue();
+            if (eventTime >= startDay.getTimeInMillis() && eventTime<=endDay.getTimeInMillis()) {
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
+    private ArrayList<Event> todayEvents(ArrayList<Event> dailyStudySessions) {
+        ArrayList<Event> res = new ArrayList<>();
+        Calendar startDay = Calendar.getInstance();
+        Calendar endDay = Calendar.getInstance();
+
+        int year = startDay.get(Calendar.YEAR);
+        int month = startDay.get(Calendar.MONTH);
+        int day = startDay.get(Calendar.DATE);
+        startDay.set(year, month, day, 0, 0, 0);
+        endDay.set(year,month,day,23,59,59);
+
+        for (Event e: dailyStudySessions) {
+            long eventTime = e.getStart().getDateTime().getValue();
+            if (eventTime >= startDay.getTimeInMillis() && eventTime<=endDay.getTimeInMillis()) {
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
 }

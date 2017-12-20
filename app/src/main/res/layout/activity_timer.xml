@@ -15,7 +15,8 @@
         android:id="@+id/frameLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/box">
+        android:background="@drawable/box"
+        app:layout_constraintStart_toStartOf="parent">
 
         <devlight.io.library.ArcProgressStackView
             android:id="@+id/apsv_presentation"
