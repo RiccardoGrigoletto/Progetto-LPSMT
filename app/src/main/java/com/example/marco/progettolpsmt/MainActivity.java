@@ -16,7 +16,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,7 +34,7 @@ import android.widget.Toast;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.example.marco.progettolpsmt.backend.User;
-import com.example.marco.progettolpsmt.managers.CalendarManager;
+import com.example.marco.progettolpsmt.managers.CalendarUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -188,11 +187,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
                         numberofsession.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                try {   //Log.d("------------------>","During"+numberofsession.getText().toString());
+                                try {
                                     String temp = (String) numberofsession.getItemAtPosition(i);
                                     TimerSettingsSingleton.getInstance().setNumberOfStudySessions(Integer.parseInt(temp), MainActivity.this);
-                                    Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfStudySessions(getApplicationContext()));
-                                } catch (Exception e) {
+                                }catch (Exception e){
                                     e.printStackTrace();
                                     Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
                                 }
@@ -295,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
             break;
             case R.id.action_calendar: {
-                startActivity(CalendarManager.getIntent());
+                startActivity(CalendarUtils.getIntent());
 
             }
             break;
@@ -341,11 +339,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View v) {
                 try {
-                    TimerSettingsSingleton.getInstance().setDurationOfStudySessions(np.getValue() * 60000, MainActivity.this);
-                    Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfStudyDuration(getApplicationContext()));
+                    TimerSettingsSingleton.getInstance().setDurationOfStudySessions(np.getValue()*60000, MainActivity.this);
                     Toast.makeText(MainActivity.this, "Value Updated", Toast.LENGTH_LONG).show();
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                }catch (Exception e){
+                    Toast.makeText(MainActivity.this, "Impossible Update Values.", Toast.LENGTH_LONG).show();
                 }
                 ((TextView) findViewById(R.id.studyDurationSelector))
                         .setText(np.getValue() + " minutes");
@@ -378,11 +375,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View v) {
                 try {
-                    TimerSettingsSingleton.getInstance().setDurationOfBreakSessions(np.getValue() * 60000, MainActivity.this);
-                    Log.d("------------------>", "sdksojdajaosdjao" + TimerSettingsSingleton.getInstance().getNumberOfBreakDuration(getApplicationContext()));
+                    TimerSettingsSingleton.getInstance().setDurationOfBreakSessions(np.getValue()*60000, MainActivity.this);
                     Toast.makeText(MainActivity.this, "Value Updated", Toast.LENGTH_LONG).show();
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "Il campo non può essere vuoto", Toast.LENGTH_LONG).show();
+                }catch (Exception e){
+                    Toast.makeText(MainActivity.this, "Impossible Update Values.", Toast.LENGTH_LONG).show();
                 }
                 ((TextView) findViewById(R.id.breakDurationSelector)).setText(np.getValue() + " minutes");
                 d.dismiss();

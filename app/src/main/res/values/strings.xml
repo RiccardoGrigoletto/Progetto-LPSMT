@@ -50,4 +50,16 @@
     <string name="minutes">%1$ minutes</string>
     <string name="add_study_date_label">study dates</string>
 
+    <!-- Timer Strings -->
+    <string name="studyTimeTextView">Study Time</string>
+    <string name="breakTimeTextView">Break Time</string>
+    <string name="studyProgressTextView">Session Status</string>
+    <string name="coursesSpinnerTextView">Your Courses</string>
+    <string name="argumetSpinnerTextView">Course Arguments</string>
+    <string name="timerStartButton">Start</string>
+    <string name="timerPauseButton">Pause</string>
+    <string name="timerSettingsButton">Settings</string>
+    <string name="timerStopButton">Stop</string>
+
+
 </resources>

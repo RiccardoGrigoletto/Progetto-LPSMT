@@ -30,12 +30,8 @@ import com.example.marco.progettolpsmt.backend.Argument;
 import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.Evaluation;
 import com.example.marco.progettolpsmt.backend.Exam;
-import com.example.marco.progettolpsmt.backend.Log;
-import com.example.marco.progettolpsmt.backend.Settings;
 import com.example.marco.progettolpsmt.backend.User;
-import com.example.marco.progettolpsmt.managers.CalendarManager;
-import com.example.marco.progettolpsmt.managers.DBManager;
-import com.example.marco.progettolpsmt.backend.User;
+import com.example.marco.progettolpsmt.managers.CalendarUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -49,9 +45,6 @@ import com.google.api.client.util.DateTime;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventAttendee;
-import com.google.api.services.calendar.model.EventDateTime;
-import com.google.api.services.calendar.model.EventReminder;
 import com.google.api.services.calendar.model.Events;
 
 import java.io.IOException;
@@ -708,17 +701,17 @@ public class NewCourseActivity extends AppCompatActivity {
                 //adding study sessions in google calendar
                 for(int i = 0 ; i < day.size();i++ ){
                     if(exams.size() != 0){
-                        studyEvent = CalendarManager.eventBuilder(day.get(i),startHour.get(i),endHour.get(i),courseName ,exams.get(0).getDate());
+                        studyEvent = CalendarUtils.eventBuilder(day.get(i),startHour.get(i),endHour.get(i),courseName ,exams.get(0).getDate());
                     }
                     else{
-                        studyEvent = CalendarManager.eventBuilder(day.get(i),startHour.get(i),endHour.get(i),courseName ,null);
+                        studyEvent = CalendarUtils.eventBuilder(day.get(i),startHour.get(i),endHour.get(i),courseName ,null);
                     }
 
                     studyEvent = mService.events().insert("primary", studyEvent).execute();
                 }
                 //adding exams in google calendar
                 for(int i = 0 ; i < exams.size(); i++){
-                    examEvent = CalendarManager.examEventBuilder(exams.get(i).getDate(),courseName);
+                    examEvent = CalendarUtils.examEventBuilder(exams.get(i).getDate(),courseName);
                     examEvent = mService.events().insert("primary", examEvent).execute();
                 }
             }catch (Exception  e) {

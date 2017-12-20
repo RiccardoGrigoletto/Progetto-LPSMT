@@ -14,4 +14,8 @@ public class StudyLog extends Log {
     public StudyLog(Date start, Date end) {
         super(start, end);
     }
+
+    public StudyLog() {
+    }
+
 }

@@ -137,6 +137,17 @@ public class User extends Observable {
         return courses;
     }
 
+    @Exclude public Argument getArgumentByName(String name) {
+        for(int i = 0; i < courses.size(); i++ ){
+            for(int j = 0; j < courses.get(i).getArguments().size(); j++ ) {
+                if (courses.get(i).getArguments().get(j).getName().equals(name)) {
+                    return courses.get(i).getArguments().get(j);
+                }
+            }
+        }
+        return null;
+    }
+
     public String getName() {
         return name;
     }

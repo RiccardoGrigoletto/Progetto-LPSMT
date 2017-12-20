@@ -7,8 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -58,9 +56,6 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
-
         progDialog = new ProgressDialog(this);
         progDialog.setMessage(getString(R.string.loading));
         progDialog.setIndeterminate(false);
@@ -83,8 +78,14 @@ public class LoginActivity extends AppCompatActivity {
         Integer logOut;
         if (bundle!=null) {
             logOut = (Integer)bundle.get("log-out");
-            if (logOut.equals(LOG_OUT)) {
-                logOut();
+            try{
+                if (logOut.equals(LOG_OUT)) {
+                    logOut();
+                }
+            }catch(NullPointerException e ){
+                e.printStackTrace();
+            }catch (Exception e){
+                //doing nothing at the moment
             }
         }
         setContentView(R.layout.activity_login);
@@ -163,8 +164,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         progDialog.show();
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
