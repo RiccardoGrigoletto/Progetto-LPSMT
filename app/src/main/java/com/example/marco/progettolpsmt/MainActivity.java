@@ -39,6 +39,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -55,6 +57,9 @@ import com.google.firebase.auth.FirebaseAuth;
 //import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -86,7 +91,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public User user;
 
     ArrayList<Course> courses;
-    DailyCoursesAdapter<Course> dailyAdapter;
+    ArrayList<Event> dailyStudySessions;
+    DailyCoursesAdapter<Event> todayAdapter;
+    DailyCoursesAdapter<Event> tomorrowAdapter;
     CoursesAdapterMax coursesAdapter;
 
 
@@ -136,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 View view = null;
 
                 courses = (ArrayList<Course>) user.getCourses();
-
+                dailyStudySessions = new ArrayList<>();
                 switch (position) {
                     case 0: {
                         view = LayoutInflater.from(
@@ -145,10 +152,17 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
                         ListView lvToday = view.findViewById(R.id.today_events_list_view);
 
-                        dailyAdapter = new DailyCoursesAdapter<>(getBaseContext(),
-                                R.layout.daily_course, courses);
+                        todayAdapter = new DailyCoursesAdapter<>(getBaseContext(),
+                                R.layout.daily_course, dailyStudySessions);
+                        lvToday.setAdapter(todayAdapter);
+
+                        ListView lvTomorrow = view.findViewById(R.id.tomorrow_events_list_view);
+
+                        tomorrowAdapter = new DailyCoursesAdapter<>(getBaseContext(),
+                                R.layout.daily_course, dailyStudySessions);
+                        lvTomorrow.setAdapter(tomorrowAdapter);
+
                         getResultsFromApi();
-                        lvToday.setAdapter(dailyAdapter);
                     }
                     break;
                     case 1: {
@@ -395,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private void refresh() {
 
         try {
-            dailyAdapter.notifyDataSetChanged();
+            todayAdapter.notifyDataSetChanged();
             coursesAdapter.notifyDataSetChanged();
         } catch (Exception e) {
 
@@ -580,11 +594,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
     }
+
     /**
      * An asynchronous task that handles the Google Calendar API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+    private class MakeRequestTask extends AsyncTask<Void, Void, List<Event>> {
         private com.google.api.services.calendar.Calendar mService = null;
         private Exception mLastError = null;
 
@@ -603,12 +618,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
          * @return List of Strings describing returned events.
          * @throws IOException
          */
-        private List<String> getDataFromApi(Date targetDay) throws IOException {
+        private List<Event> getDataFromApi(Date targetDay) throws IOException {
             // List the next 10 events from the primary calendar.
             DateTime day = new DateTime(targetDay);
-            day.isDateOnly();
             DateTime maxDay = new DateTime(day.getValue()+1000*60*60*48);
-            List<String> eventStrings = new ArrayList<String>();
             Events events = mService.events().list("primary")
                     .setMaxResults(50)
                     .setTimeMin(day)
@@ -617,31 +630,17 @@ public class MainActivity extends AppCompatActivity implements Observer {
                     .setSingleEvents(true)
                     .execute();
 
-            List<Event> items = events.getItems();
-
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    // All-day events don't have start times, so just use
-                    // the start date.
-                    start = event.getStart().getDate();
-                }
-                eventStrings.add(
-                        String.format("%s (%s)", event.getSummary(), start));
-            }
-            return eventStrings;
+            return events.getItems();
         }
 
         @Override
-        protected List<String> doInBackground(Void... voids) {
+        protected List<Event> doInBackground(Void... voids) {
             try {
                 Calendar c = Calendar.getInstance();
                 int year = c.get(Calendar.YEAR);
                 int month = c.get(Calendar.MONTH);
                 int day = c.get(Calendar.DATE);
                 c.set(year, month, day, 0, 0, 0);
-                List<String> dates = getDataFromApi(c.getTime());
-                System.out.println("DATES " + dates.toString());
                 return getDataFromApi(c.getTime());
             } catch (Exception e) {
                 mLastError = e;
@@ -649,5 +648,93 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 return null;
             }
         }
+
+        @Override
+        protected void onPreExecute() {
+            //mProgress.show();
+        }
+
+        @Override
+        protected void onPostExecute(List<Event> output) {
+            mProgress.hide();
+            dailyStudySessions = (ArrayList<Event>) output;
+            ArrayList<Event> res = new ArrayList<>();
+            for (Course c : user.getCourses()) {
+                for (Event e: dailyStudySessions) {
+                    if (c.getName().equals(e.getSummary())) res.add(e);
+                }
+            }
+            dailyStudySessions = res;
+            todayAdapter.setObjects(todayEvents(dailyStudySessions));
+            todayAdapter.notifyDataSetChanged();
+            tomorrowAdapter.setObjects(tomorrowEvents(dailyStudySessions));
+            tomorrowAdapter.notifyDataSetChanged();
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            mProgress.hide();
+            if (mLastError != null) {
+                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
+                    showGooglePlayServicesAvailabilityErrorDialog(
+                            ((GooglePlayServicesAvailabilityIOException) mLastError)
+                                    .getConnectionStatusCode());
+                } else if (mLastError instanceof UserRecoverableAuthIOException) {
+                    startActivityForResult(
+                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
+                            MainActivity.REQUEST_AUTHORIZATION);
+                }
+            }
+        }
     }
+
+    private void filterEvents(ArrayList<Event> dailyStudySessions) {
+        for (Course c : user.getCourses()) {
+            for (Event e: dailyStudySessions) {
+                if (c.getName() != e.getSummary()) dailyStudySessions.remove(e);
+            }
+        }
+    }
+
+    private ArrayList<Event> tomorrowEvents(ArrayList<Event> dailyStudySessions) {
+        ArrayList<Event> res = new ArrayList<>();
+        Calendar startDay = Calendar.getInstance();
+        Calendar endDay = Calendar.getInstance();
+
+        int year = startDay.get(Calendar.YEAR);
+        int month = startDay.get(Calendar.MONTH);
+        int day = startDay.get(Calendar.DATE);
+        startDay.set(year, month, day+1, 0, 0, 0);
+        endDay.set(year,month,day+1,23,59,59);
+
+        for (Event e: dailyStudySessions) {
+            long eventTime = e.getStart().getDateTime().getValue();
+            if (eventTime >= startDay.getTimeInMillis() && eventTime<=endDay.getTimeInMillis()) {
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
+    private ArrayList<Event> todayEvents(ArrayList<Event> dailyStudySessions) {
+        ArrayList<Event> res = new ArrayList<>();
+        Calendar startDay = Calendar.getInstance();
+        Calendar endDay = Calendar.getInstance();
+
+        int year = startDay.get(Calendar.YEAR);
+        int month = startDay.get(Calendar.MONTH);
+        int day = startDay.get(Calendar.DATE);
+        startDay.set(year, month, day, 0, 0, 0);
+        endDay.set(year,month,day,23,59,59);
+
+        for (Event e: dailyStudySessions) {
+            long eventTime = e.getStart().getDateTime().getValue();
+            if (eventTime >= startDay.getTimeInMillis() && eventTime<=endDay.getTimeInMillis()) {
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
 }

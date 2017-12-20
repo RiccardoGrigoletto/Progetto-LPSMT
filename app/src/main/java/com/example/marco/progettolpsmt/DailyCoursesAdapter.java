@@ -1,53 +1,70 @@
 package com.example.marco.progettolpsmt;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.marco.progettolpsmt.backend.Course;
+import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.model.Event;
 
+import org.w3c.dom.Text;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.zip.Inflater;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by ricca on 22/09/2017.
  */
 
-public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
+public class DailyCoursesAdapter<C> extends ArrayAdapter<Event> {
 
-    // declaring our ArrayList of items
-    private ArrayList<Course> objects;
+    public ArrayList<Event> getObjects() {
+        return objects;
+    }
 
-    public DailyCoursesAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<Course> objects) {
-        super(context, resource, objects);
+    public void setObjects(ArrayList<Event> objects) {
         this.objects = objects;
     }
 
+    // declaring our ArrayList of items
+    private ArrayList<Event> objects;
+    int resource;
+
+    public DailyCoursesAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<Event> objects) {
+        super(context, resource, objects);
+        this.objects = objects;
+        this.resource = resource;
+    }
+
+    @Override
+    public int getCount() {
+        return objects.size();
+    }
+
+    @Override
+    public Event getItem(int i) {
+        return objects.get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
     /*
      * we are overriding the getView method here - this is what defines how each
      * list item will look.
      */
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         // assign the view we are converting to a local variable
@@ -57,7 +74,7 @@ public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
         // to inflate it basically means to render, or show, the view.
         if (v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.daily_course, null);
+            v = inflater.inflate(resource, null);
         }
 
 		/*
@@ -67,21 +84,27 @@ public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
 		 *
 		 * Therefore, i refers to the current Item object.
 		 */
-        final Course i = objects.get(position);
+        final Event i = objects.get(position);
 
         if (i != null) {
 
             TextView courseTitle = v.findViewById(R.id.name);
             TextView courseStudyTime = v.findViewById(R.id.hours);
+            TextView fromToSession = v.findViewById(R.id.fromTo);
 
-            courseTitle.setText(i.getName());
-            courseStudyTime.setText("10h");
+            courseTitle.setText(i.getSummary());
+            int duration = (int) ((i.getEnd().getDateTime().getValue()-i.getStart().getDateTime().getValue())/(1000*60*60));
+            String start = ((new DateTime(i.getStart().getDateTime().getValue())).toString().substring(11,16)
+                    + "/"
+                    + (new DateTime(i.getEnd().getDateTime().getValue())).toString().substring(11,16));
+            fromToSession.setText(start);
+            courseStudyTime.setText(String.format("%dh", duration));
             ImageButton startTimer = v.findViewById(R.id.startTimerActivityImageButton);
             startTimer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), TimerActivity.class);
-                    intent.putExtra("courseID",i.getName());
+                    intent.putExtra("courseID",i.getId());
                     view.getContext().startActivity(intent);
                 }
             });
