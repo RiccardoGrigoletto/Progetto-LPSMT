@@ -10,8 +10,6 @@ import java.util.Date;
 public abstract class Log {
     private Date start;
     private Date end;
-    // TODO add location, for place-aware analysis
-
     /**
      * Constructor of an event that started and ended in certain moments.
      * @param start when started
