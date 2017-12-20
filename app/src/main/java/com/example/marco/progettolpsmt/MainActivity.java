@@ -113,9 +113,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         //Toast Login
         Toast.makeText(this, user.getName(), Toast.LENGTH_LONG).show();
-
-        //create calendar TODO
-
         //page creation
         final ViewPager viewPager = findViewById(R.id.vp_ntb);
         viewPager.setAdapter(new PagerAdapter() {
@@ -352,8 +349,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
         });
         d.show();
-
-
     }
 
     public void showNumberPickerDialogForBreakTextView(View v) {

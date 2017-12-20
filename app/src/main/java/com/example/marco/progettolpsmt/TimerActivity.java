@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
@@ -29,18 +28,14 @@ import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.StudyLog;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.example.marco.progettolpsmt.backend.User;
-import com.example.marco.progettolpsmt.managers.DBManager;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import cn.iwgang.countdownview.CountdownView;
 import devlight.io.library.ArcProgressStackView;
 import static devlight.io.library.ArcProgressStackView.Model;
-import com.example.marco.progettolpsmt.managers.CourseManagerSingleton;
 
 
 public class
@@ -148,8 +143,6 @@ TimerActivity extends AppCompatActivity {
                 preSelectItem(extras.getString("courseID"));
                 //CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")).getName()
             }
-            //test TODO delete this line of code
-             boundleArgument = getIntent().getStringExtra("courseID");
         }
         catch (NullPointerException e) {
                 Toast.makeText(TimerActivity.this, "Impossible Getting Courses/Arguments", Toast.LENGTH_LONG).show();
