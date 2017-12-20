@@ -42,7 +42,7 @@ public final class CalendarUtils {
         return intent;
     }
 
-    private  static Pair<String,String> calendarEventDatesStringBuilder(String strtHour, String endHour){
+    private  static Pair<String,String> calendarEventDatesStringBuilder(String strtHour, String endHour,String day ){
 
         //return values
         Pair <String,String> returnPairDates;
@@ -50,9 +50,7 @@ public final class CalendarUtils {
         String endDateFormatted;
         //start date building
         StringBuilder dateBuilder = new StringBuilder();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        String currentDate = dateFormat.format(date);
+        String currentDate = getNextEventDate(day);
         dateBuilder.append(currentDate);
         dateBuilder.append("T");
         dateBuilder.append(strtHour+":00");
@@ -122,7 +120,7 @@ public final class CalendarUtils {
 
         //getting dates
 
-        Pair eventDates = calendarEventDatesStringBuilder(strtHour,endHour);
+        Pair eventDates = calendarEventDatesStringBuilder(strtHour,endHour,day.substring(0,2).toUpperCase());
         //creating calendar event
         Event event = new Event()
                 .setSummary(courseName)
@@ -164,5 +162,38 @@ public final class CalendarUtils {
         event.setReminders(reminders);
 
         return event;
+    }
+
+    public static String getNextEventDate(String dayOfWeek){
+        int numberOfDay=0;
+
+        switch (dayOfWeek){
+            case "SU":
+                numberOfDay = 1;
+                break;
+            case "MO":
+                numberOfDay = 2;
+                break;
+            case "TU":
+                numberOfDay = 3;
+                break;
+            case "WE":
+                numberOfDay = 4;
+                break;
+            case "TH":
+                numberOfDay = 5;
+                break;
+            case "FR":
+                numberOfDay = 6;
+                break;
+            case "SA":
+                numberOfDay = 7;
+                break;
+        }
+
+        Calendar cal = Calendar.getInstance(); // Today, now
+        cal.add(Calendar.DAY_OF_MONTH, (numberOfDay  - cal.get(Calendar.DAY_OF_WEEK)) % 7);
+        cal.add(Calendar.DAY_OF_MONTH, 7); // Bump to next week
+        return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
     }
 }

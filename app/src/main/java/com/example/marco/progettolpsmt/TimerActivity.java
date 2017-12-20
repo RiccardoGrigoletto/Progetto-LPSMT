@@ -148,8 +148,6 @@ TimerActivity extends AppCompatActivity {
                 preSelectItem(extras.getString("courseID"));
                 //CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")).getName()
             }
-            //test TODO delete this line of code
-             boundleArgument = getIntent().getStringExtra("courseID");
         }
         catch (NullPointerException e) {
                 Toast.makeText(TimerActivity.this, "Impossible Getting Courses/Arguments", Toast.LENGTH_LONG).show();

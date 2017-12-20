@@ -696,7 +696,6 @@ public class NewCourseActivity extends AppCompatActivity {
             Event studyEvent = null;
             Event examEvent = null;
             String courseName = ((TextView)findViewById(R.id.courseName)).getText().toString();
-
             try{
                 //adding study sessions in google calendar
                 for(int i = 0 ; i < day.size();i++ ){
