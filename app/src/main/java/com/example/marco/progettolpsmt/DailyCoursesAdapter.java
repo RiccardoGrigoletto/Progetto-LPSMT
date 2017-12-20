@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.marco.progettolpsmt.backend.Course;
+import com.google.api.services.calendar.model.Event;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -34,12 +35,12 @@ import java.util.zip.Inflater;
  * Created by ricca on 22/09/2017.
  */
 
-public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
+public class DailyCoursesAdapter<C> extends ArrayAdapter<com.google.api.services.calendar.model.Event> {
 
     // declaring our ArrayList of items
-    private ArrayList<Course> objects;
+    private ArrayList<Event> objects;
 
-    public DailyCoursesAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<Course> objects) {
+    public DailyCoursesAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<Event> objects) {
         super(context, resource, objects);
         this.objects = objects;
     }
@@ -67,21 +68,22 @@ public class DailyCoursesAdapter<C> extends ArrayAdapter<Course> {
 		 *
 		 * Therefore, i refers to the current Item object.
 		 */
-        final Course i = objects.get(position);
+        final Event i = objects.get(position);
 
         if (i != null) {
 
             TextView courseTitle = v.findViewById(R.id.name);
             TextView courseStudyTime = v.findViewById(R.id.hours);
 
-            courseTitle.setText(i.getName());
-            courseStudyTime.setText("10h");
+            courseTitle.setText(i.getId());
+            int dureation = (int) (i.getEnd().getDate().getValue()-i.getStart().getDate().getValue());
+            courseStudyTime.setText(String.format("%dh", dureation));
             ImageButton startTimer = v.findViewById(R.id.startTimerActivityImageButton);
             startTimer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), TimerActivity.class);
-                    intent.putExtra("courseID",i.getName());
+                    intent.putExtra("courseID",i.getId());
                     view.getContext().startActivity(intent);
                 }
             });
