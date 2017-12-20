@@ -29,11 +29,24 @@
             android:textAlignment="center"
             android:textSize="24sp" />
 
+        <TextView
+            android:id="@+id/nothingToday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="16dp"
+            android:text="Nothing to study today"
+            android:textAlignment="center"
+            android:visibility="invisible" />
+
         <ListView
             android:id="@+id/today_events_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/box_margin" />
+            android:layout_margin="@dimen/box_margin" >
+
+        </ListView>
 
         <TextView
             android:layout_width="match_parent"
@@ -41,6 +54,15 @@
             android:text="Tomorrow"
             android:textAlignment="center"
             android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/nothingTomorrow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Nothing to study tomorrow"
+            android:textAlignment="center"
+            android:visibility="invisible" />
 
         <ListView
             android:id="@+id/tomorrow_events_list_view"
