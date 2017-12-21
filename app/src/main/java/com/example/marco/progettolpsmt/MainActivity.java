@@ -410,10 +410,17 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         try {
             todayAdapter.notifyDataSetChanged();
+            tomorrowAdapter.notifyDataSetChanged();
             coursesAdapter.notifyDataSetChanged();
         } catch (Exception e) {
 
         }
+        if (todayAdapter.getCount() == 0 ) findViewById(R.id.nothingToday).setVisibility(View.VISIBLE);
+        else findViewById(R.id.nothingToday).setVisibility(View.INVISIBLE);
+        if (tomorrowAdapter.getCount() == 0 ) findViewById(R.id.nothingTomorrow).setVisibility(View.VISIBLE);
+        else findViewById(R.id.nothingTomorrow).setVisibility(View.INVISIBLE);
+        if (coursesAdapter.getCount() == 0 ) findViewById(R.id.noCourses).setVisibility(View.VISIBLE);
+        else findViewById(R.id.noCourses).setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -669,6 +676,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             todayAdapter.notifyDataSetChanged();
             tomorrowAdapter.setObjects(tomorrowEvents(dailyStudySessions));
             tomorrowAdapter.notifyDataSetChanged();
+            refresh();
 
         }
 

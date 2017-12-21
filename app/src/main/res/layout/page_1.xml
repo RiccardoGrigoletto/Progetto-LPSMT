@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     >
 
+    <TextView
+        android:id="@+id/noCourses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="Insert a new course using the orange button"
+        android:textAlignment="center"
+        android:visibility="invisible" />
+
     <ListView
         android:id="@+id/coursesListView"
         android:layout_width="match_parent"
