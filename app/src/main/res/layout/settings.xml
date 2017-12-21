@@ -118,7 +118,55 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
             </android.support.constraint.ConstraintLayout>
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/box_margin"
+                android:background="@drawable/box"
+                android:elevation="@dimen/box_elevation"
+                android:paddingBottom="16dp"
+                android:translationZ="@dimen/box_translationZ">
 
+                <TextView
+                    android:id="@+id/userNameLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="11dp"
+                    android:text="You are logged as:"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/userMailLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="11dp"
+                    android:text="e-mail:"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/userNameLabel" />
+
+                <TextView
+                    android:id="@+id/userNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toEndOf="@+id/userNameLabel"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/userMailTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toEndOf="@+id/userMailLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/userNameLabel" />
+            </android.support.constraint.ConstraintLayout>
             <Button
                 android:id="@+id/log_out"
                 style="@style/Widget.AppCompat.Button.Colored"

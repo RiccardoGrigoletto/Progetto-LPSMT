@@ -310,7 +310,6 @@ public class NewCourseActivity extends AppCompatActivity {
             }
             Button deleteButton = findViewById(R.id.deleteCourseButton);
             deleteButton.setVisibility(View.VISIBLE);
-            final Course finalCourseToEdit1 = courseToEdit;
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -320,8 +319,7 @@ public class NewCourseActivity extends AppCompatActivity {
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    u.getCourses().remove(finalCourseToEdit1);
-                                    u.updateOnFirestore();
+                                    finalCourseToEdit.removeOnFirestore();
                                     finish();
                                 }})
                             .setNegativeButton(android.R.string.no, null).create();
