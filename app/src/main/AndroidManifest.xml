@@ -18,7 +18,8 @@
         <activity android:name=".MainActivity" />
         <activity
             android:name=".TimerActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".NewCourseActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
