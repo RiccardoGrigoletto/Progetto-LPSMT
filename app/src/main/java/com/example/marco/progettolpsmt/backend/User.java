@@ -148,6 +148,15 @@ public class User extends Observable {
         return null;
     }
 
+    public Course getCoursebyName(String name){
+        for(int i = 0; i < courses.size(); i++ ){
+                if (courses.get(i).getName().equals(name)) {
+                    return courses.get(i);
+                }
+            }
+        return null;
+    }
+
     public String getName() {
         return name;
     }

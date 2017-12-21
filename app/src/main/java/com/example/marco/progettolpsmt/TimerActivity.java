@@ -41,7 +41,6 @@ import static devlight.io.library.ArcProgressStackView.Model;
 public class
 TimerActivity extends AppCompatActivity {
 
-    private int mCounter = 0;
     public final static int MODEL_COUNT = 3;
     private ArcProgressStackView mArcProgressStackView;
     private Button startButton;
@@ -84,6 +83,7 @@ TimerActivity extends AppCompatActivity {
     private List<Course> userCourses;
     private List<Argument> userArguments;
     private Argument studyingArgument;
+    private Course studyCourse;
     //boundle elements
     private String boundleArgument = null;
     @Override
@@ -182,6 +182,7 @@ TimerActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try{
                     String selectedCourse = courseSpinner.getSelectedItem().toString();
+                    studyCourse = User.getInstance().getCoursebyName(selectedCourse);
                     List<Argument> argList = getArgumentsFromCourse(selectedCourse);
                     initiArgumentSpinner(argList);
                     if(boundleArgument != null){
@@ -265,12 +266,12 @@ TimerActivity extends AppCompatActivity {
         firstArch.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(final Animator animation) {
-                mCounter = 0;
                 animationStateThirdArch = 0;
                 try {
                     if(studyLog.getStart() != null){
                         studyLog.setEnd(new Date());
                         studyingArgument.addLog(studyLog);
+                        studyCourse.updateOnFirestore();
                     }
                 }catch(Exception e){
                     Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
@@ -280,7 +281,6 @@ TimerActivity extends AppCompatActivity {
             }
             @Override
             public void onAnimationRepeat(final Animator animation) {
-                mCounter++;
             }
         });
 
@@ -477,6 +477,7 @@ TimerActivity extends AppCompatActivity {
                 try {
                     studyLog.setEnd(new Date());
                     studyingArgument.addLog(studyLog);
+                    studyCourse.updateOnFirestore();
                 }catch(Exception e){
                     Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                 }
@@ -538,6 +539,7 @@ TimerActivity extends AppCompatActivity {
             if(studyLog.getStart() != null) {
                 studyLog.setEnd(new Date());
                 studyingArgument.addLog(studyLog);
+                studyCourse.updateOnFirestore();
             }
         }catch(Exception e){
             Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
@@ -550,6 +552,7 @@ TimerActivity extends AppCompatActivity {
             if(studyLog.getStart() != null) {
                 studyLog.setEnd(new Date());
                 studyingArgument.addLog(studyLog);
+                studyCourse.updateOnFirestore();
             }
         }catch(Exception e){
             Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
@@ -575,6 +578,7 @@ TimerActivity extends AppCompatActivity {
                             if(studyLog.getStart() != null){
                                 studyLog.setEnd(new Date());
                                 studyingArgument.addLog(studyLog);
+                                studyCourse.updateOnFirestore();
                             }
                         }catch(Exception e){
                             Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();

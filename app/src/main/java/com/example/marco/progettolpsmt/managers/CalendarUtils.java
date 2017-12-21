@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
@@ -136,7 +137,7 @@ public final class CalendarUtils {
                 .setDateTime(endDateTime)
                 .setTimeZone(Calendar.getInstance().getTimeZone().getID());
         event.setEnd(end);
-
+        Log.d("TimeZOne",""+startDateTime.getTimeZoneShift());
         //setting recurrency
         String[] recurrence;
         if(examDate != null) {
@@ -191,8 +192,15 @@ public final class CalendarUtils {
                 break;
         }
 
-        Calendar cal = Calendar.getInstance(); // Today, now
-        cal.add(Calendar.DAY_OF_MONTH, (numberOfDay  - cal.get(Calendar.DAY_OF_WEEK)) % 7);
-        return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
+
+        Calendar date = Calendar.getInstance();
+        int diff = numberOfDay - date.get(Calendar.DAY_OF_WEEK);
+        if (diff <= 0) {
+            diff += 7;
+        }
+        date.add(Calendar.DAY_OF_MONTH, diff);
+        DateFormat d = new SimpleDateFormat("yyyy-MM-dd");
+        d.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return d.format(date.getTime());
     }
 }

@@ -120,6 +120,7 @@ public class Argument extends Observable {
      */
     public void addLog(Log log) {
         journal.add(log);
+
     }
 
     /**

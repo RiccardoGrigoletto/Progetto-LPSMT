@@ -7,7 +7,7 @@ import java.util.Date;
  * <br>
  * An event is represented by when it started, and when it ended.
  */
-public abstract class Log {
+public class Log {
     private Date start;
     private Date end;
     /**
