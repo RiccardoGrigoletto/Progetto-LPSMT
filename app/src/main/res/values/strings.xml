@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ProgettoLPSMT</string>
+    <string name="app_name">Study Tracker</string>
     <string name="action_timer">timer</string>
     <string name="action_calendar">calendar</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
