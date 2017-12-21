@@ -38,7 +38,7 @@
             android:layout_margin="16dp"
             android:text="Nothing to study today"
             android:textAlignment="center"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <ListView
             android:id="@+id/today_events_list_view"
@@ -62,7 +62,7 @@
             android:layout_margin="16dp"
             android:text="Nothing to study tomorrow"
             android:textAlignment="center"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <ListView
             android:id="@+id/tomorrow_events_list_view"
