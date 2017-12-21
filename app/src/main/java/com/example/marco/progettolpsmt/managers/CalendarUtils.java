@@ -193,7 +193,6 @@ public final class CalendarUtils {
 
         Calendar cal = Calendar.getInstance(); // Today, now
         cal.add(Calendar.DAY_OF_MONTH, (numberOfDay  - cal.get(Calendar.DAY_OF_WEEK)) % 7);
-        cal.add(Calendar.DAY_OF_MONTH, 7); // Bump to next week
         return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
     }
 }

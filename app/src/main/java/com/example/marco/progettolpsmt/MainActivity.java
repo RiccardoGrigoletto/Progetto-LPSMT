@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     final int VIEWS = 3;
 
     GoogleAccountCredential mCredential;
-    ProgressDialog mProgress;
-
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -115,11 +113,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        mProgress = new ProgressDialog(this);
-        mProgress.setMessage("Calling Google Calendar ...");
 
-        //Toast Login
-        Toast.makeText(this, user.getName(), Toast.LENGTH_LONG).show();
         //page creation
         final ViewPager viewPager = findViewById(R.id.vp_ntb);
         viewPager.setAdapter(new PagerAdapter() {
@@ -209,6 +203,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
                             }
                         });
+
+                        ((TextView)view.findViewById(R.id.userNameTextView)).setText(user.getName());
+                        ((TextView)view.findViewById(R.id.userMailTextView)).setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
                         Button logOut = view.findViewById(R.id.log_out);
                         logOut.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -234,10 +232,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
 
         models.add(ntbModelBuilder(
-                R.drawable.ic_home_black_24dp,
+                R.drawable.ic_event_note_black_24dp,
                 R.color.colorPrimaryDark));
         models.add(ntbModelBuilder(
-                R.drawable.ic_account_circle_black_24dp,
+                R.drawable.ic_list_black_24dp,
                 R.color.colorPrimaryDark));
         models.add(ntbModelBuilder(
                 R.drawable.ic_settings_black_24dp,
@@ -663,12 +661,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         @Override
         protected void onPreExecute() {
-            //mProgress.show();
         }
 
         @Override
         protected void onPostExecute(List<Event> output) {
-            mProgress.hide();
             dailyStudySessions = (ArrayList<Event>) output;
             ArrayList<Event> res = new ArrayList<>();
             for (Course c : user.getCourses()) {
@@ -687,7 +683,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         @Override
         protected void onCancelled() {
-            mProgress.hide();
             if (mLastError != null) {
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
                     showGooglePlayServicesAvailabilityErrorDialog(

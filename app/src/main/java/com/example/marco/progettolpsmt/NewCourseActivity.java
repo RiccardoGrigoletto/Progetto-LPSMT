@@ -89,9 +89,9 @@ public class NewCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //init of study event arraylists
 
-        day = new ArrayList<String>();
-        startHour  = new ArrayList<String>();
-        endHour = new ArrayList<String>();
+        day = new ArrayList<>();
+        startHour  = new ArrayList<>();
+        endHour = new ArrayList<>();
         exams  = new ArrayList<>();
 
         final User u = User.getInstance();
@@ -308,9 +308,11 @@ public class NewCourseActivity extends AppCompatActivity {
                         });
                 ll.addView(view1);
             }
+
+            findViewById(R.id.studySessionsEditLabel).setVisibility(View.VISIBLE);
+
             Button deleteButton = findViewById(R.id.deleteCourseButton);
             deleteButton.setVisibility(View.VISIBLE);
-            final Course finalCourseToEdit1 = courseToEdit;
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -320,8 +322,7 @@ public class NewCourseActivity extends AppCompatActivity {
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    u.getCourses().remove(finalCourseToEdit1);
-                                    u.updateOnFirestore();
+                                    finalCourseToEdit.removeOnFirestore();
                                     finish();
                                 }})
                             .setNegativeButton(android.R.string.no, null).create();
@@ -401,7 +402,7 @@ public class NewCourseActivity extends AppCompatActivity {
         }
         //exams
         LinearLayout examsLinearLayout = findViewById(R.id.examsList);
-        DateFormat df = new SimpleDateFormat("dd - MM - yyyy", new Locale("it"));
+        DateFormat df = new SimpleDateFormat("dd - MM - yyyy");
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
             try {
@@ -410,7 +411,7 @@ public class NewCourseActivity extends AppCompatActivity {
                 e.printStackTrace();
                 //DATE ERROR RECOVERY
             }
-            //exams.add(new Exam(examDate));
+            exams.add(new Exam(examDate));
 
         }
         //study sessions
