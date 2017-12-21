@@ -89,9 +89,9 @@ public class NewCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //init of study event arraylists
 
-        day = new ArrayList<String>();
-        startHour  = new ArrayList<String>();
-        endHour = new ArrayList<String>();
+        day = new ArrayList<>();
+        startHour  = new ArrayList<>();
+        endHour = new ArrayList<>();
         exams  = new ArrayList<>();
 
         final User u = User.getInstance();
@@ -399,7 +399,7 @@ public class NewCourseActivity extends AppCompatActivity {
         }
         //exams
         LinearLayout examsLinearLayout = findViewById(R.id.examsList);
-        DateFormat df = new SimpleDateFormat("dd - MM - yyyy", new Locale("it"));
+        DateFormat df = new SimpleDateFormat("dd - MM - yyyy");
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
             try {
@@ -408,7 +408,7 @@ public class NewCourseActivity extends AppCompatActivity {
                 e.printStackTrace();
                 //DATE ERROR RECOVERY
             }
-            //exams.add(new Exam(examDate));
+            exams.add(new Exam(examDate));
 
         }
         //study sessions

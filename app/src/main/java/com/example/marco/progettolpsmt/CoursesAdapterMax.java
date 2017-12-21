@@ -79,6 +79,7 @@ public class CoursesAdapterMax extends ArrayAdapter<Course> {
             llArgs.addView(view1);
         }
         LinearLayout llExams = (view.findViewById(R.id.examsLinearLayout));
+        llExams.removeAllViews();
         for (Exam exam : course.getExams()) {
             View view1 = inflater.inflate(R.layout.item_head_2, null, false);
             Calendar calendar = Calendar.getInstance();
