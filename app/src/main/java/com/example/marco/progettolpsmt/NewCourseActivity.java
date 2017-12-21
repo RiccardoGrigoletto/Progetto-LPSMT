@@ -308,6 +308,9 @@ public class NewCourseActivity extends AppCompatActivity {
                         });
                 ll.addView(view1);
             }
+
+            findViewById(R.id.studySessionsEditLabel).setVisibility(View.VISIBLE);
+
             Button deleteButton = findViewById(R.id.deleteCourseButton);
             deleteButton.setVisibility(View.VISIBLE);
             deleteButton.setOnClickListener(new View.OnClickListener() {

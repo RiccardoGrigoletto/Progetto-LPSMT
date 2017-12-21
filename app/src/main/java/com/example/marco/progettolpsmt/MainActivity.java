@@ -414,11 +414,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         }
         if (todayAdapter.getCount() == 0 ) findViewById(R.id.nothingToday).setVisibility(View.VISIBLE);
-        else findViewById(R.id.nothingToday).setVisibility(View.INVISIBLE);
+        else findViewById(R.id.nothingToday).setVisibility(View.GONE);
         if (tomorrowAdapter.getCount() == 0 ) findViewById(R.id.nothingTomorrow).setVisibility(View.VISIBLE);
-        else findViewById(R.id.nothingTomorrow).setVisibility(View.INVISIBLE);
+        else findViewById(R.id.nothingTomorrow).setVisibility(View.GONE);
         if (coursesAdapter.getCount() == 0 ) findViewById(R.id.noCourses).setVisibility(View.VISIBLE);
-        else findViewById(R.id.noCourses).setVisibility(View.INVISIBLE);
+        else findViewById(R.id.noCourses).setVisibility(View.GONE);
     }
 
     /**
