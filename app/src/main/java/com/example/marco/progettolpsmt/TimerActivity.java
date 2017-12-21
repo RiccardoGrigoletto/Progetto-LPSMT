@@ -267,6 +267,14 @@ TimerActivity extends AppCompatActivity {
             public void onAnimationEnd(final Animator animation) {
                 mCounter = 0;
                 animationStateThirdArch = 0;
+                try {
+                    if(studyLog.getStart() != null){
+                        studyLog.setEnd(new Date());
+                        studyingArgument.addLog(studyLog);
+                    }
+                }catch(Exception e){
+                    Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+                }
                 countdownView.start(breakTimeTimer);
                 secondArch.start();
             }
@@ -281,6 +289,7 @@ TimerActivity extends AppCompatActivity {
             public void onAnimationEnd(final Animator animation) {
                 animationStateSecondArch = 0;
                 thirdArch.pause();
+                startButton.setEnabled(true);
                reverseFirstArch.reverse();
                reverseSecondArch.reverse();
             }

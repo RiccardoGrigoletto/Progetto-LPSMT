@@ -190,7 +190,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
                         ArrayAdapter<CharSequence> adapter_1_to10 = ArrayAdapter.createFromResource(getBaseContext(),
                                 R.array.one_to_ten_array, android.R.layout.simple_spinner_item);
                         numberofsession.setAdapter(adapter_1_to10);
-                        numberofsession.setSelection((int) TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this) % 10);
+
+                        numberofsession.setSelection((int) TimerSettingsSingleton.getInstance().getNumberOfStudySessions(MainActivity.this)-1);
                         numberofsession.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -415,12 +416,16 @@ public class MainActivity extends AppCompatActivity implements Observer {
         } catch (Exception e) {
 
         }
-        if (todayAdapter.getCount() == 0 ) findViewById(R.id.nothingToday).setVisibility(View.VISIBLE);
-        else findViewById(R.id.nothingToday).setVisibility(View.INVISIBLE);
-        if (tomorrowAdapter.getCount() == 0 ) findViewById(R.id.nothingTomorrow).setVisibility(View.VISIBLE);
-        else findViewById(R.id.nothingTomorrow).setVisibility(View.INVISIBLE);
-        if (coursesAdapter.getCount() == 0 ) findViewById(R.id.noCourses).setVisibility(View.VISIBLE);
-        else findViewById(R.id.noCourses).setVisibility(View.INVISIBLE);
+        try{
+            if (todayAdapter.getCount() == 0 ) findViewById(R.id.nothingToday).setVisibility(View.VISIBLE);
+            else findViewById(R.id.nothingToday).setVisibility(View.INVISIBLE);
+            if (tomorrowAdapter.getCount() == 0 ) findViewById(R.id.nothingTomorrow).setVisibility(View.VISIBLE);
+            else findViewById(R.id.nothingTomorrow).setVisibility(View.INVISIBLE);
+            if (coursesAdapter.getCount() == 0 ) findViewById(R.id.noCourses).setVisibility(View.VISIBLE);
+            else findViewById(R.id.noCourses).setVisibility(View.INVISIBLE);
+        }catch(NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -101,6 +101,7 @@ public class Settings extends Observable {
     public void setStudyDuration(Integer studyDuration) throws IllegalArgumentException {
         if (studyDuration <= 0)
             throw new IllegalArgumentException("'studyDuration' must be a non-zero positive number");
+        this.studyDuration = studyDuration;
 
     }
 
