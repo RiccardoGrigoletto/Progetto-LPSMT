@@ -84,6 +84,8 @@ public class NewCourseActivity extends AppCompatActivity {
     private ArrayList<String> startHour;
     private ArrayList<String> endHour;
     private ArrayList<Exam> exams;
+    private String courseToDeleteName ="";
+    private boolean isCourseDeleting = false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -196,7 +198,7 @@ public class NewCourseActivity extends AppCompatActivity {
 
         Button createCourseButton = findViewById(R.id.addCourseButton);
 
-        final Course finalCourseToEdit = courseToEdit;
+        final  Course finalCourseToEdit = courseToEdit;
         createCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -322,8 +324,16 @@ public class NewCourseActivity extends AppCompatActivity {
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    finalCourseToEdit.removeOnFirestore();
-                                    finish();
+                                    try{
+                                        courseToDeleteName = finalCourseToEdit.getName();
+                                        //finalCourseToEdit.removeOnFirestore();
+                                        isCourseDeleting = true;
+                                        getResultsFromApi();
+                                        Toast.makeText(getBaseContext(),"Course and Study Session Deleted",Toast.LENGTH_LONG);
+                                        finish();
+                                    }catch (Exception e){
+                                        Toast.makeText(getBaseContext(),"Impossible delete Course. Try later.",Toast.LENGTH_LONG);
+                                    }
                                 }})
                             .setNegativeButton(android.R.string.no, null).create();
                     deleteCourseDialog.show();
@@ -669,7 +679,11 @@ public class NewCourseActivity extends AppCompatActivity {
         @Override
         protected Event doInBackground(Void... params) {
             try {
-                return crateEventFromAPI();
+                if(isCourseDeleting == false){
+                    return crateEventFromAPI();
+                }else{
+                    return deleteEvents();
+                }
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
@@ -678,35 +692,29 @@ public class NewCourseActivity extends AppCompatActivity {
         }
 
         /**
-         * Fetch a list of the next 10 events from the primary calendar.
+         * Fetch a list of the events from the primary calendar.
          *
-         * @return List of Strings describing returned events.
+         * @return deleted Eevent.
          * @throws IOException
          */
-        private List<String> getDataFromApi() throws IOException {
+        private  Event deleteEvents() throws IOException {
             // List the next 10 events from the primary calendar.
             DateTime now = new DateTime(System.currentTimeMillis());
             List<String> eventStrings = new ArrayList<String>();
             Events events = mService.events().list("primary")
-                    .setMaxResults(10)
                     .setTimeMin(now)
-                    .setOrderBy("startTime")
-                    .setSingleEvents(true)
                     .execute();
 
             List<Event> items = events.getItems();
-
+            Event deletedEvent = null;
             for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    // All-day events don't have start times, so just use
-                    // the start date.
-                    start = event.getStart().getDate();
+                 event.getSummary();
+                if(courseToDeleteName.equals(event.getSummary())){
+                    mService.events().delete("primary", event.getId()).execute();
+                    deletedEvent = event;
                 }
-                eventStrings.add(
-                        String.format("%s (%s)", event.getSummary(), start));
             }
-            return eventStrings;
+            return deletedEvent;
         }
         /**
          * create a Event for the ...

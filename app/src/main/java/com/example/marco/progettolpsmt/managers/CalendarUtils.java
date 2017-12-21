@@ -200,7 +200,6 @@ public final class CalendarUtils {
         }
         date.add(Calendar.DAY_OF_MONTH, diff);
         DateFormat d = new SimpleDateFormat("yyyy-MM-dd");
-        d.setTimeZone(TimeZone.getTimeZone("GMT"));
         return d.format(date.getTime());
     }
 }
