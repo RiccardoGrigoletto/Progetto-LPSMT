@@ -49,6 +49,18 @@ public final class CalendarUtils {
         Pair <String,String> returnPairDates;
         String strtDateFormatted;
         String endDateFormatted;
+
+        /**
+         * Temporary date solution
+         */
+
+        strtHour = formateHours(strtHour);
+        endHour = formateHours(endHour);
+
+
+        /**
+         * end solution
+         */
         //start date building
         StringBuilder dateBuilder = new StringBuilder();
         String currentDate = getNextEventDate(day);
@@ -201,5 +213,24 @@ public final class CalendarUtils {
         date.add(Calendar.DAY_OF_MONTH, diff);
         DateFormat d = new SimpleDateFormat("yyyy-MM-dd");
         return d.format(date.getTime());
+    }
+
+
+
+    /**
+     * temporary  solution for a wrong hour
+     */
+    private static String formateHours(String hour){
+        int h = Integer.parseInt(hour.substring(0,2));
+        --h;
+        StringBuilder builder = new StringBuilder();
+        if(h <10) {
+            builder.append("0");
+        }
+        builder.append(h);
+        builder.append(":00");
+
+        return builder.toString();
+
     }
 }
