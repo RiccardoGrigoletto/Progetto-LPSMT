@@ -67,7 +67,7 @@ public class TimerSettingsSingleton extends Application {
         else {
             timerPreferences = PreferenceManager
                     .getDefaultSharedPreferences(c);
-            returnStudySessionAmout = timerPreferences.getInt("studysession",99999);
+            returnStudySessionAmout = timerPreferences.getInt("studysession",4);
             //if not sette on fireetore, it will be setted here
             setNumberOfStudySessions((int)returnStudySessionAmout,c);
         }
@@ -81,7 +81,7 @@ public class TimerSettingsSingleton extends Application {
         }else{
             timerPreferences = PreferenceManager
                     .getDefaultSharedPreferences(c);
-            breakDurationReturnValue = timerPreferences.getInt("breakduration",99999);
+            breakDurationReturnValue = timerPreferences.getInt("breakduration",300000);
             setDurationOfBreakSessions((int)breakDurationReturnValue,c);
         }
 
@@ -95,7 +95,7 @@ public class TimerSettingsSingleton extends Application {
         }else{
             timerPreferences = PreferenceManager
                     .getDefaultSharedPreferences(c);
-            studyDurationRetunrValue = timerPreferences.getInt("studyduration",99999);
+            studyDurationRetunrValue = timerPreferences.getInt("studyduration",1500000);
             setDurationOfStudySessions((int)studyDurationRetunrValue,c);
         }
         return studyDurationRetunrValue;
