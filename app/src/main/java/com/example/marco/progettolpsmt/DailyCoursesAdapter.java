@@ -104,7 +104,7 @@ public class DailyCoursesAdapter<C> extends ArrayAdapter<Event> {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), TimerActivity.class);
-                    intent.putExtra("courseID",i.getId());
+                    intent.putExtra("courseID",i.getSummary());
                     view.getContext().startActivity(intent);
                 }
             });

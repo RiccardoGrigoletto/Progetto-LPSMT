@@ -139,8 +139,9 @@ TimerActivity extends AppCompatActivity {
              *
              */
             initiCourseSpinner();
-            if (extras != null) {
-                preSelectItem(extras.getString("courseID"));
+            Bundle extrass = getIntent().getExtras();
+            if (extrass != null) {
+                preSelectItem(extrass.getString("courseID"));
                 //CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")).getName()
             }
         }
