@@ -326,7 +326,7 @@ public class NewCourseActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     try{
                                         courseToDeleteName = finalCourseToEdit.getName();
-                                        //finalCourseToEdit.removeOnFirestore();
+                                        finalCourseToEdit.removeOnFirestore();
                                         isCourseDeleting = true;
                                         getResultsFromApi();
                                         Toast.makeText(getBaseContext(),"Course and Study Session Deleted",Toast.LENGTH_LONG);

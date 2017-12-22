@@ -79,7 +79,7 @@ public class Course implements Observer {
     public void removeOnFirestore() {
         if (onFirestore != null) {
             onFirestore.delete();
-            onFirestore = null;
+            //onFirestore = null;
         }
     }
 
