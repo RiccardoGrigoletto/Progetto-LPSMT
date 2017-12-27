@@ -616,7 +616,7 @@ TimerActivity extends AppCompatActivity {
         for(int i = 0; i < User.getInstance().getCourses().size(); i++ ){
             coursesNames.add(User.getInstance().getCourses().get(i).getName());
         }
-        ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,coursesNames);
+        ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,R.layout.spinner_custom_view,coursesNames);
         courseSpinner.setAdapter(courseAdapter);
     }
 
@@ -631,12 +631,12 @@ TimerActivity extends AppCompatActivity {
             for(int i = 0; i < arguments.size(); i++ ){
                 argumentsName.add(arguments.get(i).getName());
             }
-            ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,argumentsName);
+            ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,R.layout.spinner_custom_view,argumentsName);
             argumentSpinner.setAdapter(courseAdapter);
         }
         else{
             argumentsName.add("");
-            ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,argumentsName);
+            ArrayAdapter<String> courseAdapter = new ArrayAdapter<String>(this,R.layout.spinner_custom_view,argumentsName);
             argumentSpinner.setAdapter(courseAdapter);
         }
 

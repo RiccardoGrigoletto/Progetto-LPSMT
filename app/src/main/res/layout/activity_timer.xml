@@ -152,7 +152,7 @@
         app:layout_constraintHorizontal_bias="0.82"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:maxWidth="50dp"/>
+        android:maxWidth="30dp"/>
 
     <Spinner
         android:id="@+id/courseSpinner"
@@ -162,7 +162,7 @@
         android:layout_marginTop="416dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:maxWidth="50dp"/>
+        android:maxWidth="30dp"/>
 
     <TextView
         android:id="@+id/coursesTextView"
