@@ -45,7 +45,6 @@ public class NotificationUpdateService extends WearableListenerService
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-
         resultReceiver = intent.getParcelableExtra("receiver");
 
 
@@ -103,8 +102,12 @@ public class NotificationUpdateService extends WearableListenerService
         intent.putExtra("remainingTime", remainingTime);
         intent.putExtra("status", status);
         intent.putExtra("now",(new Date()).getTime());
-        //startActivity(intent);
-        resultReceiver.send(100,intent.getExtras());
-
+        if (resultReceiver == null) {
+            Intent intentRec =  new Intent(this,WearableActivity.class);
+            startActivity(intentRec);
+        }
+        else {
+            resultReceiver.send(100, intent.getExtras());
+        }
     }
 }
