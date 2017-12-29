@@ -8,10 +8,13 @@ import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -24,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.example.marco.progettolpsmt.backend.Log;
@@ -101,6 +105,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
     //boundle elements
     private String boundleArgument = null;
     GoogleApiClient mGoogleApiClient;
+    private Intent service;
+
     @Override
     protected void onCreate(final Bundle extras) {
         super.onCreate(extras);
@@ -429,14 +435,15 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             @Override
             @TargetApi(Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
+
+                buildWearableNotification("start");
                 /**
                  * in order to avoid sync pause/stop button,
                  * here this button will be forced to Pause status
                  */
                 pauseBtnBinaryFlag = 1;
                 pause.setText(R.string.timerPauseButton);
-                /*timerNotification.notify(getBaseContext(),"Studying",1);
-                final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();*/
+                timerNotification.notify(getBaseContext(),"Studying",1);
                 if(animationStateThirdArch != 0) {
                     firstArch.resume();
                     thirdArch.resume();
@@ -468,7 +475,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 argumentSpinner.setEnabled(false);
                 pause.setEnabled(true);
 
-                buildWearableNotification("start");
             }
         });
 
@@ -478,6 +484,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             public void onClick(View v) {
 
                 if(pauseBtnBinaryFlag != 0) {
+
+                    buildWearableNotification("pause");
                     pause.setText(R.string.timerStopButton);
                     timerNotification.notify(getBaseContext(), "Timer Paused", 1);
                     final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
@@ -506,7 +514,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 }catch(Exception e){
                     Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                 }
-                buildWearableNotification("pause");
+
 
             }
         });
@@ -521,7 +529,10 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
 
         //spinners onchange listeners
 
-
+        service = new Intent(this, NotificationService.class);
+        MyResultReceiver resultReceiver = new MyResultReceiver(null);
+        service.putExtra("receiver", resultReceiver);
+        startService(service);
     }
 
     private void buildWearableNotification(final String status) {
@@ -784,6 +795,29 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
     public void onPointerCaptureChanged(boolean hasCapture) {
         Log.e("wearable", "onPointerCaptureChanged(): no Google API Client connection");
 
+    }
+
+    private class MyResultReceiver  extends ResultReceiver {
+        public MyResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(final int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            final String status = resultData.getString("status");
+            long remainingTime = resultData.getLong("remainingTime", 0);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    switch (status) {
+                        case "start":startButton.performClick();break;
+                        case "pause":pause.performClick();break;
+                    }
+
+                }
+            });
+        }
     }
 }
 

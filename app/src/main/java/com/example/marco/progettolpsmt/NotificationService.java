@@ -23,7 +23,7 @@ import java.util.Date;
  * Created by ricca on 28/12/2017.
  */
 
-public class NotificationUpdateService extends WearableListenerService
+public class NotificationService extends WearableListenerService
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         ResultCallback<DataApi.DeleteDataItemsResult> {
     private static final String TAG = "NotificationUpdate";
@@ -59,12 +59,11 @@ public class NotificationUpdateService extends WearableListenerService
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
                 DataMap dataMap = DataMapItem.fromDataItem(dataEvent.getDataItem()).getDataMap();
-                String courseName = dataMap.getString("courseName");
-                String argumentName = dataMap.getString("argumentName");
+
                 String status = dataMap.getString("status");
                 long remainingTime = dataMap.getLong("remainingTime");
-                if ("/countdown".equals(dataEvent.getDataItem().getUri().getPath())) {
-                    buildWearableNotification(courseName, argumentName, remainingTime,status);
+                if ("/countdownrev".equals(dataEvent.getDataItem().getUri().getPath())) {
+                    buildNotification(status,remainingTime);
                 }
                 else if (dataEvent.getType() == DataEvent.TYPE_DELETED) {
                     if (Log.isLoggable(TAG, Log.DEBUG)) {
@@ -90,21 +89,18 @@ public class NotificationUpdateService extends WearableListenerService
     @Override
     public void onResult(DataApi.DeleteDataItemsResult deleteDataItemsResult) {
         if (!deleteDataItemsResult.getStatus().isSuccess()) {
-            Log.e(TAG, "dismissWearableNotification(): failed to delete DataItem");
+            Log.e(TAG, "NotificationService(): failed to delete DataItem");
         }
 
     }
 
-    private void buildWearableNotification(String courseName, String argumentName, long remainingTime, String status) {
+    private void buildNotification(String status, long remainingTime) {
 
-        Intent intent = new Intent(this,WearableActivity.class);
-        intent.putExtra("courseName",courseName);
-        intent.putExtra("argumentName", argumentName);
-        intent.putExtra("remainingTime", remainingTime);
+        Intent intent = new Intent(this,TimerActivity.class);
         intent.putExtra("status", status);
-        intent.putExtra("now",(new Date()).getTime());
+        intent.putExtra("remainingTime", remainingTime);
         //startActivity(intent);
-        resultReceiver.send(100,intent.getExtras());
+        resultReceiver.send(200,intent.getExtras());
 
     }
 }
