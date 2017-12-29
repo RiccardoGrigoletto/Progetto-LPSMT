@@ -66,32 +66,27 @@ public class NotificationUpdateService extends WearableListenerService
         }
     }
     @Override
-    public void onConnected(Bundle bundle) {        Log.d("DIOAND","onCreate()");
+    public void onConnected(Bundle bundle) {
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d("DIOAND","onCreate()");
+
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d("DIOAND","onCreate()");
-    }
+    public void onConnectionFailed(ConnectionResult connectionResult) {    }
 
     @Override
     public void onResult(DataApi.DeleteDataItemsResult deleteDataItemsResult) {
         if (!deleteDataItemsResult.getStatus().isSuccess()) {
             Log.e(TAG, "dismissWearableNotification(): failed to delete DataItem");
         }
-        Log.d("DIOAND","onCreate()");
-        buildWearableNotification("CIAONE");
 
     }
 
     private void buildWearableNotification(String content) {
-        Log.d("DIOAND","onCreate()");
 
         Intent intent = new Intent(this,WearableActivity.class);
         intent.putExtra("courseName",content);
