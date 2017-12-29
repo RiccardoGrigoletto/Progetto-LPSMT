@@ -116,6 +116,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 .addOnConnectionFailedListener(this)
                 .useDefaultAccount()
                 .build();
+        mGoogleApiClient.connect();
         //
         confirmChangeCourseArgumentDialog = new AlertDialog.Builder(this)
                 .setTitle("Change Course or Argument")
@@ -467,7 +468,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 argumentSpinner.setEnabled(false);
                 pause.setEnabled(true);
 
-                buildWearableNotification();
+                buildWearableNotification("start");
             }
         });
 
@@ -505,6 +506,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 }catch(Exception e){
                     Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                 }
+                buildWearableNotification("pause");
 
             }
         });
@@ -522,21 +524,22 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
 
     }
 
-    private void buildWearableNotification() {
+    private void buildWearableNotification(final String status) {
         new Thread(new Runnable() {
 
             @Override
             public void run() {
-                mGoogleApiClient.connect();
-                if (mGoogleApiClient.isConnected()) {
+                if (mGoogleApiClient.isConnected() || mGoogleApiClient.isConnecting()) {
                     //if you've put data on the remote node
                     String nodeId = getRemoteNodeId();
                     // Or If you already know the node id
                     // String nodeId = "some_node_id";
-                    Uri uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).authority(nodeId).path("/start").build();
-                    Log.v("uriwear",uri.getPath());
+                    Uri uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).authority(nodeId).path("/countdown").build();
                     PutDataMapRequest putDataMapRequest = PutDataMapRequest.create (uri.getPath());
-                    putDataMapRequest.getDataMap().putString("content", "ciao mondo" + (new Date()).getTime());
+                    putDataMapRequest.getDataMap().putString("courseName", courseSpinner.getSelectedItem().toString());
+                    putDataMapRequest.getDataMap().putString("argumentName", argumentSpinner.getSelectedItem().toString());
+                    putDataMapRequest.getDataMap().putString("status", status);
+                    putDataMapRequest.getDataMap().putLong("remainingTime",countdownView.getRemainTime());
                     PutDataRequest request = putDataMapRequest.asPutDataRequest();
                     request.setUrgent();
                     Wearable.DataApi.putDataItem(mGoogleApiClient,request)
@@ -548,7 +551,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                                                 + "status: " + dataItemResult.getStatus().getStatusCode());
                                     }
                                     else {
-                                        Log.e("wearable", "buildWatchOnlyNotification(): Success to set the data, "
+                                        Log.v("wearable", "buildWatchOnlyNotification(): Success to set the data, "
                                                 + "status: " + dataItemResult.getStatus().getStatusCode());
 
                                     }

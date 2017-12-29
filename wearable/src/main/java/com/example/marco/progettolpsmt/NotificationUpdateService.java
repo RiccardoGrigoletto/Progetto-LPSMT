@@ -2,6 +2,8 @@ package com.example.marco.progettolpsmt;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -24,12 +26,12 @@ public class NotificationUpdateService extends WearableListenerService
         ResultCallback<DataApi.DeleteDataItemsResult> {
     private static final String TAG = "NotificationUpdate";
     private GoogleApiClient mGoogleApiClient;
+    private ResultReceiver resultReceiver;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Log.d("DIOAND","onCreate()");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(this)
@@ -40,7 +42,10 @@ public class NotificationUpdateService extends WearableListenerService
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("DIOAND","onCreate()");
+
+
+        resultReceiver = intent.getParcelableExtra("receiver");
+
 
         return super.onStartCommand(intent, flags, startId);
 
@@ -49,13 +54,15 @@ public class NotificationUpdateService extends WearableListenerService
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
 
-        Log.d("DIOAND","onDataChanged()");
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
                 DataMap dataMap = DataMapItem.fromDataItem(dataEvent.getDataItem()).getDataMap();
-                String content = dataMap.getString("content");
+                String courseName = dataMap.getString("courseName");
+                String argumentName = dataMap.getString("argumentName");
+                String status = dataMap.getString("status");
+                long remainingTime = dataMap.getLong("remainingTime");
                 if ("/start".equals(dataEvent.getDataItem().getUri().getPath())) {
-                    buildWearableNotification(content);
+                    buildWearableNotification(courseName, argumentName, remainingTime,status);
                 }
                 else if (dataEvent.getType() == DataEvent.TYPE_DELETED) {
                     if (Log.isLoggable(TAG, Log.DEBUG)) {
@@ -86,10 +93,15 @@ public class NotificationUpdateService extends WearableListenerService
 
     }
 
-    private void buildWearableNotification(String content) {
+    private void buildWearableNotification(String courseName, String argumentName, long remainingTime, String status) {
 
         Intent intent = new Intent(this,WearableActivity.class);
-        intent.putExtra("courseName",content);
+        intent.putExtra("courseName",courseName);
+        intent.putExtra("argumentName", argumentName);
+        intent.putExtra("remainingTime", remainingTime);
+        intent.putExtra("status", status);
         startActivity(intent);
+        resultReceiver.send(100,intent.getExtras());
+
     }
 }

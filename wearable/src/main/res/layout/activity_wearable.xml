@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#008ba3"
     tools:context="com.example.marco.progettolpsmt.WearableActivity">
 
     <TextView
@@ -12,9 +13,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginEnd="17dp"
-        android:layout_marginTop="34dp"
-        android:layout_toStartOf="@+id/countdownview"
+        android:layout_alignStart="@+id/countdownview"
+        android:layout_marginTop="38dp"
+        android:maxLength="10"
         android:text="course" />
 
     <cn.iwgang.countdownview.CountdownView
@@ -33,16 +34,19 @@
         app:suffixHour="h"
         app:suffixMinute="m"
         app:suffixSecond="s"
-        app:suffixTextColor="#000000"
+        app:suffixTextColor="@color/ambient_mode_text"
         app:suffixTextSize="20sp"
-        app:timeTextColor="#000000"
+        app:timeTextColor="@color/ambient_mode_text"
         app:timeTextSize="30sp" />
+
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"
+        android:backgroundTint="#ff5722"
         android:text="Button" />
 
     <TextView
@@ -51,8 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/courseTextView"
         android:layout_alignBottom="@+id/courseTextView"
-        android:layout_marginStart="14dp"
-        android:layout_toEndOf="@+id/countdownview"
+        android:layout_alignEnd="@+id/countdownview"
         android:text="argument" />
 
 </RelativeLayout>

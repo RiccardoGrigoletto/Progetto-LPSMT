@@ -35,5 +35,4 @@ dependencies {
     compile 'com.google.android.support:wearable:2.1.0'
 
     compile 'com.github.iwgang:countdownview:2.1.6'
-
 }
