@@ -167,8 +167,8 @@ public class NewCourseActivity extends AppCompatActivity {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(new Date());
 
-                    examDate.setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
-                            (calendar.get(Calendar.MONTH)+1) + " - " + calendar.get(Calendar.YEAR));
+                    examDate.setText(calendar.get(Calendar.DAY_OF_MONTH) + " / " +
+                            (calendar.get(Calendar.MONTH)+1) + " / " + calendar.get(Calendar.YEAR));
                     examDate.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -291,24 +291,32 @@ public class NewCourseActivity extends AppCompatActivity {
                             }
                         });
             }
+            findViewById(R.id.examsEditLabel).setVisibility(View.VISIBLE);
+
+
             for (Exam exam:courseToEdit.getExams()) {
                 final View view1 = LayoutInflater.from(getBaseContext())
                         .inflate(R.layout.exam_edit_view,null,false);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(exam.getDate());
-                ((TextView)view1.findViewById(R.id.examDate)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
-                        (calendar.get(Calendar.MONTH)+1) + " - " + calendar.get(Calendar.YEAR));
-                final LinearLayout ll = findViewById(R.id.examsList);
-                final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
-                deleteArgumentButton.setOnClickListener(
+                ((TextView)view1.findViewById(R.id.examDate)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " / " +
+                        (calendar.get(Calendar.MONTH)+1) + " / " + calendar.get(Calendar.YEAR));
+                view1.findViewById(R.id.examDate).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showDatePickerDialog(v,R.id.examDate);
+                    }
+                });
+                final ImageButton deleteExamButton = view1.findViewById(R.id.imageButton);
+                deleteExamButton.setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                ll.removeView(view1);
+                                linearLayoutExams.removeView(view1);
 
                             }
                         });
-                ll.addView(view1);
+                linearLayoutExams.addView(view1);
             }
 
             findViewById(R.id.studySessionsEditLabel).setVisibility(View.VISIBLE);
@@ -339,6 +347,7 @@ public class NewCourseActivity extends AppCompatActivity {
                     deleteCourseDialog.show();
                 }
             });
+            ((Button)findViewById(R.id.addCourseButton)).setText("Modify");
         }
 
     }

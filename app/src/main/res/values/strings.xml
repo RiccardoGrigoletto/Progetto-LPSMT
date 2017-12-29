@@ -1,22 +1,22 @@
 <resources>
     <string name="app_name">Study Tracker</string>
-    <string name="action_timer">timer</string>
-    <string name="action_calendar">calendar</string>
+    <string name="action_timer">Timer</string>
+    <string name="action_calendar">Calendar</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
-    <string name="navbar_calendar">calendar</string>
+    <string name="navbar_calendar">Calendar</string>
     <string name="breakduration">300000</string>
     <string name="studyduration">60000</string>
     <string name="studysession">4</string>
-    <string name="add_course_name_label">course name</string>
+    <string name="add_course_name_label">Name</string>
     <string name="add_course_cfu_label">CFU</string>
-    <string name="add_course_arguments_label">arguments</string>
-    <string name="add_course_exams_label">exams</string>
-    <string name="add_course_new_exam_btn">New Exam</string>
+    <string name="add_course_arguments_label">Arguments</string>
+    <string name="add_course_exams_label">Exams</string>
+    <string name="add_course_new_exam_btn">New exam</string>
     <string name="email_label">email</string>
     <string name="password_label">password</string>
     <string name="login_label">login</string>
     <string name="log_out_btn">log out</string>
-    <string name="loading">loading ...</string>
+    <string name="loading">Loading...</string>
     <string name="title_activity_login2">Sign in</string>
 
     <!-- Strings related to login -->
@@ -31,7 +31,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="create_course_button">CREATE/MODIFY</string>
+    <string name="create_course_button">Create</string>
     <string name="courseNameVoid">please add a course name</string>
     <string name="courseCFUVoid">please add CFU</string>
     <string name="courseLoaded">course loaded</string>
@@ -48,7 +48,7 @@
     <string name="settingstimerpaneltitle">Timer Settings</string>
     <string name="settinglogoutpaneltitle">Log Out</string>
     <string name="minutes">%1$ minutes</string>
-    <string name="add_study_date_label">study dates</string>
+    <string name="add_study_date_label">Study preferences</string>
 
     <!-- Timer Strings -->
     <string name="studyTimeTextView">Study Time</string>

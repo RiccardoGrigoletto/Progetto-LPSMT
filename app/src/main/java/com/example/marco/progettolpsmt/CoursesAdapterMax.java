@@ -68,7 +68,7 @@ public class CoursesAdapterMax extends ArrayAdapter<Course> {
         ((TextView) view.findViewById(R.id.courseName)).setText(course.getName());
         ((TextView) view.findViewById(R.id.courseCFU1)).setText(Integer.toString(course.getCredits()));
         ((ProgressBar) view.findViewById(R.id.progressBar4)).setProgress((int)course.computeProgress());
-
+        ((TextView) view.findViewById(R.id.progressTextView)).setText(((int)course.computeProgress()/60)+"h/"+(((int)course.getTimeExpected())/60)+"h");
         LinearLayout llArgs = (view.findViewById(R.id.argumentsLinearLayout));
         llArgs.removeAllViews();
         for (Argument arg : course.getArguments()) {
@@ -76,6 +76,7 @@ public class CoursesAdapterMax extends ArrayAdapter<Course> {
             View view1 = inflater.inflate(R.layout.item_head_1, null, false);
             ((TextView) view1.findViewById(R.id.argumentName)).setText(arg.getName());
             ((ProgressBar) view1.findViewById(R.id.argumentProgressBar)).setProgress((int)arg.computeProgress());
+            ((TextView) view1.findViewById(R.id.argumentProgressTextView)).setText(((int)arg.computeProgress()/60)+"h/"+(arg.getExpectedTime()/60)+"h");
             llArgs.addView(view1);
         }
         LinearLayout llExams = (view.findViewById(R.id.examsLinearLayout));
@@ -84,8 +85,8 @@ public class CoursesAdapterMax extends ArrayAdapter<Course> {
             View view1 = inflater.inflate(R.layout.item_head_2, null, false);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(exam.getDate());
-            ((TextView) view1.findViewById(R.id.examTextView)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " - " +
-                    (calendar.get(Calendar.MONTH)+1) + " - " + calendar.get(Calendar.YEAR));
+            ((TextView) view1.findViewById(R.id.examTextView)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " / " +
+                    (calendar.get(Calendar.MONTH)+1) + " / " + calendar.get(Calendar.YEAR));
             llExams.addView(view1);
         }
         view.findViewById(R.id.editCourseButton).setOnClickListener(new View.OnClickListener() {
