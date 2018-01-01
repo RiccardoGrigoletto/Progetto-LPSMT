@@ -8,11 +8,18 @@ import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
@@ -20,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.example.marco.progettolpsmt.backend.Log;
@@ -28,18 +36,28 @@ import com.example.marco.progettolpsmt.backend.Course;
 import com.example.marco.progettolpsmt.backend.StudyLog;
 import com.example.marco.progettolpsmt.backend.TimerSettingsSingleton;
 import com.example.marco.progettolpsmt.backend.User;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import cn.iwgang.countdownview.CountdownView;
 import devlight.io.library.ArcProgressStackView;
 import static devlight.io.library.ArcProgressStackView.Model;
 
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 
 public class
-TimerActivity extends AppCompatActivity {
+TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public final static int MODEL_COUNT = 3;
     private ArcProgressStackView mArcProgressStackView;
@@ -86,6 +104,9 @@ TimerActivity extends AppCompatActivity {
     private Course studyCourse;
     //boundle elements
     private String boundleArgument = null;
+    GoogleApiClient mGoogleApiClient;
+    private Intent service;
+
     @Override
     protected void onCreate(final Bundle extras) {
         super.onCreate(extras);
@@ -95,6 +116,13 @@ TimerActivity extends AppCompatActivity {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.timerinitializationpopup);
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this.getApplicationContext())
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .useDefaultAccount()
+                .build();
+        mGoogleApiClient.connect();
         //
         confirmChangeCourseArgumentDialog = new AlertDialog.Builder(this)
                 .setTitle("Change Course or Argument")
@@ -407,6 +435,8 @@ TimerActivity extends AppCompatActivity {
             @Override
             @TargetApi(Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
+
+                buildWearableNotification("start");
                 /**
                  * in order to avoid sync pause/stop button,
                  * here this button will be forced to Pause status
@@ -414,7 +444,6 @@ TimerActivity extends AppCompatActivity {
                 pauseBtnBinaryFlag = 1;
                 pause.setText(R.string.timerPauseButton);
                 timerNotification.notify(getBaseContext(),"Studying",1);
-                final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
                 if(animationStateThirdArch != 0) {
                     firstArch.resume();
                     thirdArch.resume();
@@ -445,6 +474,7 @@ TimerActivity extends AppCompatActivity {
                 courseSpinner.setEnabled(false);
                 argumentSpinner.setEnabled(false);
                 pause.setEnabled(true);
+
             }
         });
 
@@ -454,6 +484,8 @@ TimerActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if(pauseBtnBinaryFlag != 0) {
+
+                    buildWearableNotification("pause");
                     pause.setText(R.string.timerStopButton);
                     timerNotification.notify(getBaseContext(), "Timer Paused", 1);
                     final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
@@ -483,6 +515,7 @@ TimerActivity extends AppCompatActivity {
                     Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                 }
 
+
             }
         });
 
@@ -496,9 +529,66 @@ TimerActivity extends AppCompatActivity {
 
         //spinners onchange listeners
 
-
+        service = new Intent(this, NotificationService.class);
+        MyResultReceiver resultReceiver = new MyResultReceiver(null);
+        service.putExtra("receiver", resultReceiver);
+        startService(service);
     }
 
+    private void buildWearableNotification(final String status) {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                if (mGoogleApiClient.isConnected() || mGoogleApiClient.isConnecting()) {
+                    //if you've put data on the remote node
+                    String nodeId = getRemoteNodeId();
+                    // Or If you already know the node id
+                    // String nodeId = "some_node_id";
+                    Uri uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).authority(nodeId).path("/countdown").build();
+                    PutDataMapRequest putDataMapRequest = PutDataMapRequest.create (uri.getPath());
+                    putDataMapRequest.getDataMap().putString("courseName", courseSpinner.getSelectedItem().toString());
+                    putDataMapRequest.getDataMap().putString("argumentName", argumentSpinner.getSelectedItem().toString());
+                    putDataMapRequest.getDataMap().putString("status", status);
+                    putDataMapRequest.getDataMap().putLong("remainingTime",countdownView.getRemainTime());
+                    PutDataRequest request = putDataMapRequest.asPutDataRequest();
+                    request.setUrgent();
+                    Wearable.DataApi.putDataItem(mGoogleApiClient,request)
+                            .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+                                @Override
+                                public void onResult(DataApi.DataItemResult dataItemResult) {
+                                    if (!dataItemResult.getStatus().isSuccess()) {
+                                        Log.e("wearable", "buildWearableNotification(): Failed to set the data, "
+                                                + "status: " + dataItemResult.getStatus().getStatusCode());
+                                    }
+                                    else {
+                                        Log.v("wearable", "buildWearableNotification(): Success to set the data, "
+                                                + "status: " + dataItemResult.getStatus().getStatusCode());
+
+                                    }
+                                }
+                            });
+                } else {
+                    Log.e("wearable", "buildWearableNotification(): no Google API Client connection");
+                }
+            }
+        }).start();
+
+    }
+    private String getLocalNodeId() {
+        NodeApi.GetLocalNodeResult nodeResult = Wearable.NodeApi.getLocalNode(mGoogleApiClient).await();
+        return nodeResult.getNode().getId();
+    }
+
+    private String getRemoteNodeId() {
+        NodeApi.GetConnectedNodesResult nodesResult =
+                Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
+        List<Node> nodes = nodesResult.getNodes();
+        if (nodes.size() > 0) {
+            return nodes.get(0).getId();
+        }
+        return null;
+    }
 
     private void initializeArcModel(long numberofsessions , long studytime, long breaktime){
         breaktime = breakTimeTimer;
@@ -680,6 +770,55 @@ TimerActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.e("wearable", "onConnected(): no Google API Client connection");
+
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.e("wearable", "onConnectionSuspended(): no Google API Client connection");
+
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e("wearable", "onConnectionSuspended(): no Google API Client connection");
+
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        Log.e("wearable", "onPointerCaptureChanged(): no Google API Client connection");
+
+    }
+
+    private class MyResultReceiver  extends ResultReceiver {
+        public MyResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(final int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            final String status = resultData.getString("status");
+            long remainingTime = resultData.getLong("remainingTime", 0);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    switch (status) {
+                        case "start":startButton.performClick();break;
+                        case "pause":pause.performClick();break;
+                    }
+
+                }
+            });
+        }
+    }
 }
 
 

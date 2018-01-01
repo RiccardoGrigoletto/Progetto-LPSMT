@@ -17,7 +17,7 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Name"
-        android:inputType="textPersonName"
+        android:inputType="textCapSentences"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

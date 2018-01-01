@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#008ba3"
+    tools:context="com.example.marco.progettolpsmt.WearableActivity">
+
+    <TextView
+        android:id="@+id/courseTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/countdownview"
+        android:layout_marginTop="38dp"
+        android:maxLength="10"
+        android:text="course" />
+
+    <cn.iwgang.countdownview.CountdownView
+        android:id="@+id/countdownview"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        app:isHideTimeBackground="true"
+        app:isShowHour="true"
+        app:isShowMillisecond="false"
+        app:isShowMinute="true"
+        app:isShowSecond="true"
+        app:isTimeTextBold="true"
+        app:suffixGravity="bottom"
+        app:suffixHour="h"
+        app:suffixMinute="m"
+        app:suffixSecond="s"
+        app:suffixTextColor="@color/ambient_mode_text"
+        app:suffixTextSize="20sp"
+        app:timeTextColor="@color/ambient_mode_text"
+        app:timeTextSize="30sp" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"
+        android:backgroundTint="#ff5722"
+        android:text="Button" />
+
+    <TextView
+        android:id="@+id/argumentTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/courseTextView"
+        android:layout_alignBottom="@+id/courseTextView"
+        android:layout_alignEnd="@+id/countdownview"
+        android:text="argument" />
+
+</RelativeLayout>
+

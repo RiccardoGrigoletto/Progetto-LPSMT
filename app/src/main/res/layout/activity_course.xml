@@ -49,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="textPersonName"
+                    android:inputType="textCapSentences"
                     android:labelFor="@+id/courseNameLabel"
                     android:maxLines="1"
                     android:paddingBottom="@dimen/form_padding_bottom" />
@@ -147,6 +147,13 @@
                     android:paddingTop="@dimen/label_padding_top"
                     android:text="@string/add_course_exams_label"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                <TextView
+                    android:id="@+id/examsEditLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="You can modify and delete existing  exams using google calendar"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/examsList"
