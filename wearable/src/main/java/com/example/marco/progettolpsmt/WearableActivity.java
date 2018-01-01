@@ -52,6 +52,15 @@ public class WearableActivity extends Activity implements GoogleApiClient.Connec
                 .build();
         mGoogleApiClient.connect();
 
+
+        Bundle extras = getIntent().getExtras();
+        if (!extras.isEmpty()) {
+            courseName = extras.getString("courseName");
+            argumentName = extras.getString("argumentName");
+            remainingTime = extras.getLong("remainingTime");
+            status = extras.getString("status");
+        }
+
         ((TextView) findViewById(R.id.courseTextView)).setText(courseName);
         ((TextView) findViewById(R.id.argumentTextView)).setText(argumentName);
         cdv = findViewById(R.id.countdownview);
@@ -68,7 +77,6 @@ public class WearableActivity extends Activity implements GoogleApiClient.Connec
         onlyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buildApplicationNotification(status);
                 if (status.equals("start")) {
                     onlyButton.setText("pause");
                     buildApplicationNotification("pause");
@@ -80,8 +88,6 @@ public class WearableActivity extends Activity implements GoogleApiClient.Connec
 
             }
         });
-
-
 
     }
 

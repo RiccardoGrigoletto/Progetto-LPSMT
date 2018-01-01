@@ -558,18 +558,18 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                                 @Override
                                 public void onResult(DataApi.DataItemResult dataItemResult) {
                                     if (!dataItemResult.getStatus().isSuccess()) {
-                                        Log.e("wearable", "buildWatchOnlyNotification(): Failed to set the data, "
+                                        Log.e("wearable", "buildWearableNotification(): Failed to set the data, "
                                                 + "status: " + dataItemResult.getStatus().getStatusCode());
                                     }
                                     else {
-                                        Log.v("wearable", "buildWatchOnlyNotification(): Success to set the data, "
+                                        Log.v("wearable", "buildWearableNotification(): Success to set the data, "
                                                 + "status: " + dataItemResult.getStatus().getStatusCode());
 
                                     }
                                 }
                             });
                 } else {
-                    Log.e("wearable", "buildWearableOnlyNotification(): no Google API Client connection");
+                    Log.e("wearable", "buildWearableNotification(): no Google API Client connection");
                 }
             }
         }).start();

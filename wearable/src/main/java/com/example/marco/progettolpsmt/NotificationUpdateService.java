@@ -103,8 +103,7 @@ public class NotificationUpdateService extends WearableListenerService
         intent.putExtra("status", status);
         intent.putExtra("now",(new Date()).getTime());
         if (resultReceiver == null) {
-            Intent intentRec =  new Intent(this,WearableActivity.class);
-            startActivity(intentRec);
+            startActivity(intent);
         }
         else {
             resultReceiver.send(100, intent.getExtras());
