@@ -60,6 +60,13 @@
     <string name="timerPauseButton">Pause</string>
     <string name="timerSettingsButton">Settings</string>
     <string name="timerStopButton">Stop</string>
+    <string name="esamEditLabel">You can modify and delete existing  exams using google calendar</string>
+    <string name="sudySessionsEditLabel">You can modify and delete existing  study sessions using google calendar</string>
+    <string name="deleteCourseButton">Delete</string>
+    <string name="contentDescription">Study Tracker</string>
+    <string name="agumentNameEditText">Name</string>
+    <string name="channel_name">Study Tracker</string>
+    <string name="channel_description">Timer</string>
 
 
 </resources>

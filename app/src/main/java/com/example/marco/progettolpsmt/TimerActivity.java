@@ -5,6 +5,8 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcel;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -339,11 +342,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             }
         });
 
-        final NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // Sets an ID for the notification, so it can be updated
-        final int notifyID = 1;
-        timerNotification = new TimerNotification();
+        timerNotification = new TimerNotification(getSystemService(Context.NOTIFICATION_SERVICE));
+
 
 
         /**
@@ -505,6 +505,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                     startButton.setEnabled(true);
                     pause.setEnabled(false);
                     pauseBtnBinaryFlag = 1;
+                    timerNotification.cancel(getBaseContext());
                 }
 
                 try {
@@ -625,7 +626,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        timerNotification.cancel(this);
+        timerNotification.cancel(getBaseContext());
         try {
             if(studyLog.getStart() != null) {
                 studyLog.setEnd(new Date());
@@ -666,6 +667,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                     public void onClick(DialogInterface dialog, int whichButton) {
                         TimerActivity.super.onBackPressed();
                         try {
+                            timerNotification.cancel(getBaseContext());
                             if(studyLog.getStart() != null){
                                 studyLog.setEnd(new Date());
                                 studyingArgument.addLog(studyLog);
@@ -675,7 +677,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                             Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                         }
                     }})
-                .setNegativeButton(android.R.string.no, null).create();;
+                .setNegativeButton(android.R.string.no, null).create();
         backButtonAlertDialog.show();
 
     }

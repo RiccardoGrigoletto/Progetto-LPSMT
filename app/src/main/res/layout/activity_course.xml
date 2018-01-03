@@ -152,7 +152,7 @@
                     android:id="@+id/examsEditLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="You can modify and delete existing  exams using google calendar"
+                    android:text="@string/esamEditLabel"
                     android:visibility="gone" />
 
                 <LinearLayout
@@ -207,7 +207,7 @@
                     android:id="@+id/studySessionsEditLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="You can modify and delete existing  study sessions using google calendar"
+                    android:text="@string/sudySessionsEditLabel"
                     android:textSize="12sp"
                     android:visibility="gone" />
 
@@ -243,12 +243,6 @@
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/addEventButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="add Event to Calendar (STATIC)"
-                android:visibility="invisible" />
         </LinearLayout>
 
         <Button
@@ -270,10 +264,10 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:backgroundTint="@android:color/holo_red_dark"
-            android:text="Delete"
+            android:text="@string/deleteCourseButton"
+            android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/addCourseButton"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            android:visibility="invisible"/>
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
     </android.support.constraint.ConstraintLayout>
 
 

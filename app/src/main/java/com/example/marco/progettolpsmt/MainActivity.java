@@ -220,8 +220,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
                     }
                     break;
                 }
-                /*final TextView txtPage = (TextView) view.findViewById(R.id.txt_vp_item_page);
-                txtPage.setText(String.format("Hello everyone! this is the page #%d", position));*/
 
                 container.addView(view);
                 return view;
@@ -277,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
 
         /*floating button listener*/
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.newCourse);
+        FloatingActionButton fab = findViewById(R.id.newCourse);
         fab.setOnClickListener(new View.OnClickListener()
 
         {
@@ -313,7 +311,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ntb = new NavigationTabBar.Model.Builder(getResources().getDrawable(icon, null),
                     getResources().getColor(activeColor, null));
-            /*res.badgeTitle("");*/
         } else {
             ntb = new NavigationTabBar.Model.Builder(
                     getResources().getDrawable(icon),
@@ -335,9 +332,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         final Dialog d = new Dialog(MainActivity.this);
         d.setTitle("Study Time");
         d.setContentView(R.layout.number_picker_dialog);
-        Button b1 = (Button) d.findViewById(R.id.button1);
-        Button b2 = (Button) d.findViewById(R.id.button2);
-        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        Button b1 = d.findViewById(R.id.button1);
+        Button b2 = d.findViewById(R.id.button2);
+        final NumberPicker np = d.findViewById(R.id.numberPicker1);
         np.setMaxValue(60);
         np.setMinValue(10);
         np.setWrapSelectorWheel(false);
@@ -369,9 +366,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         final Dialog d = new Dialog(MainActivity.this);
         d.setTitle("Break Time");
         d.setContentView(R.layout.number_picker_dialog);
-        Button b1 = (Button) d.findViewById(R.id.button1);
-        Button b2 = (Button) d.findViewById(R.id.button2);
-        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        Button b1 = d.findViewById(R.id.button1);
+        Button b2 = d.findViewById(R.id.button2);
+        final NumberPicker np = d.findViewById(R.id.numberPicker1);
         np.setMaxValue(60);
         np.setMinValue(10);
         np.setWrapSelectorWheel(false);
