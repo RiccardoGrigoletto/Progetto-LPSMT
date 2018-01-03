@@ -265,6 +265,8 @@ public class NewCourseActivity extends AppCompatActivity {
         //initialize the interface with the course to edit (if any)
         if (courseToEdit != null) {
             //populate activity
+            (findViewById(R.id.courseName)).setFocusable(false);
+            (findViewById(R.id.courseName)).setFocusableInTouchMode(false);
             ((TextView)findViewById(R.id.courseName)).setText(courseToEdit.getName());
             ((Spinner)findViewById(R.id.CFUSpinner)).setSelection(courseToEdit.getCredits()-3,true);
             for (Argument argument:courseToEdit.getArguments()) {
