@@ -72,7 +72,7 @@ public class User extends Observable {
                     public void onEvent(@Nullable QuerySnapshot querySnapshot,
                                         @Nullable FirebaseFirestoreException e) {
                         if (e != null) {
-                            android.util.Log.w(TAG, "Listen error", e);
+                            //android.util.Log.w(TAG, "Listen error", e);
                             return;
                         }
 

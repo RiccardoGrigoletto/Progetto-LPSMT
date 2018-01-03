@@ -757,28 +757,28 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.e("wearable", "onConnected(): no Google API Client connection");
+       // Log.e("wearable", "onConnected(): no Google API Client connection");
 
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.e("wearable", "onConnectionSuspended(): no Google API Client connection");
+        //.e("wearable", "onConnectionSuspended(): no Google API Client connection");
 
 
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("wearable", "onConnectionSuspended(): no Google API Client connection");
+      //  Log.e("wearable", "onConnectionSuspended(): no Google API Client connection");
 
 
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
-        Log.e("wearable", "onPointerCaptureChanged(): no Google API Client connection");
+      //  Log.e("wearable", "onPointerCaptureChanged(): no Google API Client connection");
 
     }
 

@@ -65,11 +65,6 @@ public class NotificationService extends WearableListenerService
                 if ("/countdownrev".equals(dataEvent.getDataItem().getUri().getPath())) {
                     buildNotification(status,remainingTime);
                 }
-                else if (dataEvent.getType() == DataEvent.TYPE_DELETED) {
-                    if (Log.isLoggable(TAG, Log.DEBUG)) {
-                        Log.d(TAG, "DataItem deleted: " + dataEvent.getDataItem().getUri().getPath());
-                    }
-                }
             }
         }
     }
@@ -88,10 +83,6 @@ public class NotificationService extends WearableListenerService
 
     @Override
     public void onResult(DataApi.DeleteDataItemsResult deleteDataItemsResult) {
-        if (!deleteDataItemsResult.getStatus().isSuccess()) {
-            Log.e(TAG, "NotificationService(): failed to delete DataItem");
-        }
-
     }
 
     private void buildNotification(String status, long remainingTime) {

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.nfc.FormatException;
 import android.provider.CalendarContract;
-import android.util.Log;
 import android.util.Pair;
 import android.widget.TextView;
 
@@ -99,7 +98,6 @@ public final class CalendarUtils {
         try {
             startDate = examFormatter.format(examDate);
             endDate = examFormatter.format(endExamDate);
-            Log.d("end-date",""+endDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -149,7 +147,6 @@ public final class CalendarUtils {
                 .setDateTime(endDateTime)
                 .setTimeZone(Calendar.getInstance().getTimeZone().getID());
         event.setEnd(end);
-        Log.d("TimeZOne",""+startDateTime.getTimeZoneShift());
         //setting recurrency
         String[] recurrence;
         if(examDate != null) {
