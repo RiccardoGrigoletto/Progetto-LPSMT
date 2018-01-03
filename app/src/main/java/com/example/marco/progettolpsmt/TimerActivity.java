@@ -427,7 +427,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
          */
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            @TargetApi(Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
 
                 buildWearableNotification("start");
@@ -475,7 +474,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
         });
 
         pause.setOnClickListener(new View.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
                 /**
@@ -493,6 +491,19 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                     startButton.setEnabled(true);
 
                     pauseBtnBinaryFlag = 0;
+
+                    //adding log
+                    try {
+                        if (studyLog.getStart() != null) {
+                            studyLog.setEnd(new Date());
+
+                            studyingArgument.addLog(studyLog);
+                            studyCourse.updateOnFirestore();
+                            studyLog = null;
+                        }
+                    }catch(Exception e){
+                        Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+                    }
                 }
                 /**
                  * stop behaviour
@@ -508,21 +519,10 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                     timerNotification.cancel(getBaseContext());
                 }
 
-                try {
-                    studyLog.setEnd(new Date(new Date().getTime() + (1000*60*60*24)));
-
-                    studyingArgument.addLog(studyLog);
-                    studyCourse.updateOnFirestore();
-                }catch(Exception e){
-                    Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
-                }
-
-
             }
         });
 
         settings.setOnClickListener(new View.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
                 dialog.show();
@@ -622,18 +622,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
         }
     }
 
-    protected void onStop() {
-        super.onStop();
-        try {
-            if(studyLog.getStart() != null) {
-                studyLog.setEnd(new Date());
-                studyingArgument.addLog(studyLog);
-                studyCourse.updateOnFirestore();
-            }
-        }catch(Exception e){
-            Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
-        }
-    }
 
     /**
      * catching button back pressed event in order to save study progress logs and in order to offer to users a
