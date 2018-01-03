@@ -509,7 +509,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 }
 
                 try {
-                    studyLog.setEnd(new Date());
+                    studyLog.setEnd(new Date(new Date().getTime() + (1000*60*60*24)));
+
                     studyingArgument.addLog(studyLog);
                     studyCourse.updateOnFirestore();
                 }catch(Exception e){

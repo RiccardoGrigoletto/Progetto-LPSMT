@@ -67,16 +67,17 @@ public class CoursesAdapterMax extends ArrayAdapter<Course> {
         final Course course = this.getItem(i);
         ((TextView) view.findViewById(R.id.courseName)).setText(course.getName());
         ((TextView) view.findViewById(R.id.courseCFU1)).setText(Integer.toString(course.getCredits()));
-        ((ProgressBar) view.findViewById(R.id.progressBar4)).setProgress((int)course.computeProgress());
-        ((TextView) view.findViewById(R.id.progressTextView)).setText(((int)course.computeProgress()/60)+"h/"+(((int)course.getTimeExpected())/60)+"h");
+        ((ProgressBar) view.findViewById(R.id.progressBar4)).setProgress((int)(course.computeProgress()*100));
+        ((TextView) view.findViewById(R.id.progressTextView)).setText((course.computeStudyTimeSpent()/60)+"h/"+(course.getTimeExpected()/60)+"h");
+
         LinearLayout llArgs = (view.findViewById(R.id.argumentsLinearLayout));
         llArgs.removeAllViews();
         for (Argument arg : course.getArguments()) {
             android.util.Log.d("arguments", "name: " + arg.getName() + " progress: " + arg.computeProgress());
             View view1 = inflater.inflate(R.layout.item_head_1, null, false);
             ((TextView) view1.findViewById(R.id.argumentName)).setText(arg.getName());
-            ((ProgressBar) view1.findViewById(R.id.argumentProgressBar)).setProgress((int)arg.computeProgress());
-            ((TextView) view1.findViewById(R.id.argumentProgressTextView)).setText(((int)arg.computeProgress()/60)+"h/"+(arg.getExpectedTime()/60)+"h");
+            ((ProgressBar) view1.findViewById(R.id.argumentProgressBar)).setProgress((int)(arg.computeProgress()*100));
+            ((TextView) view1.findViewById(R.id.argumentProgressTextView)).setText((arg.computeStudyTimeSpent()/60)+"h/"+(arg.getExpectedTime()/60)+"h");
             llArgs.addView(view1);
         }
         LinearLayout llExams = (view.findViewById(R.id.examsLinearLayout));

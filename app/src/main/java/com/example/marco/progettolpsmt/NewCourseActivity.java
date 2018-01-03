@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -269,6 +270,7 @@ public class NewCourseActivity extends AppCompatActivity {
             (findViewById(R.id.courseName)).setFocusableInTouchMode(false);
             ((TextView)findViewById(R.id.courseName)).setText(courseToEdit.getName());
             ((Spinner)findViewById(R.id.CFUSpinner)).setSelection(courseToEdit.getCredits()-3,true);
+
             for (Argument argument:courseToEdit.getArguments()) {
                 final View view1 = LayoutInflater.from(getBaseContext())
                         .inflate(R.layout.argument_edit_view,null,false);
@@ -277,7 +279,8 @@ public class NewCourseActivity extends AppCompatActivity {
                         R.array.difficulty_array, android.R.layout.simple_spinner_item);
                 difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 ((Spinner)view1.findViewById(R.id.difficulty)).setAdapter(difficultyAdapter);
-                int position = argument.getDifficulty().getPosition();
+                ((TextView)view1.findViewById(R.id.journalAddress)).setText(argument.getJournal().toString());
+                ((Switch)view1.findViewById(R.id.argumentDone)).setChecked(argument.isDone());
                 ((Spinner)view1.findViewById(R.id.difficulty)).setSelection(argument.getDifficulty().getPosition(),true);
                 final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
 
@@ -372,6 +375,11 @@ public class NewCourseActivity extends AppCompatActivity {
             String argumentName = ((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentName)).getText().toString();
 
             Evaluation difficulty;
+            List<Argument> oldArguments = null;
+
+            if (from != null) oldArguments = from.getArguments();
+
+
             Spinner evaluationSpinner = argumentsLinearLayout.getChildAt(i).findViewById(R.id.difficulty);
             try {
                 switch (evaluationSpinner.getSelectedItemPosition()) {
@@ -403,9 +411,17 @@ public class NewCourseActivity extends AppCompatActivity {
 
             try {
                 newArgument.setName(argumentName);
+                newArgument.setDone(((Switch)argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentDone)).isChecked());
+                for (Argument oldArg: oldArguments) {
+                    if ((oldArg.getJournal().toString()).equals(((TextView)argumentsLinearLayout.getChildAt(i).findViewById(R.id.journalAddress)).getText()))
+                        newArgument.setJournal(oldArg.getJournal());
+                }
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             arguments.add(newArgument);
 
 
@@ -457,6 +473,7 @@ public class NewCourseActivity extends AppCompatActivity {
         if (exams.size() > 0) course.setExams(exams);
         else course.clearExams();
 
+        course.updateCourse();
         course.updateOnFirestore();
         return course;
     }

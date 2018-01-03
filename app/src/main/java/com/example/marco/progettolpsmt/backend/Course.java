@@ -19,7 +19,7 @@ import java.util.*;
  * @see Argument
  * @see Exam
  */
-public class Course implements Observer {
+public class Course {
     private FirebaseFirestore db;
     @Exclude private DocumentReference onFirestore; // non lo esclude...
 
@@ -141,55 +141,12 @@ public class Course implements Observer {
     }
 
     /**
-     * Add the argument to the course.
-     * @param argument argument to add
-     */
-    public void addArgument(Argument argument) {
-        argument.addObserver(this);
-        arguments.add(argument);
-
-        // Things are changed, recompute expected time for the arguments
-        updateCourse();
-    }
-
-    /**
-     * Remove the argument from the course.
-     * @param argument argument to remove
-     */
-    public void removeArgument(Argument argument) {
-        argument.deleteObserver(this);
-        arguments.remove(argument);
-
-        // Things are changed, recompute expected time for the arguments
-        updateCourse();
-    }
-
-    /**
      * Return the arguments's list for the course.
      * @return list of arguments
      */
     public List<Argument> getArguments() {
         // TODO return an hard copy
         return arguments;
-    }
-
-    /**
-     * Add the exam to the course.
-     * @param exam exam to add
-     */
-    public void addExam(Exam exam) {
-        exams.add(exam);
-
-        // The list could now be unsorted
-        // TODO fix: exams.sort(Comparator.comparing(Exam::getDate));
-    }
-
-    /**
-     * Remove the exam from the course.
-     * @param exam exam to remove
-     */
-    public void removeExam(Date exam) {
-        exams.remove(exam);
     }
 
     /**
@@ -278,22 +235,12 @@ public class Course implements Observer {
      * </ul>
      * (*) <i>called via Observable.notifyObservers()</i>
      */
-    private void updateCourse() {
+    public void updateCourse() {
+        timeExpected = credits * 25 * 60;
         // No arguments
         if (arguments.size() == 0) {
             return;
         }
-
-        // Settings in use
-        int hoursPerCredit;
-        if (getSettings() == null || getSettings().getHoursPerCredit() == null) {
-            hoursPerCredit = Settings.DEFAULT.getHoursPerCredit();
-        } else {
-            hoursPerCredit = getSettings().getHoursPerCredit();
-        }
-
-        timeExpected = credits * hoursPerCredit * 60;
-
         // Amount of minutes for every argument, if they have the same difficulty
         int sameDifficultyExpectedTime = timeExpected / arguments.size();
 
@@ -309,11 +256,6 @@ public class Course implements Observer {
             argument.setExpectedTime((int) Math.round( sameDifficultyExpectedTime * argument.getDifficulty().getValue()
                     * k ) );
         }
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        updateCourse();
     }
 
     public void setArguments(ArrayList<Argument> arguments) {
