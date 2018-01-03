@@ -5,8 +5,6 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcel;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -336,8 +333,11 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             }
         });
 
-        timerNotification = new TimerNotification(getSystemService(Context.NOTIFICATION_SERVICE));
-
+        final NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // Sets an ID for the notification, so it can be updated
+        final int notifyID = 1;
+        timerNotification = new TimerNotification();
 
 
         /**
@@ -505,11 +505,10 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                     startButton.setEnabled(true);
                     pause.setEnabled(false);
                     pauseBtnBinaryFlag = 1;
-                    timerNotification.cancel(getBaseContext());
                 }
 
                 try {
-                    studyLog.setEnd(new Date());
+                    studyLog.setEnd(new Date(new Date().getTime() + (1000*60*60*24)));
                     studyingArgument.addLog(studyLog);
                     studyCourse.updateOnFirestore();
                 }catch(Exception e){
@@ -609,7 +608,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        timerNotification.cancel(getBaseContext());
+        timerNotification.cancel(this);
         try {
             if(studyLog.getStart() != null) {
                 studyLog.setEnd(new Date());
@@ -650,7 +649,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                     public void onClick(DialogInterface dialog, int whichButton) {
                         TimerActivity.super.onBackPressed();
                         try {
-                            timerNotification.cancel(getBaseContext());
                             if(studyLog.getStart() != null){
                                 studyLog.setEnd(new Date());
                                 studyingArgument.addLog(studyLog);
@@ -660,7 +658,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                             Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                         }
                     }})
-                .setNegativeButton(android.R.string.no, null).create();
+                .setNegativeButton(android.R.string.no, null).create();;
         backButtonAlertDialog.show();
 
     }
@@ -757,28 +755,28 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.e("wearable", "onConnected(): no Google API Client connection");
+       // Log.e("wearable", "onConnected(): no Google API Client connection");
 
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.e("wearable", "onConnectionSuspended(): no Google API Client connection");
+        //.e("wearable", "onConnectionSuspended(): no Google API Client connection");
 
 
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("wearable", "onConnectionSuspended(): no Google API Client connection");
+      //  Log.e("wearable", "onConnectionSuspended(): no Google API Client connection");
 
 
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
-        Log.e("wearable", "onPointerCaptureChanged(): no Google API Client connection");
+      //  Log.e("wearable", "onPointerCaptureChanged(): no Google API Client connection");
 
     }
 

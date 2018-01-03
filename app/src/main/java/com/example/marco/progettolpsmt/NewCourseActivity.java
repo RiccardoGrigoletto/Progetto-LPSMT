@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,24 +87,20 @@ public class NewCourseActivity extends AppCompatActivity {
     private ArrayList<Exam> exams;
     private String courseToDeleteName ="";
     private boolean isCourseDeleting = false;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //init of study event arraylists
 
         day = new ArrayList<>();
         startHour  = new ArrayList<>();
         endHour = new ArrayList<>();
         exams  = new ArrayList<>();
 
-        //the logged user
         final User u = User.getInstance();
         Bundle extras = getIntent().getExtras();
-
         setContentView(R.layout.activity_course);
         Course courseToEdit = null;
-
-        //fetching the course to edit (if any)
         try {
             if (extras != null) {
                 ArrayList<Course> courses = (ArrayList) u.getCourses();
@@ -116,8 +113,6 @@ public class NewCourseActivity extends AppCompatActivity {
             }
         }
         catch (NullPointerException e) {}
-
-
         Spinner cfuSpinner = findViewById(R.id.CFUSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
                 R.array.three_to_fifteen_array, android.R.layout.simple_spinner_item);
@@ -125,7 +120,6 @@ public class NewCourseActivity extends AppCompatActivity {
         cfuSpinner.setAdapter(adapter);
         final LinearLayout linearLayoutArguments = findViewById(R.id.argumentsList);
 
-        //arguments
         FloatingActionButton addArgumentButton = findViewById(R.id.addArgumentButton);
 
         addArgumentButton.setOnClickListener(new View.OnClickListener() {
@@ -163,6 +157,7 @@ public class NewCourseActivity extends AppCompatActivity {
 
         final LinearLayout linearLayoutExams = findViewById(R.id.examsList);
 
+
         addExamButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -181,8 +176,8 @@ public class NewCourseActivity extends AppCompatActivity {
                             showDatePickerDialog(v,R.id.examDate);
                         }
                     });
-                    final ImageButton deleteButton = view1.findViewById(R.id.imageButton);
-                    deleteButton.setOnClickListener(
+                    final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
+                    deleteArgumentButton.setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -193,6 +188,7 @@ public class NewCourseActivity extends AppCompatActivity {
                     linearLayoutExams.addView(view1);
                 }
             });
+
 
         Button createCourseButton = findViewById(R.id.addCourseButton);
 
@@ -214,8 +210,6 @@ public class NewCourseActivity extends AppCompatActivity {
                 }
             }
         });
-
-        //study dates
         FloatingActionButton addStudyDateButton = findViewById(R.id.addStudyDateButton);
 
         final LinearLayout linearLayoutStudyDates = findViewById(R.id.studyDateList);
@@ -261,14 +255,16 @@ public class NewCourseActivity extends AppCompatActivity {
                         });
             }
         });
-
-        //initialize the interface with the course to edit (if any)
+        /**
+         Edit course
+         */
         if (courseToEdit != null) {
             //populate activity
             (findViewById(R.id.courseName)).setFocusable(false);
             (findViewById(R.id.courseName)).setFocusableInTouchMode(false);
             ((TextView)findViewById(R.id.courseName)).setText(courseToEdit.getName());
             ((Spinner)findViewById(R.id.CFUSpinner)).setSelection(courseToEdit.getCredits()-3,true);
+
             for (Argument argument:courseToEdit.getArguments()) {
                 final View view1 = LayoutInflater.from(getBaseContext())
                         .inflate(R.layout.argument_edit_view,null,false);
@@ -277,8 +273,9 @@ public class NewCourseActivity extends AppCompatActivity {
                         R.array.difficulty_array, android.R.layout.simple_spinner_item);
                 difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 ((Spinner)view1.findViewById(R.id.difficulty)).setAdapter(difficultyAdapter);
-                int position = argument.getDifficulty().getPosition();
                 ((Spinner)view1.findViewById(R.id.difficulty)).setSelection(argument.getDifficulty().getPosition(),true);
+                ((TextView)view1.findViewById(R.id.journalAddress)).setText(argument.getJournal().toString());
+                ((Switch)view1.findViewById(R.id.argumentDone)).setChecked(argument.isDone());
                 final ImageButton deleteArgumentButton = view1.findViewById(R.id.imageButton);
 
                 linearLayoutArguments.addView(view1);
@@ -302,13 +299,25 @@ public class NewCourseActivity extends AppCompatActivity {
                 calendar.setTime(exam.getDate());
                 ((TextView)view1.findViewById(R.id.examDate)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " / " +
                         (calendar.get(Calendar.MONTH)+1) + " / " + calendar.get(Calendar.YEAR));
+                view1.findViewById(R.id.examDate).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showDatePickerDialog(v,R.id.examDate);
+                    }
+                });
                 final ImageButton deleteExamButton = view1.findViewById(R.id.imageButton);
-                deleteExamButton.setVisibility(View.INVISIBLE);
+                deleteExamButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                linearLayoutExams.removeView(view1);
+
+                            }
+                        });
                 linearLayoutExams.addView(view1);
             }
 
             findViewById(R.id.studySessionsEditLabel).setVisibility(View.VISIBLE);
-
 
             Button deleteButton = findViewById(R.id.deleteCourseButton);
             deleteButton.setVisibility(View.VISIBLE);
@@ -342,13 +351,10 @@ public class NewCourseActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * create a course or edit the course passed by parameter
-     * @param from: the course to edit
-     * @return the course loaded
-     */
+
     private Course createCourse(@Nullable Course from) {
         Course course;
+        User u = User.getInstance();
         //name
         String name = ((TextView) findViewById(R.id.courseName)).getText().toString();
         if (Objects.equals(name, "")) {
@@ -368,6 +374,10 @@ public class NewCourseActivity extends AppCompatActivity {
         //arguments
         LinearLayout argumentsLinearLayout = findViewById(R.id.argumentsList);
         ArrayList<Argument> arguments = new ArrayList<>();
+        List<Argument> oldArguments = null;
+
+        if (from != null) oldArguments = from.getArguments();
+
         for (int i = 0; i < argumentsLinearLayout.getChildCount(); i++) {
             String argumentName = ((TextView) argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentName)).getText().toString();
 
@@ -400,9 +410,14 @@ public class NewCourseActivity extends AppCompatActivity {
             }
             Argument newArgument = new Argument();
             newArgument.setDifficulty(difficulty);
+            newArgument.setDone(((Switch)argumentsLinearLayout.getChildAt(i).findViewById(R.id.argumentDone)).isChecked());
 
             try {
                 newArgument.setName(argumentName);
+                for (Argument oldArg: oldArguments) {
+                    if ((oldArg.getJournal().toString()).equals(((TextView)argumentsLinearLayout.getChildAt(i).findViewById(R.id.journalAddress)).getText()))
+                        newArgument.setJournal(oldArg.getJournal());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -457,13 +472,11 @@ public class NewCourseActivity extends AppCompatActivity {
         if (exams.size() > 0) course.setExams(exams);
         else course.clearExams();
 
+        course.updateCourse();
         course.updateOnFirestore();
         return course;
     }
 
-    /**
-     * the date picker dialog for the exams
-     */
     public void showDatePickerDialog(View v, int id) {
         Bundle extras = new Bundle();
         extras.putInt(DatePickerFragment.resIdKey,id);
@@ -471,10 +484,6 @@ public class NewCourseActivity extends AppCompatActivity {
         newFragment.setArguments(extras);
         newFragment.show(getFragmentManager(), "datePicker");
     }
-
-    /**
-     *the time picker dialog for the study dates
-     */
     private void showTimePickerDialog(View view, int id) {
         Bundle extras = new Bundle();
         extras.putInt(TimePickerFragment.resIdKey,id);
@@ -482,8 +491,6 @@ public class NewCourseActivity extends AppCompatActivity {
         newFragment.setArguments(extras);
         newFragment.show(getFragmentManager(), "timePicker");
     }
-
-
     /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
@@ -769,6 +776,14 @@ public class NewCourseActivity extends AppCompatActivity {
         protected void onPostExecute(Event output) {
             mProgress.hide();
             finish();
+            /*if (output == null || output.size() == 0) {
+                Toast.makeText(getApplicationContext(),"No results returned.", Toast.LENGTH_LONG);
+            } else {
+                Toast.makeText(getApplicationContext(),"Data retrieved using the Google Calendar API:"
+                        +TextUtils.join("\n", output), Toast.LENGTH_LONG);
+                System.out.println("Data retrieved using the Google Calendar API:"
+                        +TextUtils.join("\n", output));
+            }*/
         }
 
         @Override

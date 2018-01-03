@@ -131,8 +131,6 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d("google login", "firebaseAuthWithGoogle:" + acct.getId());
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
 
         Task<com.google.firebase.auth.AuthResult> credentialTask = mAuth.signInWithCredential(credential);
@@ -142,14 +140,12 @@ public class LoginActivity extends AppCompatActivity {
                         progDialog.dismiss();
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d("google login", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                             startMainActivity();
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w("google login", "signInWithCredential:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
@@ -172,7 +168,6 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.w("google signin", "Google sign in failed", e);
                 // ...
             }
         }
