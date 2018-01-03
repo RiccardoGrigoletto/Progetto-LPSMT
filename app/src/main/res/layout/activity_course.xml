@@ -8,15 +8,13 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/box_margin"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/box"
             android:divider="@android:drawable/divider_horizontal_bright"
             android:dividerPadding="2dp"
@@ -25,7 +23,6 @@
             android:padding="5dp"
             android:showDividers="middle"
             android:translationZ="@dimen/box_translationZ"
-            app:layout_constraintBottom_toTopOf="@+id/addCourseButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -155,7 +152,7 @@
                     android:id="@+id/examsEditLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="You can modify and delete existing  exams using google calendar"
+                    android:text="@string/esamEditLabel"
                     android:visibility="gone" />
 
                 <LinearLayout
@@ -190,7 +187,6 @@
                 </android.support.constraint.ConstraintLayout>
 
             </LinearLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -211,7 +207,7 @@
                     android:id="@+id/studySessionsEditLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="You can modify and delete existing  study sessions using google calendar"
+                    android:text="@string/sudySessionsEditLabel"
                     android:textSize="12sp"
                     android:visibility="gone" />
 
@@ -254,9 +250,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
             android:text="@string/create_course_button"
             android:theme="@style/AppTheme"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
@@ -268,9 +264,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:backgroundTint="@android:color/holo_red_dark"
-            android:text="Delete"
+            android:text="@string/deleteCourseButton"
             android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/addCourseButton"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
     </android.support.constraint.ConstraintLayout>
