@@ -46,7 +46,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="14dp"
-        android:backgroundTint="#ff5722" />
+        android:backgroundTint="#ff5722"
+        android:text="Button" />
 
     <TextView
         android:id="@+id/argumentTextView"

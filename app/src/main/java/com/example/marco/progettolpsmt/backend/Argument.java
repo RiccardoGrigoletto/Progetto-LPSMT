@@ -20,7 +20,7 @@ import java.util.Observable;
  * @see Evaluation
  * @see Log
  */
-public class Argument extends Observable {
+public class Argument {
     private String name;
     private Evaluation difficulty;
     private int expectedTime;
@@ -35,18 +35,6 @@ public class Argument extends Observable {
         difficulty = Evaluation.REGULAR;
         journal = new ArrayList<>();
         done = false;
-    }
-
-    public Argument(String name, Integer expectedTime) {
-        super();
-        this.name = name;
-        this.expectedTime = expectedTime;
-
-    }
-
-    public Argument(String argumentName, Settings difficulty) {
-        super();
-
     }
 
     /**
@@ -92,10 +80,6 @@ public class Argument extends Observable {
             throw new NullPointerException();
         }
         this.difficulty = difficulty;
-
-        // Notify the containing course to update expected time for the arguments
-        setChanged();
-        notifyObservers();
     }
 
     /**
@@ -114,10 +98,15 @@ public class Argument extends Observable {
         this.expectedTime = expectedTime;
     }
 
+    public void setJournal(List<Log> journal) {
+        this.journal = journal;
+    }
+
     /**
      * Add the log to the journal of the argument.
      * @param log log to add
      */
+
     public void addLog(Log log) {
         journal.add(log);
 
@@ -162,10 +151,6 @@ public class Argument extends Observable {
     public int computeStudyTimeSpent() {
         int time = 0;
         for (Log log: journal) {
-            // Ignore, not a study thing
-            if (!(log instanceof StudyLog)) {
-                continue;
-            }
 
             // Date.getTime() returns milliseconds
             // It subtract time using seconds (/1_000) and not minutes (/60_000) because the last one can introduce
