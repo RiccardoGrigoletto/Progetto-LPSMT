@@ -140,8 +140,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
 
         Button confirmTimerTemporaryChanges = dialog.findViewById(R.id.button);
         Button cancelTimerTemporaryChanges  = dialog.findViewById(R.id.cancelbutton);
-        //studyLog
-        studyLog = new StudyLog();
+
         //textbox of the dialog
         final EditText sessions = dialog.findViewById(R.id.editText2);
         final EditText studyTime = dialog.findViewById(R.id.editText3);
@@ -173,7 +172,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             Bundle extrass = getIntent().getExtras();
             if (extrass != null) {
                 preSelectItem(extrass.getString("courseID"));
-                //CourseManagerSingleton.getInstance().getCourseById(extras.getInt("courseId")).getName()
             }
         }
         catch (NullPointerException e) {
@@ -241,12 +239,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
         argumentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-              //  try {
                     String selectedArgument = argumentSpinner.getSelectedItem().toString();
                     setStudyArgument(selectedArgument);
-               // }catch(Exception e){
-              //      Toast.makeText(TimerActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
-              //  }
             }
 
             @Override
@@ -437,6 +431,9 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             public void onClick(View v) {
 
                 buildWearableNotification("start");
+                //studyLog
+                studyLog = new StudyLog();
+                studyLog.setStart(new Date());
                 /**
                  * in order to avoid sync pause/stop button,
                  * here this button will be forced to Pause status
@@ -470,7 +467,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 thirdArch.start();
                 startButton.setEnabled(false);
                 settings.setEnabled(false);
-                studyLog.setStart(new Date());
                 courseSpinner.setEnabled(false);
                 argumentSpinner.setEnabled(false);
                 pause.setEnabled(true);
@@ -482,9 +478,10 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-
+                /**
+                 * pause behaviour
+                 */
                 if(pauseBtnBinaryFlag != 0) {
-
                     buildWearableNotification("pause");
                     pause.setText(R.string.timerStopButton);
                     timerNotification.notify(getBaseContext(), "Timer Paused", 1);
@@ -497,6 +494,9 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
 
                     pauseBtnBinaryFlag = 0;
                 }
+                /**
+                 * stop behaviour
+                 */
                 else if(pauseBtnBinaryFlag ==0){
                     pause.setText(R.string.timerPauseButton);
                     initializeTimerView(mArcProgressStackView);
@@ -545,7 +545,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                     //if you've put data on the remote node
                     String nodeId = getRemoteNodeId();
                     // Or If you already know the node id
-                    // String nodeId = "some_node_id";
                     Uri uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).authority(nodeId).path("/countdown").build();
                     PutDataMapRequest putDataMapRequest = PutDataMapRequest.create (uri.getPath());
                     putDataMapRequest.getDataMap().putString("courseName", courseSpinner.getSelectedItem().toString());
@@ -554,23 +553,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                     putDataMapRequest.getDataMap().putLong("remainingTime",countdownView.getRemainTime());
                     PutDataRequest request = putDataMapRequest.asPutDataRequest();
                     request.setUrgent();
-                    Wearable.DataApi.putDataItem(mGoogleApiClient,request)
-                            .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-                                @Override
-                                public void onResult(DataApi.DataItemResult dataItemResult) {
-                                    if (!dataItemResult.getStatus().isSuccess()) {
-                                        Log.e("wearable", "buildWearableNotification(): Failed to set the data, "
-                                                + "status: " + dataItemResult.getStatus().getStatusCode());
-                                    }
-                                    else {
-                                        Log.v("wearable", "buildWearableNotification(): Success to set the data, "
-                                                + "status: " + dataItemResult.getStatus().getStatusCode());
-
-                                    }
-                                }
-                            });
-                } else {
-                    Log.e("wearable", "buildWearableNotification(): no Google API Client connection");
+                    Wearable.DataApi.putDataItem(mGoogleApiClient,request);
                 }
             }
         }).start();
@@ -758,7 +741,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             String tmp = (String) courseSpinner.getItemAtPosition(i);
             if (tmp.equals(name)) {
                 courseSpinner.setSelection(i);
-                doWeStopTheLoop = true; //you can use break; too
+                doWeStopTheLoop = true;
             }
         }
     }
