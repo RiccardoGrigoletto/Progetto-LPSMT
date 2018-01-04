@@ -306,7 +306,15 @@ public class NewCourseActivity extends AppCompatActivity {
                 ((TextView)view1.findViewById(R.id.examDate)).setText(calendar.get(Calendar.DAY_OF_MONTH) + " / " +
                         (calendar.get(Calendar.MONTH)+1) + " / " + calendar.get(Calendar.YEAR));
                 final ImageButton deleteExamButton = view1.findViewById(R.id.imageButton);
-                deleteExamButton.setVisibility(View.INVISIBLE);
+                deleteExamButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                linearLayoutExams.removeView(view1);
+
+                            }
+                        });
+
                 linearLayoutExams.addView(view1);
             }
 
@@ -429,7 +437,7 @@ public class NewCourseActivity extends AppCompatActivity {
         }
         //exams
         LinearLayout examsLinearLayout = findViewById(R.id.examsList);
-        DateFormat df = new SimpleDateFormat("dd - MM - yyyy");
+        DateFormat df = new SimpleDateFormat("dd / MM / yyyy");
         for (int i = 0; i < examsLinearLayout.getChildCount(); i++) {
             Date examDate = null;
             try {
