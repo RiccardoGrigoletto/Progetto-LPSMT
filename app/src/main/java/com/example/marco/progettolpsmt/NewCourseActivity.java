@@ -359,29 +359,31 @@ public class NewCourseActivity extends AppCompatActivity {
      */
     private Course createCourse(@Nullable Course from) {
         Course course;
-        //name
         String name = ((TextView) findViewById(R.id.courseName)).getText().toString();
-        //required
-        if (Objects.equals(name, "")) {
-            ((TextView) findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
-            Toast toast = Toast.makeText(this, R.string.courseNameVoid, Toast.LENGTH_LONG);
-            toast.show();
-            return null;
-        }
-        //unique
-        try {
-            ArrayList<Course> courses = (ArrayList<Course>) User.getInstance().getCourses();
+        //if from null the course is new, check the name
+        if (from == null) {
+            //required
+            if (Objects.equals(name, "")) {
+                ((TextView) findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
+                Toast toast = Toast.makeText(this, R.string.courseNameVoid, Toast.LENGTH_LONG);
+                toast.show();
+                return null;
+            }
+            //unique
+            try {
+                ArrayList<Course> courses = (ArrayList<Course>) User.getInstance().getCourses();
 
-            for (Course c : courses) {
-                if (c.getName().equals(name)) {
-                    ((TextView) findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
-                    Toast toast = Toast.makeText(this, R.string.courseNameNotUnique, Toast.LENGTH_LONG);
-                    toast.show();
-                    return null;
+                for (Course c : courses) {
+                    if (c.getName().equals(name)) {
+                        ((TextView) findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
+                        Toast toast = Toast.makeText(this, R.string.courseNameNotUnique, Toast.LENGTH_LONG);
+                        toast.show();
+                        return null;
+                    }
                 }
+            } catch (NullPointerException e) {
             }
         }
-        catch (NullPointerException e) {}
         //cfu
         Integer cfu = Integer.parseInt(((Spinner) (findViewById(R.id.CFUSpinner))).getSelectedItem().toString());
         if (cfu == null) {
