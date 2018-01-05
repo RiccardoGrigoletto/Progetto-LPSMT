@@ -45,8 +45,11 @@ public class NotificationService extends WearableListenerService
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        try{
+            resultReceiver = intent.getParcelableExtra("receiver");
+        }catch (NullPointerException e){
 
-        resultReceiver = intent.getParcelableExtra("receiver");
+        }
 
 
         return super.onStartCommand(intent, flags, startId);
