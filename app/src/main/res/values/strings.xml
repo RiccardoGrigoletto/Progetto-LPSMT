@@ -67,6 +67,7 @@
     <string name="agumentNameEditText">Name</string>
     <string name="channel_name">Study Tracker</string>
     <string name="channel_description">Timer</string>
+    <string name="courseNameNotUnique">please add a unique course name</string>
 
 
 </resources>
