@@ -299,7 +299,9 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                         studyingArgument.addLog(studyLog);
                         studyCourse.updateOnFirestore();
                     }
-                }catch(Exception e){
+                }catch(NullPointerException e){
+
+                }catch (Exception e){
                     Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                 }
                 countdownView.start(breakTimeTimer);
@@ -501,7 +503,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                             studyCourse.updateOnFirestore();
                             studyLog = null;
                         }
-                    }catch(Exception e){
+                    }catch(NullPointerException e){
+                    }catch (Exception e){
                         Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -617,7 +620,9 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 studyingArgument.addLog(studyLog);
                 studyCourse.updateOnFirestore();
             }
-        }catch(Exception e){
+        }catch(NullPointerException e){
+
+        }catch (Exception e){
             Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
         }
     }
@@ -645,7 +650,9 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                                 studyingArgument.addLog(studyLog);
                                 studyCourse.updateOnFirestore();
                             }
-                        }catch(Exception e){
+                        }catch(NullPointerException e){
+
+                        }catch (Exception e){
                             Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
                         }
                     }})
