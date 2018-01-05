@@ -108,8 +108,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
         setContentView(R.layout.activity_timer);
 
         //Dialog used in order to take data from user, that we need in order to initializate timer
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.timerinitializationpopup);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this.getApplicationContext())
                 .addApi(Wearable.API)
@@ -128,15 +126,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
 
                     }})
                 .setNegativeButton(android.R.string.no, null).create();;
-
-
-        Button confirmTimerTemporaryChanges = dialog.findViewById(R.id.button);
-        Button cancelTimerTemporaryChanges  = dialog.findViewById(R.id.cancelbutton);
-
-        //textbox of the dialog
-        final EditText sessions = dialog.findViewById(R.id.editText2);
-        final EditText studyTime = dialog.findViewById(R.id.editText3);
-        final EditText breakTime = dialog.findViewById(R.id.editText4);
         //spinners
         courseSpinner = findViewById(R.id.courseSpinner);
         argumentSpinner = findViewById(R.id.argumentSpinner);

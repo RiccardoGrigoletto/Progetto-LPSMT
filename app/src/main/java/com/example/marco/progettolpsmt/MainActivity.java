@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
@@ -113,6 +114,18 @@ public class MainActivity extends AppCompatActivity implements Observer {
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+
+        SharedPreferences loggedAccount = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = loggedAccount.edit();
+        editor.putString(PREF_ACCOUNT_NAME, FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        editor.commit();
+
+        String accountName = getPreferences(Context.MODE_PRIVATE)
+                .getString(PREF_ACCOUNT_NAME, null);
+
+        //setting account logged in app
+        //mCredential.setSelectedAccountName(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
         //page creation
         final ViewPager viewPager = findViewById(R.id.vp_ntb);
@@ -455,8 +468,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private void chooseAccount() {
         if (EasyPermissions.hasPermissions(
                 this, android.Manifest.permission.GET_ACCOUNTS)) {
-            String accountName = getPreferences(Context.MODE_PRIVATE)
-                    .getString(PREF_ACCOUNT_NAME, null);
+            /*String accountName = getPreferences(Context.MODE_PRIVATE)
+                    .getString(PREF_ACCOUNT_NAME, null);*/
+            String accountName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
             if (accountName != null) {
                 mCredential.setSelectedAccountName(accountName);
                 getResultsFromApi();

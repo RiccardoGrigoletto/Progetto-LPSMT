@@ -49,6 +49,7 @@ import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -155,6 +156,7 @@ public class NewCourseActivity extends AppCompatActivity {
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+       // mCredential.setSelectedAccountName(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Calling Google Calendar ...");
 
@@ -552,8 +554,9 @@ public class NewCourseActivity extends AppCompatActivity {
     private void chooseAccount() {
         if (EasyPermissions.hasPermissions(
                 this, android.Manifest.permission.GET_ACCOUNTS)) {
-            String accountName = getPreferences(Context.MODE_PRIVATE)
-                    .getString(PREF_ACCOUNT_NAME, null);
+            /*String accountName = getPreferences(Context.MODE_PRIVATE)
+                    .getString(PREF_ACCOUNT_NAME, null);*/
+            String accountName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
             if (accountName != null) {
                 mCredential.setSelectedAccountName(accountName);
                 getResultsFromApi();
