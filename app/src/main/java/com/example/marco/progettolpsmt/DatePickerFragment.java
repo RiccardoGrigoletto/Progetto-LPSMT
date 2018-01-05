@@ -27,8 +27,14 @@ import java.util.Date;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
-    int resId;
-    public static String resIdKey = "resID";
+    private final TextView view;
+
+    public DatePickerFragment(TextView view) {
+        this.view = view;
+    }
+    public DatePickerFragment(){
+        this.view=null;
+    }
 
     @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -38,8 +44,6 @@ public class DatePickerFragment extends DialogFragment
             int month = c.get(Calendar.MONTH);
             int dayOfmonth = c.get(Calendar.DAY_OF_MONTH);
 
-            Bundle extras = this.getArguments();
-            resId = extras.getInt(resIdKey);
             // Create a new instance of TimePickerDialog and return it
             DatePickerDialog dpd = new DatePickerDialog(getActivity(), this, year, month, dayOfmonth);
             dpd.getDatePicker().setMinDate(new Date().getTime());
@@ -48,7 +52,6 @@ public class DatePickerFragment extends DialogFragment
 
     @Override
     public void onDateSet(DatePicker datePicker, final int year, final int month, final int dayOfMonth) {
-        TextView tv = getActivity().findViewById(resId);
-        tv.setText(dayOfMonth + " / " + (month+1) + " / " + year);
+        view.setText(dayOfMonth + " / " + (month+1) + " / " + year);
     }
 }

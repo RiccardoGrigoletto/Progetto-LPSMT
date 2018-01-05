@@ -59,7 +59,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -179,7 +178,7 @@ public class NewCourseActivity extends AppCompatActivity {
                     examDate.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            showDatePickerDialog(v,R.id.examDate);
+                            showDatePickerDialog(v,examDate);
                         }
                     });
                     final ImageButton deleteButton = view1.findViewById(R.id.imageButton);
@@ -240,13 +239,13 @@ public class NewCourseActivity extends AppCompatActivity {
                 studyDateFrom.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        showTimePickerDialog(view, R.id.studyDateFrom);
+                        showTimePickerDialog(view, studyDateFrom);
                     }
                 });
                 studyDateTo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        showTimePickerDialog(view, R.id.studyDateTo);
+                        showTimePickerDialog(view, studyDateTo);
                     }
                 });
 
@@ -360,13 +359,30 @@ public class NewCourseActivity extends AppCompatActivity {
      */
     private Course createCourse(@Nullable Course from) {
         Course course;
-        //name
         String name = ((TextView) findViewById(R.id.courseName)).getText().toString();
-        if (Objects.equals(name, "")) {
-            ((TextView) findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
-            Toast toast = Toast.makeText(this, R.string.courseNameVoid, Toast.LENGTH_LONG);
-            toast.show();
-            return null;
+        //if from null the course is new, check the name
+        if (from == null) {
+            //required
+            if (Objects.equals(name, "")) {
+                ((TextView) findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
+                Toast toast = Toast.makeText(this, R.string.courseNameVoid, Toast.LENGTH_LONG);
+                toast.show();
+                return null;
+            }
+            //unique
+            try {
+                ArrayList<Course> courses = (ArrayList<Course>) User.getInstance().getCourses();
+
+                for (Course c : courses) {
+                    if (c.getName().equals(name)) {
+                        ((TextView) findViewById(R.id.courseName)).setShowSoftInputOnFocus(true);
+                        Toast toast = Toast.makeText(this, R.string.courseNameNotUnique, Toast.LENGTH_LONG);
+                        toast.show();
+                        return null;
+                    }
+                }
+            } catch (NullPointerException e) {
+            }
         }
         //cfu
         Integer cfu = Integer.parseInt(((Spinner) (findViewById(R.id.CFUSpinner))).getSelectedItem().toString());
@@ -489,22 +505,16 @@ public class NewCourseActivity extends AppCompatActivity {
     /**
      * the date picker dialog for the exams
      */
-    public void showDatePickerDialog(View v, int id) {
-        Bundle extras = new Bundle();
-        extras.putInt(DatePickerFragment.resIdKey,id);
-        DialogFragment newFragment = new DatePickerFragment();
-        newFragment.setArguments(extras);
+    public void showDatePickerDialog(View v, TextView target) {
+        DialogFragment newFragment = new DatePickerFragment(target);
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
     /**
      *the time picker dialog for the study dates
      */
-    private void showTimePickerDialog(View view, int id) {
-        Bundle extras = new Bundle();
-        extras.putInt(TimePickerFragment.resIdKey,id);
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.setArguments(extras);
+    private void showTimePickerDialog(View v, TextView target) {
+        DialogFragment newFragment = new TimePickerFragment(target);
         newFragment.show(getFragmentManager(), "timePicker");
     }
 
