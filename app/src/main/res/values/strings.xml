@@ -58,7 +58,7 @@
     <string name="argumetSpinnerTextView">Course Arguments</string>
     <string name="timerStartButton">Start</string>
     <string name="timerPauseButton">Pause</string>
-    <string name="timerSettingsButton">Settings</string>
+    <string name="timerSettingsButton">Stop</string>
     <string name="timerStopButton">Stop</string>
     <string name="esamEditLabel">You can modify and delete existing  exams using google calendar</string>
     <string name="sudySessionsEditLabel">You can modify and delete existing  study sessions using google calendar</string>

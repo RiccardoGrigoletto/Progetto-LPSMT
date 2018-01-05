@@ -66,7 +66,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
     private ArcProgressStackView mArcProgressStackView;
     private Button startButton;
     private Button pause;
-    private Button settings;
+    private Button stopBtn;
     private CountdownView countdownView;
     private long animationStateThirdArch =0, animationStateSecondArch =0, thirdArchAnimationState =0;
     private long nSession = 4;
@@ -75,7 +75,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
     private Spinner argumentSpinner;
     private long breakTimeTimer;
     private boolean isDialogSetted = false;
-    private Course courses;
     //circle creation
     private ArrayList<Model> models;
     //animator declaration and initialization
@@ -92,11 +91,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
     private AlertDialog confirmChangeCourseArgumentDialog = null;
     private AlertDialog stopAlerDialog = null;
     private AlertDialog backButtonAlertDialog = null;
-    //button pause binary flag
-    private int pauseBtnBinaryFlag = 1 ;
-    //timestamps
-    private Date initialTimeStamp;
-    private Date timeStampFromInterruption;
     private com.example.marco.progettolpsmt.backend.Log studyLog;
     //Notification
     TimerNotification timerNotification;
@@ -108,8 +102,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
     //boundle elements
     private String boundleArgument = null;
     GoogleApiClient mGoogleApiClient;
-    private Intent service;
-
     @Override
     protected void onCreate(final Bundle extras) {
         super.onCreate(extras);
@@ -152,7 +144,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
         startButton = (Button) findViewById(R.id.startbtn);
         pause =(Button) findViewById(R.id.pausebtn);
         pause.setEnabled(false);
-        settings = (Button) findViewById(R.id.settings);
+        stopBtn = (Button) findViewById(R.id.settings);
+        stopBtn.setEnabled(false);
         //testual timer
         countdownView = findViewById(R.id.countdownview);
         //arch model
@@ -177,32 +170,6 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
         catch (NullPointerException e) {
                 Toast.makeText(TimerActivity.this, "Impossible Getting Courses/Arguments", Toast.LENGTH_LONG).show();
         }
-
-        //adding listener to buttons
-        confirmTimerTemporaryChanges.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if ( !((sessions.getText()).toString().equals("")) && !((studyTime.getText()).toString().equals("")) && !((breakTime.getText()).toString().equals(""))) {
-                    //go on here and dismiss dialog
-                    nSession = Integer.parseInt(sessions.getText().toString());
-                    studyTimeTimer = Long.parseLong(studyTime.getText().toString())*60000;
-                    breakTimeTimer = Long.parseLong(breakTime.getText().toString())*60000;
-                    isDialogSetted = true;
-                    countdownView.updateShow(studyTimeTimer);
-                    initializeTimerView(mArcProgressStackView);
-                    initializeArcModel(nSession, studyTimeTimer, breakTimeTimer);
-                    dialog.dismiss();
-                }
-            }
-        });
-
-        cancelTimerTemporaryChanges.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    dialog.dismiss();
-            }
-        });
-
         /**
          * after course being selected, argument are setted
          */
@@ -249,14 +216,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
             }
         });
 
-
-
-         /*
-           if user doesn't set values, the system will use default setted values
-         */
-         if(isDialogSetted == false) {
-            readFromSharedPreferences();
-         }
+        //setting timer duration
+        readFromSharedPreferences();
 
         //ArcProgressView initialization
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -302,7 +263,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 }catch(NullPointerException e){
 
                 }catch (Exception e){
-                    Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    Toast.makeText(TimerActivity.this, "Impossible save progresses", Toast.LENGTH_LONG).show();
                 }
                 countdownView.start(breakTimeTimer);
                 secondArch.start();
@@ -435,12 +397,12 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 //studyLog
                 studyLog = new StudyLog();
                 studyLog.setStart(new Date());
+                stopBtn.setEnabled(false);
+                pause.setEnabled(true);
                 /**
                  * in order to avoid sync pause/stop button,
                  * here this button will be forced to Pause status
                  */
-                pauseBtnBinaryFlag = 1;
-                pause.setText(R.string.timerPauseButton);
                 timerNotification.notify(getBaseContext(),"Studying",1);
                 if(animationStateThirdArch != 0) {
                     firstArch.resume();
@@ -467,79 +429,59 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                 firstArch.start();
                 thirdArch.start();
                 startButton.setEnabled(false);
-                settings.setEnabled(false);
                 courseSpinner.setEnabled(false);
                 argumentSpinner.setEnabled(false);
-                pause.setEnabled(true);
-
             }
         });
 
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                 * pause behaviour
-                 */
-                if(pauseBtnBinaryFlag != 0) {
                     buildWearableNotification("pause");
-                    pause.setText(R.string.timerStopButton);
                     timerNotification.notify(getBaseContext(), "Timer Paused", 1);
                     final NotificationCompat.Builder mNotifyBuilder = timerNotification.getBuilder();
                     firstArch.pause();
                     secondArch.pause();
                     thirdArch.pause();
                     countdownView.pause();
+                    stopBtn.setEnabled(true);
+                    pause.setEnabled(false);
                     startButton.setEnabled(true);
-
-                    pauseBtnBinaryFlag = 0;
 
                     //adding log
                     try {
                         if (studyLog.getStart() != null) {
                             studyLog.setEnd(new Date());
-
                             studyingArgument.addLog(studyLog);
                             studyCourse.updateOnFirestore();
                             studyLog = null;
                         }
                     }catch(NullPointerException e){
                     }catch (Exception e){
-                        Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
-                    }
-                }
-                /**
-                 * stop behaviour
-                 */
-                else if(pauseBtnBinaryFlag ==0){
-                    pause.setText(R.string.timerPauseButton);
-                    initializeTimerView(mArcProgressStackView);
-                    courseSpinner.setEnabled(true);
-                    argumentSpinner.setEnabled(true);
-                    startButton.setEnabled(true);
-                    pause.setEnabled(false);
-                    pauseBtnBinaryFlag = 1;
-                    timerNotification.cancel(getBaseContext());
-                }
+                        e.printStackTrace();
 
+                        Toast.makeText(TimerActivity.this, "Impossible save progresses", Toast.LENGTH_LONG).show();
+                    }
             }
         });
 
-        settings.setOnClickListener(new View.OnClickListener() {
+        stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.show();
+                initializeTimerView(mArcProgressStackView);
+                courseSpinner.setEnabled(true);
+                argumentSpinner.setEnabled(true);
+                startButton.setEnabled(true);
+                pause.setEnabled(false);
+                timerNotification.cancel(getBaseContext());
             }
         });
-
-        //spinners onchange listeners
-
-        service = new Intent(this, NotificationService.class);
-        MyResultReceiver resultReceiver = new MyResultReceiver(null);
-        service.putExtra("receiver", resultReceiver);
-        startService(service);
     }
 
+    /**
+     * wearable notifications
+     * @param status
+     */
     private void buildWearableNotification(final String status) {
         new Thread(new Runnable() {
 
@@ -598,11 +540,11 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
         animationStateSecondArch = 0;
         thirdArchAnimationState = 0;
         animationStateThirdArch = 0;
-        stackView.getModels().get(MODEL_COUNT-2)  //Math.min(mCounter, MODEL_COUNT - 2)
+        stackView.getModels().get(MODEL_COUNT-2)
                 .setProgress(0);
-        stackView.getModels().get(MODEL_COUNT-1)  //Math.min(mCounter, MODEL_COUNT - 2)
+        stackView.getModels().get(MODEL_COUNT-1)
                 .setProgress(0);
-        stackView.getModels().get(MODEL_COUNT-3)  //Math.min(mCounter, MODEL_COUNT - 2)
+        stackView.getModels().get(MODEL_COUNT-3)
                 .setProgress(0);
         startButton.setClickable(true);
         countdownView.stop();
@@ -623,7 +565,7 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
         }catch(NullPointerException e){
 
         }catch (Exception e){
-            Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+            Toast.makeText(TimerActivity.this, "Impossible save progresses", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -653,7 +595,8 @@ TimerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCal
                         }catch(NullPointerException e){
 
                         }catch (Exception e){
-                            Toast.makeText(TimerActivity.this, "Impossible adding Log", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                            Toast.makeText(TimerActivity.this, "Impossible save progresses", Toast.LENGTH_LONG).show();
                         }
                     }})
                 .setNegativeButton(android.R.string.no, null).create();
