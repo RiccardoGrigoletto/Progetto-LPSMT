@@ -9,4 +9,4 @@
 <img src="shots/6.png" width=200></img>
 
 # wearable module <br>
-<img src="shots/7.png" width=200></img>
+<img src="shots/7PNG.PNG" width=200></img>
